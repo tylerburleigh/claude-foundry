@@ -6,13 +6,62 @@ A Claude Code plugin for working with [foundry-mcp](https://github.com/tylerburl
 
 This plugin provides skills, commands, and agents for spec-driven development (SDD) workflows powered by the Foundry MCP server.
 
-## Installation
+## Prerequisites
 
-Add to your Claude Code plugins:
+### Install foundry-mcp (Required)
+
+The plugin requires the `foundry-mcp` Python package to be installed:
 
 ```bash
-claude plugins add tylerburleigh/claude-foundry
+pip install foundry-mcp
 ```
+
+Or with pipx for isolated installation:
+
+```bash
+pipx install foundry-mcp
+```
+
+Verify installation:
+
+```bash
+python -m foundry_mcp.server --help
+```
+
+## Installation
+
+### Easiest method (script)
+
+Run from command line. Requires `jq`. Adds marketplace, pre-enables the plugin.
+
+```bash
+mkdir -p ~/.claude && \
+  touch ~/.claude/settings.json && \
+  [ ! -s ~/.claude/settings.json ] && echo '{}' > ~/.claude/settings.json; \
+  jq '. * {
+    "extraKnownMarketplaces": {
+      "claude-foundry": {
+        "source": {"source": "github", "repo": "tylerburleigh/claude-foundry"}
+      }
+    },
+    "enabledPlugins": {
+      "foundry@claude-foundry": true
+    }
+  }' ~/.claude/settings.json > ~/.claude/settings.json.tmp && \
+  mv ~/.claude/settings.json.tmp ~/.claude/settings.json
+```
+
+Then restart Claude Code and trust the repository when prompted.
+
+### Alternative: Install from within Claude Code
+
+If you prefer, you can add the marketplace interactively from inside Claude Code:
+
+```
+/plugin marketplace add tylerburleigh/claude-foundry
+```
+
+Then run `/plugin` to browse and install available plugins.
 
 ## Plugin Structure
 
@@ -42,12 +91,12 @@ Skills are invoked via `Skill(foundry:skill-name)`:
 - `foundry:sdd-pr` - Create PRs with AI-enhanced descriptions
 - `foundry:sdd-review` - Review specs for quality and issues
 
-### Commands (`/foundry:*`)
+### Commands
 
 Slash commands for common workflows:
 
-- `/foundry:begin` - Resume or start spec-driven development work
-- `/foundry:setup` - First-time project setup
+- `/foundry-setup` - First-time setup and guided tour of plugin features
+- `/sdd-next` - Resume or start spec-driven development work
 
 ### Agents
 
@@ -55,7 +104,9 @@ Subagents for specialized tasks (spawned via Task tool).
 
 ## Configuration
 
-The plugin uses the foundry-mcp server for backend operations. Ensure the MCP server is configured in your Claude Code settings.
+The plugin automatically configures the foundry-mcp MCP server when installed. The server starts automatically when the plugin is enabled - no manual MCP configuration needed.
+
+If the MCP server fails to start, verify that `foundry-mcp` is installed (see Prerequisites above).
 
 ## License
 

@@ -109,6 +109,33 @@ mcp__foundry-mcp__code-find-function name="function_name"
 mcp__foundry-mcp__code-trace-calls function_name="function_name"
 ```
 
+### 3.1 Subagent Guidance (Context Exploration)
+
+For complex failures or unfamiliar code, use Claude Code's built-in subagents:
+
+| Scenario | Subagent | Thoroughness |
+|----------|----------|--------------|
+| Find related test files | Explore | quick |
+| Understand module dependencies | Explore | medium |
+| Multi-file state/fixture investigation | Explore | very thorough |
+| Complex debugging across packages | general-purpose | N/A |
+
+**Example: Investigating shared state (flaky tests)**
+```
+Use the Explore agent (very thorough) to find:
+- All fixtures in conftest.py files
+- Global state or module-level variables
+- Files importing the failing module
+- Test files that modify shared resources
+```
+
+**Benefits:**
+- Prevents test output and search results from bloating context
+- Haiku model is faster for searching test directories
+- Returns focused findings for targeted debugging
+
+> For detailed investigation patterns with subagents, see `reference.md#subagent-investigation-patterns`
+
 ## Phase 4: Consult External Tools
 
 **Check availability:**

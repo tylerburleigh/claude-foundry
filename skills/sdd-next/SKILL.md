@@ -163,6 +163,32 @@ Treat `context` as the authoritative source. Only fall back to `mcp__foundry-mcp
 **Present plan via `AskUserQuestion`:**
 - Options: "Approve & Start", "Request Changes", "More Details", "Defer"
 
+### 3.3.1 Subagent Guidance (Pre-Implementation Exploration)
+
+Before implementing, use Claude Code's built-in subagents for efficient codebase exploration:
+
+| Scenario | Subagent | Thoroughness |
+|----------|----------|--------------|
+| Find related files/patterns | Explore | medium |
+| Understand unfamiliar code areas | Explore | very thorough |
+| Complex multi-file investigation | general-purpose | N/A |
+
+**Example invocation:**
+```
+Use the Explore agent (medium thoroughness) to find:
+- Existing implementations of similar patterns
+- Test files for the target module
+- Related documentation that may need updates
+```
+
+**Benefits of subagent exploration:**
+- Prevents context bloat in main conversation
+- Haiku model is faster for search operations
+- Returns focused results for detailed analysis
+- Keeps main context available for implementation
+
+> For more subagent patterns including autonomous mode usage, see `reference.md#built-in-subagent-patterns`
+
 ### 3.4 Implementation Handoff
 
 **Before coding:**

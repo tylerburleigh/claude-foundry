@@ -53,6 +53,7 @@ This skill operates entirely through the Foundry MCP server (`foundry-mcp`). Too
 | Tool Category | MCP Tools | Purpose |
 |---------------|-----------|---------|
 | **Codebase Analysis** | `doc-stats`, `code-find-class`, `code-find-function`, `code-trace-calls`, `code-impact-analysis` | Understand existing code structure |
+| **Plan Review** | `plan-review` | AI-powered review of markdown plans before spec creation |
 | **Spec Creation** | `spec-schema-export`, `spec-create` | Generate specification files |
 | **Spec Validation** | `spec-validate`, `spec-validate-fix` | Ensure spec integrity |
 | **Spec Query** | `spec-list`, `spec-get`, `spec-get-hierarchy` | Inspect existing specs |
@@ -86,11 +87,76 @@ If documentation available, use for analysis:
 
 If documentation unavailable, fall back to `Glob`, `Grep`, and `Read`.
 
+### 2.1 Subagent Guidance (Codebase Exploration)
+
+For large or unfamiliar codebases, use Claude Code's built-in subagents for efficient parallel exploration:
+
+| Scenario | Subagent | Thoroughness |
+|----------|----------|--------------|
+| Initial file structure discovery | Explore | quick |
+| Understanding existing patterns | Explore | medium |
+| Complex dependency analysis | Explore | very thorough |
+| Multi-area architectural research | general-purpose | N/A |
+
+**Example: Parallel Exploration**
+```
+Use the Explore agent (medium thoroughness) to find:
+- All files matching the feature area pattern
+- Existing implementations of similar functionality
+- Test coverage for affected modules
+- Related configuration files
+```
+
+**Benefits:**
+- Prevents context bloat during analysis phase
+- Haiku model is faster for search operations
+- Keeps main context available for spec creation
+- Can run multiple Explore agents in parallel for different areas
+
+> For detailed exploration patterns, see `reference.md#parallel-investigation-strategies`
+
 ### Step 3: Create High-Level Phase Plan
 
 For complex features (3+ phases expected), first create a phase-only markdown plan and **present to the user for approval before detailed planning**.
 
 > For phase plan template, see `reference.md#phase-plan-template`
+
+### Step 3.5: AI Review of Phase Plan (Optional)
+
+Before converting your markdown plan to a formal JSON spec, you can get AI-powered feedback to catch issues early:
+
+```bash
+mcp__foundry-mcp__plan-review plan_path="./PLAN.md" review_type="full"
+```
+
+**Review Types:**
+| Type | Focus |
+|------|-------|
+| `full` | Comprehensive 6-dimension review (completeness, architecture, sequencing, feasibility, risk, clarity) |
+| `quick` | Critical blockers and questions only |
+| `security` | Security-focused analysis |
+| `feasibility` | Technical complexity and risk assessment |
+
+**Review → Revise → Repeat:**
+1. Create markdown plan
+2. Run AI review
+3. Review feedback in `./tmp/<plan-name>-review.md`
+4. Revise plan based on feedback
+5. Repeat until no critical blockers
+
+**When to use AI review:**
+- Complex features with 3+ phases
+- Unfamiliar domains or technology
+- High-risk architectural changes
+- When user requests additional validation
+
+**When to skip:**
+- Simple features with clear scope
+- Well-understood domain/patterns
+- Time-sensitive changes
+- User explicitly approves plan without review
+
+> For review output format and iteration examples, see `reference.md#ai-plan-review`
 
 ### Step 4: Create JSON Specification
 

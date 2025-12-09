@@ -12,6 +12,8 @@ Detailed workflows, examples, and edge cases for the sdd-next skill.
 - [Autonomous Mode Workflow](#autonomous-mode-phase-completion)
 - [Phase Loop with Human Checkpoints](#phase-loop-with-human-checkpoints)
 - [Troubleshooting](#troubleshooting)
+- [Agent Delegation](#agent-delegation)
+- [Built-in Subagent Patterns](#built-in-subagent-patterns)
 
 ---
 
@@ -308,6 +310,40 @@ Current context: {context_percentage}%
 - Auto-revise plans on deviations
 - Batch task completions
 
+### Subagent Usage in Autonomous Mode
+
+Autonomous mode benefits significantly from Claude Code's built-in subagent delegation:
+
+**Pre-Phase Exploration:**
+Before starting a phase, use Explore to understand scope:
+```
+Use the Explore agent (very thorough) to find all files
+that will be affected by this phase's tasks
+```
+
+**Parallel Task Investigation:**
+When multiple tasks have no dependencies, investigate in parallel:
+```
+Launch 2-3 Explore agents to gather context for upcoming tasks
+while implementing the current task
+```
+
+**Plan Deviation Research:**
+When implementation reveals unexpected patterns:
+```
+Use the general-purpose subagent to investigate the deviation
+and recommend whether to proceed or stop for replanning
+```
+
+**Context Management Benefits:**
+Subagent exploration keeps autonomous mode efficient:
+- Search results stay in subagent context (not main conversation)
+- Only relevant findings returned to orchestrator
+- Helps stay under the 85% context threshold
+- Haiku model (Explore) is faster for search operations
+
+> For complete subagent reference, see [Built-in Subagent Patterns](#built-in-subagent-patterns)
+
 ---
 
 ## Phase Loop with Human Checkpoints
@@ -460,6 +496,16 @@ Task(
 )
 ```
 
+### Built-in vs Custom Agents
+
+| Need | Use |
+|------|-----|
+| Codebase exploration | **Explore** (built-in) |
+| Complex investigation | **general-purpose** (built-in) |
+| Spec modification | sdd-modify (custom) |
+| Test execution | run-tests (custom) |
+| Plan creation | sdd-planner (custom) |
+
 ### Related Agents
 
 | Agent | Use For |
@@ -468,3 +514,65 @@ Task(
 | `sdd-modify` | Applying bulk changes to existing specs |
 | `sdd-spec-reviewer` | Multi-model review of specifications |
 | `test-runner` | Running and debugging tests |
+
+---
+
+## Built-in Subagent Patterns
+
+Claude Code provides built-in subagents that complement custom agent delegation. Use these for efficient codebase exploration without bloating main conversation context.
+
+### Explore Subagent
+
+**Purpose:** Fast, read-only codebase exploration using Haiku model
+
+**Tools available:** Glob, Grep, Read, Bash (read-only commands only)
+
+| Task Phase | When to Use Explore |
+|------------|---------------------|
+| Pre-implementation | Find existing patterns, test files, related code |
+| Debugging | Trace error sources, find similar issues |
+| Verification | Locate all affected files before verification |
+| Plan deviation | Investigate unexpected patterns |
+
+**Invocation example:**
+```
+Use the Explore agent with "medium" thoroughness to find all files
+that import the module being modified
+```
+
+### Thoroughness Levels
+
+| Level | Use Case | Trade-off |
+|-------|----------|-----------|
+| **quick** | Known file patterns, targeted lookup | Fast but may miss edge cases |
+| **medium** | General exploration (default) | Good balance of speed and coverage |
+| **very thorough** | Security audits, unfamiliar code | Slower but comprehensive |
+
+### General-Purpose Subagent
+
+**Purpose:** Complex multi-step tasks requiring full tool access
+
+**Model:** Sonnet (capable reasoning)
+
+**Tools available:** All tools
+
+**When to use:**
+- Multi-file investigation that may require modifications
+- Complex debugging requiring code changes
+- Tasks with multiple dependent steps
+
+### When NOT to Use Subagents
+
+- **Simple single-file tasks** - Use direct tools instead
+- **Known file locations** - Direct Read is faster
+- **Spec reading** - Always use MCP tools per skill rules (never direct file access)
+- **Near context limit** - Subagent results still consume context when returned
+
+### Benefits of Subagent Delegation
+
+| Benefit | Description |
+|---------|-------------|
+| **Context isolation** | Search results don't bloat main conversation |
+| **Speed** | Explore uses Haiku for fast searches |
+| **Focus** | Subagent returns only relevant findings |
+| **Parallelization** | Multiple Explore agents can run concurrently |

@@ -251,6 +251,69 @@ security-scanner/
 
 ---
 
+## Leveraging Built-in Subagents
+
+Skills can recommend Claude use built-in subagents for efficient task execution. This is particularly useful for skills that need to discover or analyze code before taking action.
+
+### Built-in Subagent Reference
+
+| Subagent | Model | Mode | When to Recommend |
+|----------|-------|------|-------------------|
+| **Explore** | Haiku | Read-only | Codebase discovery before analysis |
+| **Plan** | Sonnet | Read-only | Complex research requiring separate context |
+| **general-purpose** | Sonnet | Full access | Multi-step tasks needing all tools |
+
+### Explore Thoroughness Levels
+
+| Level | Use When |
+|-------|----------|
+| **quick** | Known file patterns, targeted lookups |
+| **medium** | General exploration (good default) |
+| **very thorough** | Security audits, unfamiliar codebases |
+
+### Example: Exploration-First Pattern
+
+Skills that analyze code should recommend using Explore for initial discovery:
+
+```yaml
+---
+name: security-review
+description: Review code for security vulnerabilities. Use when auditing code for security issues.
+allowed-tools: Read, Grep, Glob
+---
+
+# Security Code Review
+
+## Workflow
+
+1. **Discovery Phase**: Use the Explore subagent (medium thoroughness) to find:
+   - All authentication-related files
+   - Input validation handlers
+   - Database query construction
+
+2. **Analysis Phase**: Review discovered files for vulnerability patterns
+
+3. **Report**: Summarize findings with severity ratings
+
+## Subagent Guidance
+
+For large codebases, delegate initial discovery to the Explore subagent:
+- Prevents context bloat in main conversation
+- Faster Haiku model for search operations
+- Returns focused results for detailed analysis
+```
+
+### Benefits of Subagent Delegation
+
+| Benefit | Description |
+|---------|-------------|
+| **Context isolation** | Search results don't bloat main conversation |
+| **Speed** | Explore uses Haiku for fast searches |
+| **Focus** | Subagent returns only relevant findings |
+| **Parallelization** | Multiple Explore agents can run concurrently |
+
+---
+
 ## Examples
 
 ### Starter Template

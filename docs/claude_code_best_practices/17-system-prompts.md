@@ -315,6 +315,82 @@ Analyze GitHub issue #$ARGUMENTS and implement a fix.
 
 ---
 
+## Subagent Integration Patterns
+
+System prompts can guide Claude to leverage built-in subagents for efficient execution. This is especially valuable for skills and agents that need to explore codebases before taking action.
+
+### Built-in Subagents
+
+| Subagent | Model | Tools | Purpose |
+|----------|-------|-------|---------|
+| **Explore** | Haiku | Glob, Grep, Read, Bash (read-only) | Fast codebase search |
+| **Plan** | Sonnet | Read, Glob, Grep, Bash (read-only) | Research in plan mode |
+| **general-purpose** | Sonnet | All tools | Complex multi-step tasks |
+
+### Exploration-First Workflow
+
+For tasks requiring codebase discovery, structure the workflow to use Explore first:
+
+```markdown
+## Workflow
+
+1. **Explore**: Use the Explore subagent to find relevant files
+   - Thoroughness: medium (balance speed and coverage)
+   - Focus: [specific patterns or file types]
+
+2. **Analyze**: Review discovered files in detail
+3. **Report**: Summarize findings
+```
+
+### When to Recommend Subagents
+
+| Scenario | Recommendation |
+|----------|---------------|
+| Finding all files matching patterns | Explore (quick) |
+| Understanding unfamiliar codebase areas | Explore (very thorough) |
+| Complex refactoring research | general-purpose |
+| Initial investigation before changes | Explore (medium) |
+
+### Example: Code Review with Subagent
+
+```markdown
+---
+name: code-reviewer
+description: Review code for quality, security, and maintainability
+tools: Read, Grep, Glob
+---
+
+# Code Review
+
+## Responsibilities
+Review code for quality, security, and maintainability.
+
+## Workflow
+
+Before detailed review, use the Explore subagent to:
+- Find related test files for the changed code
+- Identify similar implementations for consistency check
+- Locate documentation that may need updates
+
+Then conduct detailed review of discovered context.
+
+## Output Format
+- **Summary**: 2-3 sentences
+- **Issues**: Table with Severity | Issue | Location
+- **Recommendations**: Prioritized list
+```
+
+### Subagent Guidance in Prompts
+
+| Requirement | Details |
+|-------------|---------|
+| SHOULD | Specify which subagent to use for discovery tasks |
+| SHOULD | Include thoroughness level for Explore |
+| SHOULD | Explain why subagent delegation benefits the task |
+| MAY | Suggest parallel Explore agents for large codebases |
+
+---
+
 ## Claude 4.x Considerations
 
 ### Extended Thinking

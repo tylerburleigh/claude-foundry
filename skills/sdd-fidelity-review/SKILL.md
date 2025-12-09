@@ -51,6 +51,35 @@ This skill relies entirely on the Foundry MCP server (`foundry-mcp`). Tool names
 
 > For detailed workflow steps per review type, see `reference.md#review-types`
 
+### Subagent Guidance (Context Gathering)
+
+For complex reviews or unfamiliar code, use Claude Code's built-in subagents to gather context before and after running the MCP fidelity review:
+
+| Scenario | Subagent | Thoroughness |
+|----------|----------|--------------|
+| Pre-review: understand implementation scope | Explore | medium |
+| Pre-review: find all files in a phase | Explore | quick |
+| Post-review: investigate deviation causes | Explore | very thorough |
+| Post-review: complex multi-file deviations | general-purpose | N/A |
+
+**Example: Pre-review context (phase review)**
+```
+Use the Explore agent (medium thoroughness) to find:
+- All implementation files referenced in phase-1 tasks
+- Related test files for the phase
+- Configuration files that may affect behavior
+```
+
+**Example: Post-review investigation**
+```
+Use the Explore agent (very thorough) to investigate:
+- Why task-2-3 has a major deviation
+- What other files depend on the deviated implementation
+- Whether the deviation is documented in comments or commit messages
+```
+
+> For detailed patterns, see `reference.md#subagent-investigation-patterns`
+
 ## Essential Commands
 
 **Phase review:**

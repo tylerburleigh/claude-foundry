@@ -181,6 +181,51 @@ Use the Explore agent to find all API endpoints in the codebase
 | Tools | All available tools |
 | Use cases | Multi-step operations, code modifications |
 
+### Choosing Built-in Subagents
+
+Use this decision matrix to select the appropriate built-in subagent:
+
+| Task Type | Recommended Subagent | Thoroughness |
+|-----------|---------------------|--------------|
+| Quick file lookup | Explore | quick |
+| Codebase understanding | Explore | medium |
+| Security audit discovery | Explore | very thorough |
+| Complex refactoring | general-purpose | N/A |
+| Plan mode research | Plan (automatic) | N/A |
+
+### Explore Thoroughness Levels
+
+| Level | Use When | Trade-off |
+|-------|----------|-----------|
+| **quick** | Known file patterns, targeted search | Fast but may miss edge cases |
+| **medium** | General exploration, balanced coverage | Good default for most tasks |
+| **very thorough** | Unfamiliar code, security reviews, comprehensive audits | Slower but comprehensive |
+
+**Specifying thoroughness:**
+```
+Use the Explore agent with "medium" thoroughness to find all authentication handlers
+```
+
+### When to Use Subagents Proactively
+
+Claude should proactively use the Explore subagent when:
+
+| Scenario | Why Explore Helps |
+|----------|-------------------|
+| User asks "where is X handled?" | Prevents search results from bloating main context |
+| Task requires understanding multiple areas | Isolated context keeps main conversation focused |
+| Initial scope is uncertain | Quick exploration before committing to approach |
+| Large codebase navigation | Haiku model is faster for search operations |
+
+### Subagent Limitations
+
+| Constraint | Details |
+|------------|---------|
+| No nesting | Subagents cannot spawn other subagents |
+| Stateless | Each invocation starts fresh |
+| Single result | Returns one final report to orchestrator |
+| Context isolation | Cannot access main conversation history |
+
 ---
 
 ## Agent Management

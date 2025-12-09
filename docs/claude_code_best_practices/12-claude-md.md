@@ -112,6 +112,7 @@ Architecture overview:
 | **Workflow** | Common commands, tools, processes |
 | **Domain context** | Terminology, business rules |
 | **Preferences** | Frameworks, libraries, approaches |
+| **Subagent usage** | When to use Explore, Plan, or general-purpose |
 
 ### Requirements
 
@@ -123,6 +124,44 @@ Architecture overview:
 | SHOULD | Keep content focused and concise |
 | MUST NOT | Include secrets, credentials, or API keys |
 | MUST NOT | Include vague statements ("use best practices") |
+
+### Subagent Preferences
+
+CLAUDE.md can establish project-level preferences for how Claude uses built-in subagents.
+
+**Built-in Subagents:**
+
+| Subagent | Model | Purpose |
+|----------|-------|---------|
+| **Explore** | Haiku | Fast, read-only codebase search |
+| **Plan** | Sonnet | Research during plan mode |
+| **general-purpose** | Sonnet | Complex multi-step tasks |
+
+**Example subagent preferences section:**
+
+```markdown
+## Subagent Usage
+
+### Exploration
+- Use Explore subagent for finding files across the codebase
+- Default thoroughness: medium
+- Use "very thorough" for security audits and unfamiliar areas
+
+### Task Delegation
+- Delegate test file discovery to Explore before running tests
+- Use general-purpose for complex multi-file refactoring
+- Keep simple single-file tasks in main context
+
+### Parallelization
+- Launch multiple Explore agents for large codebases
+- Maximum 3 concurrent agents for code review tasks
+```
+
+| Requirement | Details |
+|-------------|---------|
+| SHOULD | Specify default Explore thoroughness level |
+| SHOULD | Define when to delegate vs. use direct tools |
+| MAY | Set limits on concurrent subagent usage |
 
 ---
 

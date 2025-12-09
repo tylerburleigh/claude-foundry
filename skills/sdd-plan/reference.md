@@ -5,12 +5,14 @@ Detailed workflows, examples, and edge cases for the sdd-plan skill.
 ## Table of Contents
 
 - [Phase Plan Template](#phase-plan-template)
+- [AI Plan Review](#ai-plan-review)
 - [Task Hierarchy](#task-hierarchy)
 - [Task Categories](#task-categories)
 - [Verification Types](#verification-types)
 - [Dependency Tracking](#dependency-tracking)
 - [JSON Specification Structure](#json-specification-structure)
 - [Codebase Analysis Patterns](#codebase-analysis-patterns)
+- [Parallel Investigation Strategies](#parallel-investigation-strategies)
 - [Troubleshooting](#troubleshooting)
 
 ---
@@ -52,6 +54,132 @@ Brief description of what this change accomplishes.
 ```
 
 **Critical:** Present this to the user and get explicit approval before proceeding to detailed planning.
+
+---
+
+## AI Plan Review
+
+AI-powered review of markdown plans before converting them to formal JSON specifications. This enables iterative refinement with AI feedback to catch issues early.
+
+### Tool Usage
+
+```bash
+mcp__foundry-mcp__plan-review plan_path="./PLAN.md" review_type="full"
+```
+
+### Review Types
+
+| Type | Focus | Dimensions |
+|------|-------|------------|
+| `full` | Comprehensive analysis | Completeness, Architecture, Sequencing, Feasibility, Risk, Clarity |
+| `quick` | Critical issues only | Critical Blockers, Questions |
+| `security` | Security focus | Auth, Data Protection, Vulnerabilities |
+| `feasibility` | Technical risks | Complexity, Dependencies, Constraints |
+
+### Review Output Format
+
+Reviews are written to `./tmp/<plan-name>-review.md` with the following structure:
+
+```markdown
+# Review Summary
+
+## Critical Blockers
+Issues that MUST be fixed before this becomes a spec.
+
+- **[Completeness]** Missing error handling strategy
+  - **Description:** No mention of how errors will be surfaced to users
+  - **Impact:** Could lead to poor UX and debugging challenges
+  - **Fix:** Add "Error Handling" section specifying error types and UI patterns
+
+## Major Suggestions
+Significant improvements to strengthen the plan.
+
+- **[Architecture]** Consider caching layer
+  - **Description:** API calls may be expensive at scale
+  - **Impact:** Performance degradation as user base grows
+  - **Fix:** Add caching consideration to Phase 2
+
+## Minor Suggestions
+Smaller refinements.
+
+- **[Clarity]** Phase ordering unclear
+  - **Description:** Phase 2 and 3 could potentially run in parallel
+  - **Fix:** Add note about parallel vs sequential execution
+
+## Questions
+Clarifications needed before proceeding.
+
+- **[Feasibility]** What is the expected data volume?
+  - **Context:** Affects database design choices
+  - **Needed:** Rough estimates for initial launch and growth projections
+
+## Praise
+What the plan does well.
+
+- **[Architecture]** Clear separation of concerns
+  - **Why:** Each phase has distinct responsibility and clear boundaries
+```
+
+### Iteration Pattern
+
+The review workflow supports iteration:
+
+```
+Create Plan → Review → Address Feedback → Re-review → Approve → Create Spec
+     ↑                      ↓
+     └──────────────────────┘
+         (repeat until clean)
+```
+
+**Example iteration:**
+
+1. Create initial `PLAN.md`
+2. Run `plan-review` with type "full"
+3. Review identifies 2 critical blockers, 3 major suggestions
+4. Update `PLAN.md` addressing blockers
+5. Run `plan-review` again
+6. Review shows 0 critical blockers, 1 minor suggestion
+7. User approves - proceed to JSON spec creation
+
+### Summary Output
+
+The tool returns a structured summary:
+
+```json
+{
+  "plan_path": "./PLAN.md",
+  "plan_name": "PLAN",
+  "review_type": "full",
+  "review_path": "./tmp/PLAN-review.md",
+  "summary": {
+    "critical_blockers": 2,
+    "major_suggestions": 3,
+    "minor_suggestions": 1,
+    "questions": 2,
+    "praise": 4
+  },
+  "inline_summary": "2 critical blocker(s), 3 major suggestion(s), 1 minor suggestion(s), 2 question(s), 4 praise item(s)"
+}
+```
+
+### When to Use Each Review Type
+
+| Scenario | Recommended Type |
+|----------|------------------|
+| Initial plan review | `full` |
+| Quick sanity check after revisions | `quick` |
+| Security-sensitive features | `security` |
+| Complex or risky technical work | `feasibility` |
+| Time pressure (just need blockers) | `quick` |
+
+### Integration with Workflow
+
+1. After creating phase plan (Step 3)
+2. User approves high-level structure
+3. Run AI review for comprehensive feedback
+4. Iterate on plan addressing issues
+5. When review shows no critical blockers
+6. Proceed to JSON spec creation (Step 4)
 
 ---
 
@@ -397,6 +525,20 @@ Grep pattern="class.*Service" type="ts"
 Read file_path="src/services/auth.ts"
 ```
 
+**Fallback with Subagents:**
+
+When documentation is unavailable, use the Explore subagent for efficient fallback:
+
+```
+Use the Explore agent (medium thoroughness) to:
+1. Map the source directory structure
+2. Find files matching feature patterns
+3. Identify test file conventions
+4. Locate configuration files
+```
+
+This keeps exploration context isolated and returns focused results for planning.
+
 ### Impact Analysis for Refactoring
 
 Before planning a refactor, always run impact analysis:
@@ -409,6 +551,80 @@ This identifies:
 - Direct impacts (files that import/use the target)
 - Indirect impacts (files affected by direct impacts)
 - Impact score (how risky the change is)
+
+---
+
+## Parallel Investigation Strategies
+
+For large codebases, leverage built-in subagents to parallelize exploration during the analysis phase.
+
+### Built-in Subagents for Planning
+
+| Subagent | Model | Purpose |
+|----------|-------|---------|
+| **Explore** | Haiku | Fast read-only codebase search |
+| **general-purpose** | Sonnet | Complex multi-step investigation |
+
+### Exploration Patterns by Planning Phase
+
+**Phase 1: Initial Survey (use Explore - quick)**
+```
+Find all files matching:
+- Source directories structure
+- Test file locations
+- Configuration files
+- Documentation
+```
+
+**Phase 2: Pattern Discovery (use Explore - medium)**
+```
+Investigate existing implementations:
+- Similar features in codebase
+- Established coding patterns
+- Error handling approaches
+- Testing conventions
+```
+
+**Phase 3: Impact Analysis (use Explore - very thorough)**
+```
+For refactoring/complex changes:
+- All files importing affected modules
+- Downstream dependencies
+- Test files that may need updates
+- Documentation requiring changes
+```
+
+### Combining MCP Tools with Subagents
+
+| Analysis Need | Primary Tool | Subagent Backup |
+|---------------|--------------|-----------------|
+| Class/function lookup | `code-find-*` | Explore with Grep |
+| Call graph | `code-trace-calls` | Explore (very thorough) |
+| Impact scope | `code-impact-analysis` | general-purpose |
+| File structure | `doc-stats` | Explore (quick) |
+
+### When to Use Subagents vs Direct Tools
+
+**Use Explore subagent when:**
+- Codebase documentation unavailable
+- Need to search multiple areas simultaneously
+- Want to preserve main context for spec creation
+- Initial exploration of unfamiliar code
+
+**Use direct tools when:**
+- Single targeted query
+- Documentation exists and is current
+- Simple file read needed
+- Near context limit (subagent results still consume context)
+
+### Benefits of Subagent Exploration
+
+| Benefit | Description |
+|---------|-------------|
+| **Context isolation** | Search results don't bloat main conversation |
+| **Speed** | Explore uses Haiku for fast searches |
+| **Focus** | Subagent returns only relevant findings |
+| **Parallelization** | Multiple Explore agents can run concurrently |
 
 ---
 
@@ -466,3 +682,34 @@ If user requests changes to the high-level plan:
 3. Present updated plan
 4. Repeat until approved
 5. Only then proceed to detailed planning
+
+### AI Plan Review Not Available
+
+If `mcp__foundry-mcp__plan-review` returns an error about no AI provider:
+
+**Solution:**
+1. Check that an AI provider is configured (GEMINI_API_KEY, OPENAI_API_KEY, or ANTHROPIC_API_KEY)
+2. Verify the provider is accessible
+3. If no provider available, skip AI review and proceed directly to JSON spec creation
+4. Consider using `cursor-agent` if running in an environment with it available
+
+### Plan Review Returns Many Critical Blockers
+
+If the AI review identifies many critical blockers:
+
+**Solution:**
+1. Prioritize blockers by impact (fix showstoppers first)
+2. Group related issues that can be addressed together
+3. Address completeness issues before architecture issues
+4. Re-run review after each major revision
+5. Consider splitting the plan if blockers indicate scope is too large
+
+### Review Takes Too Long
+
+If `plan-review` times out:
+
+**Solution:**
+1. Use `--ai-timeout` flag with a longer timeout (e.g., 180 seconds)
+2. Split large plans into smaller, focused sections
+3. Use `quick` review type instead of `full` for faster feedback
+4. Check AI provider status for availability issues
