@@ -28,6 +28,16 @@ Verify installation:
 python -m foundry_mcp.server --help
 ```
 
+### Register the MCP server with Claude Code (Required)
+
+After installing the package, register it as an MCP server:
+
+```bash
+claude mcp add foundry-mcp -- python -m foundry_mcp.server
+```
+
+Restart Claude Code after adding the MCP server.
+
 ## Installation
 
 ### Interactive install script
@@ -148,9 +158,7 @@ Subagents for specialized tasks (spawned via Task tool).
 
 ## Configuration
 
-The plugin automatically configures the foundry-mcp MCP server when installed. The server starts automatically when the plugin is enabled - no manual MCP configuration needed.
-
-If the MCP server fails to start, verify that `foundry-mcp` is installed (see Prerequisites above).
+The plugin requires the foundry-mcp MCP server to be installed and registered (see Prerequisites above). Once configured, the server starts automatically when Claude Code launches.
 
 ## Permissions
 
