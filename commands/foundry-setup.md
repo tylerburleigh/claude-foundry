@@ -185,12 +185,99 @@ If yes: Call `mcp__plugin_foundry_foundry-mcp__environment action="setup"` with 
 
 Report what was created or skipped.
 
+## Phase 2.5: AI Provider Configuration
+
+**Only run this phase if foundry-mcp.toml was created in Phase 2.**
+
+This phase detects available AI providers and configures the `[consultation]` section for plan reviews and other multi-model features.
+
+### Step 1: Discover Available Providers
+
+Call `mcp__plugin_foundry_foundry-mcp__provider action="list"` to get all registered providers.
+
+Parse the response and filter to providers where `available: true`.
+
+### Step 2: Get Provider Metadata
+
+For each available provider, call in parallel:
+```
+mcp__plugin_foundry_foundry-mcp__provider action="status" provider_id="<provider_id>"
+```
+
+Extract `data.metadata.default_model` from each response.
+
+### Step 3: Build Consultation Priority List
+
+Construct priority entries in format: `[cli]{provider_id}:{default_model}`
+
+Example entries:
+- `[cli]gemini:gemini-2.5-flash`
+- `[cli]claude:claude-sonnet-4-20250514`
+- `[cli]opencode:gpt-4`
+
+Sort entries by provider priority from Step 1 (lower number = higher priority in list).
+
+### Step 4: Append to TOML
+
+Read the existing `foundry-mcp.toml` file.
+
+**If the file already contains `[consultation]`:** Skip this step and inform the user that existing configuration is preserved.
+
+**Otherwise:** Append the consultation section:
+
+```toml
+
+[consultation]
+# Auto-generated based on detected providers
+# Edit priority order or models as needed
+priority = [
+    "<entry1>",
+    "<entry2>",
+]
+default_timeout = 300
+```
+
+Use the Write tool to save the updated file.
+
+### Step 5: Display Results
+
+Present configured providers in a table:
+
+```
+## AI Provider Configuration
+
+Detected {N} available provider(s):
+
+| Provider | Model | Priority |
+|----------|-------|----------|
+| gemini | gemini-2.5-flash | 1 |
+| claude | claude-sonnet-4 | 2 |
+
+Configuration written to foundry-mcp.toml.
+```
+
+**If no providers are available:**
+
+```
+## AI Provider Configuration
+
+No AI providers detected. The [consultation] section was added with an empty priority list.
+
+To enable multi-model features like plan reviews, install one of:
+- gemini CLI: https://github.com/google-gemini/gemini-cli
+- opencode CLI: https://github.com/opencode-ai/opencode
+- codex CLI: https://github.com/openai/codex
+
+Then re-run `/foundry-setup` or manually edit foundry-mcp.toml.
+```
+
 ## Setup Complete
 
 Summarize what was configured:
 - Pre-flight check results (what passed/failed)
 - Permissions status (created/updated/skipped)
 - Workspace setup (specs directory, foundry-mcp.toml)
+- AI providers configured (list providers added to consultation priority, or note if skipped)
 
 **Important:** If permissions were added or modified, display:
 > "**Restart Claude Code** for the permission changes to take effect. After restarting, run `/foundry-tutorial` if this is your first time using the plugin."
