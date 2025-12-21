@@ -39,6 +39,25 @@ Present results in a status table:
 - Or: `uvx foundry-mcp`
 - Configure in Claude Code MCP settings
 
+**Recommended MCP configuration** (with mode toggling support):
+
+```json
+{
+  "mcpServers": {
+    "foundry-mcp": {
+      "command": "python",
+      "args": ["-m", "foundry_mcp_ctl", "wrap", "--name", "foundry-mcp", "--", "python", "-m", "foundry_mcp.server"]
+    },
+    "foundry-ctl": {
+      "command": "python",
+      "args": ["-m", "foundry_mcp_ctl", "helper"]
+    }
+  }
+}
+```
+
+This configuration enables `/sdd-on` and `/sdd-off` commands to toggle between full mode (17 tools) and minimal mode (1 tool) to save context tokens.
+
 **If other checks fail:** Warn but continue - some features may not work.
 
 **If `--check` or `--preflight` flag was provided:** Stop here. Display the pre-flight results summary and exit. Do not continue to Phase 2 or beyond.

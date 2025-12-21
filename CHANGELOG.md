@@ -5,6 +5,29 @@ All notable changes to claude-foundry will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.1] - 2025-12-21
+
+### Added
+
+- **Mode toggling**: `/sdd-on` and `/sdd-off` commands to switch between full (17 tools) and minimal (1 tool) modes for context token savings
+- **New skill**: `sdd-refactor` for spec-driven refactoring with impact analysis
+- **LSP-enhanced analysis** in skills:
+  - `sdd-plan`: Impact analysis via `findReferences`, dead code detection
+  - `sdd-next`: Dependency preview and cross-file impact check before implementation
+  - `sdd-fidelity-review`: Structural pre-check verifying expected symbols exist
+  - `run-tests`: Phase 0 pre-flight diagnostics catching import errors early
+- Updated MCP configuration docs with `foundry-ctl` wrapper pattern
+- Added `foundry-ctl` permissions to settings example
+
+### Changed
+
+- README now documents recommended MCP config for mode toggling
+- `foundry-setup` command includes mode toggling configuration
+
+### Removed
+
+- Removed `codebase.json` hook (no longer needed)
+
 ## [0.3.0] - 2025-12-15
 
 ### Changed

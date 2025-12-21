@@ -80,6 +80,68 @@ Use the Explore agent (very thorough) to investigate:
 
 > For detailed patterns, see `reference.md#subagent-investigation-patterns`
 
+## Pre-Review Structural Check (LSP-Enhanced)
+
+Before running the full MCP fidelity review, use LSP to quickly verify structural requirements. This catches obvious issues before the more expensive AI-powered review.
+
+### Symbol Existence Check
+
+For each implementation task in the phase, verify expected symbols exist:
+
+```
+# Get all symbols in implementation file
+symbols = documentSymbol(file="src/auth/service.py")
+
+# Compare against spec requirements
+# E.g., spec expects: class AuthService with methods login(), logout(), refresh_token()
+expected = ["AuthService", "login", "logout", "refresh_token"]
+
+# Identify gaps
+missing = expected - symbols.names
+extra = symbols.names - expected
+```
+
+### Quick Structural Report
+
+If LSP succeeds, generate a quick pre-check:
+
+```markdown
+## Structural Pre-Check: phase-1
+
+| Task | File | Expected Symbols | Status |
+|------|------|------------------|--------|
+| task-1-1 | src/auth/service.py | AuthService, login, logout | All present |
+| task-1-2 | src/auth/validator.py | TokenValidator, validate | MISSING: validate |
+| task-1-3 | src/auth/session.py | SessionManager | Present + 1 extra |
+
+**Issues Found:** 1 missing symbol, 1 unexpected symbol
+**Recommendation:** Review task-1-2 before full fidelity review
+```
+
+### Benefits
+
+- Catches missing implementations before expensive AI review
+- Flags unexpected symbols for review
+- Provides early warning of structural deviations
+- Fast feedback (seconds vs minutes for full review)
+
+### Fallback
+
+If LSP unavailable for the file type:
+- Skip structural pre-check
+- Proceed directly to MCP fidelity review (existing behavior)
+
+```
+# LSP check
+symbols = documentSymbol(file=task.file_path)
+
+if symbols returned:
+    Run structural pre-check
+    Then run full fidelity review
+else:
+    Skip to full fidelity review
+```
+
 ## Essential Commands
 
 **Phase review:**

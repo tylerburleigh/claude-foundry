@@ -113,6 +113,62 @@ Use the Explore agent (medium thoroughness) to find:
 
 > For detailed exploration patterns, see `reference.md#parallel-investigation-strategies`
 
+### 2.2 LSP-Enhanced Analysis
+
+For supported languages (TypeScript, Python, Go, Rust, etc.), Claude Code's built-in LSP tools provide precise semantic analysis that complements Explore subagents:
+
+| Analysis Need | LSP Tool | Fallback |
+|---------------|----------|----------|
+| Find all usages of a symbol | `findReferences` | `code action="trace-calls"` |
+| Understand file structure | `documentSymbol` | Explore agent (quick) |
+| Navigate to implementation | `goToDefinition` | `code action="find-function"` |
+
+**When to Use LSP Analysis:**
+- Planning refactoring that affects existing symbols
+- Assessing impact/blast radius of changes
+- Detecting dead code before removal
+- Understanding call hierarchies precisely
+
+**Impact Analysis Pattern:**
+
+When planning changes to existing code:
+
+1. **Identify target symbol** (class, function, variable to modify)
+2. **Try LSP first:**
+   ```
+   references = findReferences(file="src/auth/service.py", symbol="AuthService", line=15, character=6)
+   symbols = documentSymbol(file="src/auth/service.py")
+   ```
+3. **If LSP succeeds:**
+   - Count unique files referencing the symbol
+   - Identify import dependencies
+   - Map call hierarchy for functions
+   - Use reference data to inform phase/task structure
+4. **If LSP unavailable or fails:**
+   ```
+   # Fall back to MCP code router
+   mcp__plugin_foundry_foundry-mcp__code action="impact-analysis" target="AuthService" scope="src/"
+
+   # Or use Explore agent
+   Use the Explore agent (very thorough) to find all usages of AuthService
+   ```
+
+**Dead Code Detection:**
+
+Before planning removal of code:
+- Use `findReferences` to check for zero references
+- Zero refs = safe to remove, include as cleanup task
+- Non-zero refs = plan migration tasks first
+
+**LSP Availability Check:**
+```
+# Try documentSymbol on target file
+symbols = documentSymbol(file="target.py")
+
+if symbols returned: use LSP-enhanced analysis
+else: fall back to Explore/code router
+```
+
 ### Step 3: Create High-Level Phase Plan
 
 For complex features (3+ phases expected), first create a phase-only markdown plan and **present to the user for approval before detailed planning**.

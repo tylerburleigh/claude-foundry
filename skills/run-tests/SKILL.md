@@ -59,6 +59,60 @@ Fix & Verify
 - Simple fix (typo/obvious)? Fix, then verify.
 - Complex/unclear? Investigate, consult AI, fix, verify.
 
+## Phase 0: Pre-Flight Diagnostics (LSP-Enhanced)
+
+Before running tests, use LSP to catch issues early. Recommended after major refactoring or when tests are failing with import errors.
+
+**When to use Phase 0:**
+- Full suite on unfamiliar code
+- Tests failing with import/resolution errors
+- After major refactoring
+- Before running on CI (catch errors locally first)
+
+**When to skip:**
+- Quick test run after small change
+- Tests already known to be working
+- File types not supported by LSP
+
+### Symbol Resolution Check
+
+Verify test files can resolve their imports:
+
+```
+# Get test file structure
+symbols = documentSymbol(file="tests/test_auth.py")
+
+# For key imports, verify targets exist
+definition = goToDefinition(file="tests/test_auth.py", symbol="AuthService", line=5)
+
+if definition not found:
+    Report: "Import AuthService cannot be resolved - likely import error"
+```
+
+### Pre-Flight Report
+
+```markdown
+## Pre-Flight Diagnostics
+
+| Test File | Status |
+|-----------|--------|
+| tests/test_auth.py | OK - all imports resolve |
+| tests/test_user.py | WARNING - cannot resolve 'UserService' (line 5) |
+| tests/test_api.py | OK |
+
+**Issues Found:** 1 unresolved import
+**Recommendation:** Fix import in test_user.py before running full suite
+
+Proceed? [Fix First] [Run Anyway]
+```
+
+### Fallback
+
+If LSP unavailable:
+- Skip Phase 0 entirely
+- Proceed directly to Phase 1 (Run Tests)
+- Import errors will surface as test failures (handled in Phase 2)
+
 ## Phase 1: Run Tests
 
 **Quick run (stop on first failure):**

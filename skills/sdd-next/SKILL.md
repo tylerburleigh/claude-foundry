@@ -150,6 +150,68 @@ Use the Explore agent (medium thoroughness) to find:
 
 > For more subagent patterns including autonomous mode usage, see `reference.md#built-in-subagent-patterns`
 
+### 3.3.2 LSP-Enhanced Dependency Preview
+
+For tasks modifying existing code, Claude Code's LSP tools can provide precise dependency information:
+
+**Pre-Flight Dependency Check:**
+
+Before starting implementation, verify dependencies exist:
+
+```
+# Task modifies AuthService.login() - verify it exists
+definition = goToDefinition(file="src/auth/service.py", symbol="login", line=25)
+
+if definition found:
+    Proceed with implementation
+else:
+    Surface missing dependency to user
+    Consider blocking task or checking spec accuracy
+```
+
+**Cross-File Impact Preview:**
+
+Show which files will be affected by this task:
+
+```
+# Task modifies a shared function
+references = findReferences(file="src/utils/helpers.py", symbol="format_date", line=10)
+
+# Present to user before implementation:
+"This task modifies format_date() which is used in 7 files:
+- src/reports/generator.py (3 calls)
+- src/api/handlers.py (2 calls)
+- tests/test_reports.py (5 calls)
+Consider impact on these files during implementation."
+```
+
+**Enhanced Plan Presentation:**
+
+Include LSP-derived context in plan approval:
+
+```markdown
+## Task: Modify AuthService.login() for 2FA
+
+**Impact Analysis (via LSP):**
+- Direct usages: 12 call sites across 5 files
+- Test coverage: 8 tests reference this method
+- Dependent methods: validate_credentials(), create_session()
+
+**Recommended approach:** [details]
+
+Proceed? [Approve & Start] [Request Changes] [More Details]
+```
+
+**Fallback:**
+
+If LSP unavailable for the file type:
+```
+Use the Explore agent (medium thoroughness) to find:
+- All files importing the target module
+- Usages of the function/class being modified
+- Related test files
+```
+
 ### 3.4 Implementation Handoff
 
 **Before coding:**

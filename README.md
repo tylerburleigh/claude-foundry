@@ -30,13 +30,18 @@ python -m foundry_mcp.server --help
 
 ### Register the MCP server with Claude Code (Required)
 
-After installing the package, register it as an MCP server:
+After installing the package, register it as an MCP server. The plugin includes a `.mcp.json` that configures the servers automatically.
+
+**If the automatic configuration doesn't work**, manually add the servers:
 
 ```bash
-claude mcp add foundry-mcp -- python -m foundry_mcp.server
+claude mcp add foundry-mcp -- python -m foundry_mcp_ctl wrap --name foundry-mcp -- python -m foundry_mcp.server
+claude mcp add foundry-ctl -- python -m foundry_mcp_ctl helper
 ```
 
-Restart Claude Code after adding the MCP server.
+This configuration enables mode toggling between full (16 tools) and minimal (1 tool) modes to save context tokens.
+
+Restart Claude Code after adding the MCP servers.
 
 ## Installation
 
@@ -85,6 +90,8 @@ Slash commands for common workflows:
 
 - `/foundry-setup` - First-time setup and guided tour of plugin features
 - `/sdd-next` - Resume or start spec-driven development work
+- `/sdd-on` - Enable full SDD tools (16 routers)
+- `/sdd-off` - Switch to minimal mode (1 tool) to save context tokens
 
 ### Agents
 
@@ -114,6 +121,7 @@ The sample config allows:
 | Category | Permissions |
 |----------|-------------|
 | **MCP Tools** | All `mcp__plugin_foundry_foundry-mcp__*` tools |
+| **MCP Control** | All `mcp__plugin_foundry_foundry-ctl__*` tools (mode toggling) |
 | **Git** | `status`, `diff`, `log`, `rev-parse`, `branch`, `show` |
 | **Testing** | `pytest`, `python -m pytest` |
 | **Foundry CLI** | `foundry-mcp`, `foundry-cli` |
