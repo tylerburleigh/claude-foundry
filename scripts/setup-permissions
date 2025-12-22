@@ -210,6 +210,8 @@ categorize_permission() {
         echo "skills"
     elif [[ "$perm" == mcp__plugin_foundry_foundry-mcp__* ]]; then
         echo "mcp_tools"
+    elif [[ "$perm" == mcp__plugin_foundry_foundry-ctl__* ]]; then
+        echo "mcp_ctl"
     elif [[ "$perm" == Bash\(git\ * ]]; then
         echo "git_commands"
     elif [[ "$perm" == *pytest* ]]; then
