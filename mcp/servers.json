@@ -1,10 +1,12 @@
 {
-  "foundry-mcp": {
-    "command": "python",
-    "args": ["-m", "foundry_mcp_ctl", "wrap", "--name", "foundry-mcp", "--", "python", "-m", "foundry_mcp.server"]
-  },
-  "foundry-ctl": {
-    "command": "python",
-    "args": ["-m", "foundry_mcp_ctl", "helper"]
+  "mcpServers": {
+    "foundry-mcp": {
+      "command": "python",
+      "args": ["-m", "foundry_mcp_ctl", "wrap", "--name", "foundry-mcp", "--", "python", "-m", "foundry_mcp.server"]
+    },
+    "foundry-ctl": {
+      "command": "python",
+      "args": ["-m", "foundry_mcp_ctl", "helper"]
+    }
   }
 }
