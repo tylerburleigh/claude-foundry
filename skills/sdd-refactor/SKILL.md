@@ -42,6 +42,24 @@ Use `Skill(foundry:sdd-refactor)` for:
 - Deleting entire files (manual operation)
 - Formatting or style changes (use formatter tools)
 
+### Flow
+
+> `[x?]`=decision · `(GATE)`=user approval · `→`=sequence · `↻`=loop · `§`=section ref
+
+```
+- **Entry** → [Type: Rename|Extract|Move|Cleanup?]
+- ValidateTarget → [LSP available?]
+  - [yes] → `documentSymbol` → `goToDefinition`
+  - [no] → Grep fallback
+- ImpactAnalysis (GATE - REQUIRED)
+  - `findReferences` → Risk[<10|<50|50-100|>100 refs]
+  - (GATE: user approval for scope)
+- Execute → [4 operation-specific paths]
+- Verify → Structural[LSP] → References[LSP] → Tests[run-tests]
+- Document → [spec task?] → journal entry
+- **Exit**: Done
+```
+
 ## LSP Tools
 
 This skill uses Claude Code's built-in LSP tools directly:
@@ -96,7 +114,7 @@ Gather information about what to refactor:
 3. Present impact report to user with risk assessment
 4. Get user approval before proceeding
 
-> See [reference.md#impact-analysis](./reference.md#impact-analysis) for detailed procedures and report format.
+> See [references/impact-analysis.md](./references/impact-analysis.md) for detailed procedures and report format.
 
 ### Step 3: Execute Refactoring
 
@@ -109,7 +127,7 @@ Execute the appropriate operation based on refactoring type:
 | **Move** | Find references → Move definition → Update imports → Verify |
 | **Dead Code** | Check reference count → Remove if zero → Clean imports |
 
-> See [reference.md#refactoring-operations](./reference.md#refactoring-operations) for detailed procedures for each operation type.
+> See [references/operations.md](./references/operations.md) for detailed procedures for each operation type.
 
 ### Step 4: Verify Correctness
 
@@ -150,7 +168,7 @@ mcp__plugin_foundry_foundry-mcp__journal action="add" spec_id="{spec-id}" title=
 
 Before using LSP-enhanced workflow, verify by calling `documentSymbol` on the target file. If it returns successfully, use LSP workflow. Otherwise, fall back to Grep-based workflow.
 
-> See [reference.md#lsp-availability-check](./reference.md#lsp-availability-check) for fallback triggers and verification procedure.
+> See [references/lsp-check.md](./references/lsp-check.md) for fallback triggers and verification procedure.
 
 ## Size Guidelines
 
@@ -191,9 +209,7 @@ Skill(foundry:sdd-refactor) "Complete task-2-3: Rename UserDTO to UserResponse a
 ## Detailed Reference
 
 For comprehensive documentation including:
-- Impact analysis procedures and report templates
-- Detailed refactoring operation workflows
-- LSP availability verification and fallback procedures
-- Troubleshooting common issues
-
-See **[reference.md](./reference.md)**
+- Impact analysis → `references/impact-analysis.md`
+- Refactoring operations → `references/operations.md`
+- LSP availability check → `references/lsp-check.md`
+- Troubleshooting → `references/troubleshooting.md`

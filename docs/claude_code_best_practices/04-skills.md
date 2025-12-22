@@ -61,11 +61,22 @@ skills/
 skills/
 └── my-skill/
     ├── SKILL.md           # Core workflow (<500 lines)
-    ├── reference.md       # Detailed specs (load on-demand)
-    ├── examples.md        # Usage examples (load on-demand)
+    ├── reference.md       # Single file for small skills (<200 lines)
+    ├── references/        # OR folder for larger skills
+    │   ├── workflow.md
+    │   ├── troubleshooting.md
+    │   └── examples.md
     └── scripts/
         └── validate.py    # Utilities (executed, not loaded)
 ```
+
+**Choosing between single file and folder:**
+
+| Use `reference.md` | Use `references/` folder |
+|--------------------|--------------------------|
+| Reference content <200 lines | Reference content >200 lines |
+| Sections are tightly coupled | Sections accessed independently |
+| Simple skill with few edge cases | Complex skill with distinct topics |
 
 ### Domain-Specific Organization
 
@@ -74,14 +85,44 @@ For skills with multiple domains, organize to enable selective loading:
 ```
 bigquery-skill/
 ├── SKILL.md               # Overview and navigation
-└── reference/
+└── references/
     ├── finance.md         # Revenue, billing metrics
     ├── sales.md           # Pipeline, opportunities
     ├── product.md         # Usage analytics
     └── marketing.md       # Campaigns, attribution
 ```
 
-When a user asks about sales metrics, Claude only loads `reference/sales.md`—the other files remain unread, consuming zero tokens.
+When a user asks about sales metrics, Claude only loads `references/sales.md`—the other files remain unread, consuming zero tokens.
+
+### Section-Based Organization
+
+For skills with large reference documents containing distinct logical sections, split by section rather than domain:
+
+```
+my-skill/
+├── SKILL.md               # Core workflow with section links
+└── references/
+    ├── workflow.md        # Step-by-step procedures
+    ├── troubleshooting.md # Error handling and fixes
+    ├── configuration.md   # Settings and options
+    └── best-practices.md  # Do's and don'ts
+```
+
+When Claude needs troubleshooting help, it only loads `references/troubleshooting.md`—the workflow and configuration docs remain unread.
+
+**Why this matters for partial loading:**
+
+Using anchor links like `reference.md#troubleshooting` requires loading the entire `reference.md` file to find the section. With separate files, Claude loads only the specific file it needs.
+
+| Pattern | Link Style | Tokens Loaded |
+|---------|-----------|---------------|
+| Single file with anchors | `reference.md#troubleshooting` | Entire file (~800 lines) |
+| Separate files | `references/troubleshooting.md` | Just that section (~50 lines) |
+
+**Granularity guidelines:**
+- Minimum file size: ~25-30 lines (combine smaller sections)
+- Add TOC if file exceeds 50 lines
+- Group related small sections rather than creating many tiny files
 
 ---
 
@@ -278,10 +319,26 @@ Use verb + -ing to describe the activity:
 
 ## Available Datasets
 
-**Finance**: Revenue, ARR, billing → See [reference/finance.md](reference/finance.md)
-**Sales**: Opportunities, pipeline → See [reference/sales.md](reference/sales.md)
-**Product**: API usage, features → See [reference/product.md](reference/product.md)
+**Finance**: Revenue, ARR, billing → See [references/finance.md](references/finance.md)
+**Sales**: Opportunities, pipeline → See [references/sales.md](references/sales.md)
+**Product**: API usage, features → See [references/product.md](references/product.md)
 ```
+
+### Pattern 4: Section-Based References
+
+```markdown
+# SKILL.md
+
+## Detailed Reference
+
+For specific topics, see:
+- Workflows → `references/workflow.md`
+- Troubleshooting → `references/troubleshooting.md`
+- Configuration → `references/configuration.md`
+- Best practices → `references/best-practices.md`
+```
+
+This pattern enables true partial loading—Claude reads only the specific file needed rather than loading a monolithic reference.md and searching for an anchor.
 
 ---
 
@@ -296,9 +353,9 @@ Claude may partially read files when they're referenced from other referenced fi
 SKILL.md → advanced.md → details.md → actual-info.md
 
 # Good: One level deep
-SKILL.md → reference.md
+SKILL.md → references/workflow.md
+SKILL.md → references/troubleshooting.md
 SKILL.md → examples.md
-SKILL.md → troubleshooting.md
 ```
 
 | Requirement | Details |
@@ -362,11 +419,11 @@ description: Does everything
 ```markdown
 # Bad
 scripts\helper.py
-reference\guide.md
+references\guide.md
 
 # Good
 scripts/helper.py
-reference/guide.md
+references/guide.md
 ```
 
 | Requirement | Details |

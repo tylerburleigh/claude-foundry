@@ -34,24 +34,19 @@ This skill uses the Foundry MCP server (`foundry-mcp`). Tools use the router+act
 
 ## Core Workflow
 
+> `[x?]`=decision · `(GATE)`=user approval · `→`=sequence · `↻`=loop · `§`=section ref
+
 ```
-Run Tests
-    |
-    v
-Pass? --Yes--> Done
-    |
-    No
-    v
-Investigate (form hypothesis)
-    |
-    v
-Gather Context (optional: use code docs)
-    |
-    v
-Consult External Tools (mandatory if available)
-    |
-    v
-Fix & Verify
+- **Entry** → LSP PreFlight
+- RunTests → `test action="run"`
+  - [pass?] → **Exit**: Done
+  - [fail?] → Categorize[Assertion|Exception|Import|Fixture|Timeout|Flaky]
+- FormHypothesis → GatherContext[Explore preferred|Glob/Grep]
+- [Tools available?] → `provider action="list"`
+  - [yes] → Consult (MANDATORY) → `provider action="execute"`
+  - [no] → skip
+- ImplementFix → VerifySpecific ↻ [pass?]
+- RunFullSuite ↻ [pass?] → **Exit**: Done
 ```
 
 **Decision rules:**
@@ -78,7 +73,7 @@ Before running tests, optionally use LSP to catch import issues early.
 
 If LSP unavailable, skip to Phase 1. Import errors will surface as test failures.
 
-> For pseudocode examples and report format, see `reference.md#pre-flight-diagnostics`
+> For pseudocode examples and report format, see `references/pre-flight.md`
 
 ## Phase 1: Run Tests
 
@@ -142,7 +137,7 @@ Use the Explore agent (very thorough) to find:
 - Test files that modify shared resources
 ```
 
-> For detailed investigation patterns with subagents, see `reference.md#subagent-investigation-patterns`
+> For detailed investigation patterns with subagents, see `references/subagent-patterns.md`
 
 ## Phase 4: Consult External Tools
 
@@ -161,7 +156,7 @@ mcp__plugin_foundry_foundry-mcp__provider action="list"
 mcp__plugin_foundry_foundry-mcp__provider action="execute" provider_id="gemini" prompt="..."
 ```
 
-> For tool selection guidance by failure type, see `reference.md#tool-selection`
+> For tool selection guidance by failure type, see `references/tool-selection.md`
 
 ## Phase 5: Fix & Verify
 
@@ -188,7 +183,13 @@ Bash(command="pytest src/", timeout=300000)  # Wait up to 5 minutes
 
 **Never poll background processes** - this creates spam in the conversation.
 
-## Reference
+## Detailed Reference
 
-For detailed troubleshooting, failure categories, and AI tool selection:
-- See **[reference.md](./reference.md)**
+For comprehensive documentation including:
+- Tool selection → `references/tool-selection.md`
+- Pre-flight diagnostics → `references/pre-flight.md`
+- Failure categories → `references/failure-categories.md`
+- Investigation patterns → `references/investigation.md`
+- Subagent patterns → `references/subagent-patterns.md`
+- Common fixes → `references/common-fixes.md`
+- Troubleshooting → `references/troubleshooting.md`

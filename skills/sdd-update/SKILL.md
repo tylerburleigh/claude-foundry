@@ -19,7 +19,7 @@ description: Progress tracking for spec-driven development. Use to update task s
 - Structural changes → use `sdd-modify`
 - Writing code or running tests
 
-> For comparison with sdd-modify, see `reference.md#comparison`
+> For comparison with sdd-modify, see `references/comparison.md`
 
 ## MCP Tooling
 
@@ -41,14 +41,21 @@ description: Progress tracking for spec-driven development. Use to update task s
 mcp__plugin_foundry_foundry-mcp__task action="complete" spec_id={spec-id} task_id={task-id} journal_entry="..."
 ```
 
-> For all workflow commands, see `reference.md#workflow-details`
+> For workflow details, see `references/workflow-tasks.md`, `references/workflow-tracking.md`, `references/workflow-git.md`
 
 ## Core Workflow
 
-1. **Start** → `task action="start"`
-2. **Progress** → `journal action="add"` for decisions/deviations
-3. **Complete** → `task action="complete"` with journal_entry
-4. **Move** → `lifecycle action="activate|move|complete"`
+> `[x?]`=decision · `(GATE)`=user approval · `→`=sequence · `↻`=loop · `§`=section ref
+
+```
+- **Entry** → [Action?]
+  - [start] → `task action="start"` → in_progress
+  - [progress] → `journal action="add"` (document WHY)
+  - [complete] → `task action="complete"` + journal_entry
+  - [block] → `task action="block"` + reason
+- [Lifecycle?] → `lifecycle action="activate|move|complete"`
+- **Exit**
+```
 
 ## Key Principles
 
@@ -59,11 +66,14 @@ mcp__plugin_foundry_foundry-mcp__task action="complete" spec_id={spec-id} task_i
 
 ## Detailed Reference
 
-- Task states → `reference.md#task-states`
-- Folder structure → `reference.md#folder-structure`
-- sdd-update vs sdd-modify → `reference.md#comparison`
-- Git integration → `reference.md#workflow-7-git-commit-integration`
-- Troubleshooting → `reference.md#troubleshooting`
-- Command reference → `reference.md#command-reference`
+- Task states & folder structure → `references/structure.md`
+- sdd-update vs sdd-modify → `references/comparison.md`
+- Task lifecycle (start/block/complete) → `references/workflow-tasks.md`
+- Progress tracking & verification → `references/workflow-tracking.md`
+- Spec lifecycle (activate/move) → `references/workflow-lifecycle.md`
+- Git integration → `references/workflow-git.md`
+- MCP patterns → `references/mcp-patterns.md`
+- Troubleshooting → `references/troubleshooting.md`
+- Command reference → `references/command-reference.md`
 
-See **[reference.md](./reference.md)**
+See **[references/](./references/)**

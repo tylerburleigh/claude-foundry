@@ -42,13 +42,16 @@ Traditional PR creation uses static templates. The sdd-pr skill:
 
 ## Essential Workflow
 
+> `[x?]`=decision · `(GATE)`=user approval · `→`=sequence · `↻`=loop · `§`=section ref
+
 ```
-1. Invocation     → Skill(foundry:sdd-pr) "Create PR for spec my-feature-001"
-2. Context        → Gathers spec, tasks, commits, journals, diff
-3. AI Analysis    → Synthesizes context into coherent description
-4. Draft          → Shows PR description for review
-5. User Approval  → User reviews and approves/requests changes
-6. Creation       → Pushes branch, creates PR, updates spec metadata
+- **Entry** → GatherContext
+  - `pr action="context"` → [Spec|Tasks|Commits|Journals|Diff]
+- AIAnalysis → synthesize context
+- DraftPR → (GATE: user review)
+  - [approved] → continue
+  - [changes] → ↻ revise draft
+- PushBranch → CreatePR → UpdateMeta → **Exit**
 ```
 
 ## Context Sources
@@ -61,13 +64,13 @@ Traditional PR creation uses static templates. The sdd-pr skill:
 | **Journal Entries** | Technical decisions, rationale |
 | **Git Diff** | Actual code changes |
 
-> For detailed context gathering, see `reference.md#context-sources`
+> For detailed context gathering, see `references/context.md`
 
 ## PR Structure
 
 Generated PRs include: Summary, What Changed, Technical Approach, Implementation Details, Testing, and Commits sections.
 
-> For full template with examples, see `reference.md#draft-template`
+> For full template with examples, see `references/template.md`
 
 ## Quick Start
 
@@ -82,15 +85,16 @@ Skill(foundry:sdd-pr) "Create PR for spec oauth-feature-2025-11-03-001"
 
 This skill may take up to 5 minutes. Always use foreground execution with appropriate timeout.
 
-> For examples and anti-patterns, see `reference.md#long-running-operations`
+> For examples and anti-patterns, see `references/long-running.md`
 
 ## Detailed Reference
 
 For comprehensive documentation including:
-- Complete workflow steps with examples
-- Full PR draft template
-- Context gathering details
-- Best practices for better PRs
-- Troubleshooting guide
-
-See **[reference.md](./reference.md)**
+- Long-running operations → `references/long-running.md`
+- Complete workflow → `references/workflow.md`
+- Context sources → `references/context.md`
+- PR structure → `references/structure.md`
+- Draft template → `references/template.md`
+- Examples → `references/examples.md`
+- Best practices → `references/best-practices.md`
+- Troubleshooting → `references/troubleshooting.md`

@@ -61,7 +61,7 @@ This skill relies entirely on the Foundry MCP server (`foundry-mcp`). Tools use 
 | **security** | 2-3 | 15-20 min | Risk Management | Auth, data handling, compliance |
 | **feasibility** | 2-3 | 10-15 min | Estimates, Dependencies | Tight deadlines, uncertain scope |
 
-> For detailed dimension descriptions, see `reference.md#review-dimensions`
+> For detailed dimension descriptions, see `references/dimensions.md`
 
 ## Essential Command
 
@@ -73,23 +73,26 @@ Use `action="list-tools"` to check available toolchains before running.
 
 ## Core Workflow
 
+> `[x?]`=decision · `(GATE)`=user approval · `→`=sequence · `↻`=loop · `§`=section ref
+
 ```
-1. Tool Check     → Verify available review toolchains (min 1, recommended 2+)
-2. Type Select    → Choose review type based on spec risk/complexity
-3. Execute        → Run spec-review with selected type
-4. Interpret      → Organize findings by priority (CRITICAL → LOW)
-5. Report         → Present summary, provide full report paths
-6. Handoff        → Ask user before proceeding to sdd-modify
+- **Entry** → `review action="list-tools"` → [tools ≥1?]
+  - [no] → **Exit**: no toolchains available
+- [Type: quick|full|security|feasibility?] → see table above
+- Execute → `review action="spec-review"` (2-4 models parallel)
+- Synthesize → PrioritySort[CRITICAL→LOW]
+- Report → summary + file paths
+- (GATE: handoff) → [proceed to sdd-modify?] → **Exit**
 ```
 
-> For detailed workflow steps, see `reference.md#core-workflow-detailed`
+> For detailed workflow steps, see `references/workflow.md`
 
 ## Output
 
 - Reports written to `specs/.plan-reviews/{spec-id}-review-{type}.md`
 - Full results go to files; conversation receives summary only
 
-> For output format and isolation details, see `reference.md#output-format`
+> For output format and isolation details, see `references/output.md`
 
 ## Example Invocation
 
@@ -106,16 +109,19 @@ Skill(foundry:sdd-plan-review) "Review spec user-auth-001 with 'full' review typ
 | Timeout per model | 120s |
 | Max review time | 300s |
 
-> For full configuration, see `reference.md#configuration`
+> For full configuration, see `references/configuration.md`
 
 ## Detailed Reference
 
 For comprehensive documentation including:
-- Review dimensions (detailed descriptions)
-- Feedback categories
-- Error handling scenarios
-- Model coordination details
-- Configuration values
-- Best practices (DO/DON'T lists)
-
-See **[reference.md](./reference.md)**
+- Detailed workflow → `references/workflow.md`
+- Review type selection → `references/review-types.md`
+- Review dimensions → `references/dimensions.md`
+- Feedback categories → `references/feedback.md`
+- Consensus interpretation → `references/consensus.md`
+- Output format & isolation → `references/output.md`
+- Error handling → `references/errors.md`
+- Model coordination → `references/coordination.md`
+- Configuration → `references/configuration.md`
+- Examples → `references/examples.md`
+- Best practices → `references/best-practices.md`

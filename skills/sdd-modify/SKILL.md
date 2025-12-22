@@ -53,15 +53,21 @@ Use after `sdd-plan-review` or `sdd-fidelity-review` to apply suggested changes.
 
 **Key Distinction:** sdd-modify = structural changes; sdd-update = status updates.
 
-> For detailed comparison, see `reference.md#comparison`
+> For detailed comparison, see `references/comparison.md`
 
 ## Core Workflow
 
-1. **Understand** → Identify spec ID, source (review report or modifications JSON), mode
-2. **Parse** → Convert review feedback to modifications JSON (if needed)
-3. **Preview** → Always dry-run first
-4. **Apply** → Apply modifications (auto-backup, validation, rollback on failure)
-5. **Validate** → Confirm spec is valid
+> `[x?]`=decision · `(GATE)`=user approval · `→`=sequence · `↻`=loop · `§`=section ref
+
+```
+- **Entry** → [Source: Review|Custom?]
+  - [review] → `review action="parse-feedback"` → modifications JSON
+  - [custom] → use provided JSON
+- Backup → DryRun (GATE) → [Proceed?]
+  - [no] → **Exit**
+  - [yes] → Apply → Validate ↻ [fail?] → Rollback ↻
+- (VALID) → Summary → **Exit**
+```
 
 **Essential Command:**
 
@@ -69,13 +75,13 @@ Use after `sdd-plan-review` or `sdd-fidelity-review` to apply suggested changes.
 mcp__plugin_foundry_foundry-mcp__spec action="apply-plan" spec_id="{spec-id}" modifications_file="{path}" dry_run=true
 ```
 
-> For detailed workflow steps with examples, see `reference.md#workflow-details`
+> For detailed workflow steps with examples, see `references/workflow.md`
 
 ## Supported Operations
 
 Operations: `update_task`, `add_verification`, `update_metadata`, `batch_update`, `add_node`, `remove_node`
 
-> For operation formats and examples, see `reference.md#supported-operations`
+> For operation formats and examples, see `references/operations.md`
 
 ## Safety Features
 
@@ -85,21 +91,21 @@ Operations: `update_task`, `add_verification`, `update_metadata`, `batch_update`
 - **Rollback** if validation fails
 - **Idempotent** operations (safe to retry)
 
-> For rollback and recovery procedures, see `reference.md#error-handling`
+> For rollback and recovery procedures, see `references/troubleshooting.md`
 
 ## Output Format
 
 Return a structured markdown summary including: spec ID, source, changes applied, backup location, validation status, and next steps.
 
-> For full template, see `reference.md#output-format`
+> For full template, see `references/best-practices.md`
 
 ## Detailed Reference
 
-For comprehensive documentation including:
-- Detailed workflow steps with examples
-- Operation formats and JSON structures
-- Error handling and rollback procedures
-- Direct modification patterns (when to skip review parsing)
-- Troubleshooting guide
+- sdd-modify vs sdd-update → `references/comparison.md`
+- Workflow steps with examples → `references/workflow.md`
+- Operation formats & JSON structures → `references/operations.md`
+- Review source workflows → `references/review-workflows.md`
+- Error handling & troubleshooting → `references/troubleshooting.md`
+- Best practices & command reference → `references/best-practices.md`
 
-See **[reference.md](./reference.md)**
+See **[references/](./references/)**

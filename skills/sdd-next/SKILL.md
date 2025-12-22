@@ -11,22 +11,40 @@ description: Task preparation skill for spec-driven workflows. Reads specificati
 - **Scope:** Single-task execution with user approval at key checkpoints.
 - **Entry:** Invoked by `/sdd-next` command after spec has been identified.
 
-### High-Level Flow
+### Flow
+
+> `[x?]`=decision · `(GATE)`=user approval · `→`=sequence · `↻`=loop · `§`=section ref
 
 ```
-Start -> Check Mode
-           |
-           +-- minimal? --> EXIT: "Run /sdd-on, restart Claude, try again"
-           |
-           +-- full? --> Select Task -> Check Task Type
-                                              |
-                                              +-- type: "verify" --> Verification Workflow --+
-                                              |                                              |
-                                              +-- type: "task" --> Plan -> Implement --------+
-                                                                                             |
-                                                                                             v
-                                                                                       Surface Next
+- **Entry** → CheckMode
+  - [minimal?] → **Exit**: "Run /sdd-on, restart, retry"
+  - [full?] → SelectTask
+    - [recommend] → `task action="prepare"` → ShowRecommendation
+    - [browse] → `task action="query"` → (GATE: task selection)
+  - → TypeDispatch
+    - [type=verify?] → §VerifyWorkflow
+    - [type=task?] → DeepDive
+      - `task action="prepare"` → ExtractContext
+      - DraftPlan → (GATE: approve plan)
+        - [approved] → PreImpl
+        - [changes] → ↻ back to DraftPlan
+        - [defer] → **Exit**
+      - PreImpl: LSP analysis → Explore subagent
+      - `task action="update-status" status="in_progress"`
+      - **Implement**
+      - PostImpl: `Skill(sdd-update)` to complete
+      - [success?] → SurfaceNext
+        - `task action="prepare"` → ShowNextTask
+        - (GATE: continue?) → ↻ back to SelectTask | **Exit**
+      - [blocked?] → HandleBlocker
+        - `task action="block"` → (GATE: alternatives)
+        - [resolve] → ↻ back to Implement
+        - [skip] → SurfaceNext
+
+§VerifyWorkflow → see references/verification.md
 ```
+
+> Flow notation: see [docs/flow-notation.md](../../docs/flow-notation.md)
 
 ---
 
@@ -69,8 +87,8 @@ This skill must NEVER invoke itself or `Skill(sdd-next)`. The only valid callers
 
 If you find yourself about to call `Skill(sdd-next)` from within this skill, **STOP** and proceed with the workflow instead. The skill handles the complete task lifecycle - there is no need to re-invoke it.
 
-> For detailed context gathering patterns, see `reference.md#context-gathering-best-practices`
-> For agent delegation patterns (when to use sdd-planner), see `reference.md#agent-delegation`
+> For detailed context gathering patterns, see `references/context-gathering.md`
+> For agent delegation patterns (when to use sdd-planner), see `references/agent-delegation.md`
 
 ---
 
@@ -129,7 +147,7 @@ Invoke `mcp__plugin_foundry_foundry-mcp__task action="prepare"` with the target 
 
 Treat `context` as the authoritative source. Only fall back to `mcp__plugin_foundry_foundry-mcp__task action="info"` when the spec explicitly requires absent data.
 
-> For context field details and JSON structure, see `reference.md#deep-dive-context-structure`
+> For context field details and JSON structure, see `references/context-structure.md`
 
 **Draft execution plan:**
 1. Confirm previous edits in `context.sibling_files`
@@ -164,7 +182,7 @@ Use the Explore agent (medium thoroughness) to find:
 - Returns focused results for detailed analysis
 - Keeps main context available for implementation
 
-> For more subagent patterns including autonomous mode usage, see `reference.md#built-in-subagent-patterns`
+> For more subagent patterns including autonomous mode usage, see `references/subagent-patterns.md`
 
 ### LSP Dependency Analysis
 
@@ -186,8 +204,6 @@ mcp__plugin_foundry_foundry-mcp__task action="update-status" spec_id={spec-id} t
 - Follow execution plan
 - Document any deviations immediately
 
-> For using `doc-scope --view implement` during implementation, see `reference.md#using-doc-scope-during-implementation`
-
 **After implementation:**
 
 Mark task complete using the sdd-update skill:
@@ -208,7 +224,7 @@ mcp__plugin_foundry_foundry-mcp__task action="prepare" spec_id={spec-id}
 - Check with user before proceeding
 - If no pending work or spec complete, surface that clearly
 
-> For post-implementation checklist, see `reference.md#post-implementation-checklist`
+> For post-implementation checklist, see `references/checklist.md`
 
 ---
 
@@ -255,19 +271,17 @@ Skill(foundry:sdd-update) "Complete task task-2-3 in spec my-spec-001. Completio
 
 **Entry:** Routed here from Task Type Dispatch when task has `type: "verify"`
 
-> For the complete verification workflow (mark in progress, detect type, dispatch, execute, complete/remediate), see [reference.md#verification-task-workflow](./reference.md#verification-task-workflow)
+> For the complete verification workflow (mark in progress, detect type, dispatch, execute, complete/remediate), see [references/verification.md](./references/verification.md)
 
 ---
 
 ## Detailed Reference
 
 For comprehensive documentation including:
-- Context gathering best practices and anti-patterns
-- Deep dive context JSON structure
-- Built-in subagent patterns
-- Using doc-scope during implementation
-- Post-implementation checklist
-- Verification task workflow
-- Troubleshooting
-
-See **[reference.md](./reference.md)**
+- Context gathering best practices → `references/context-gathering.md`
+- Agent delegation patterns → `references/agent-delegation.md`
+- Deep dive context JSON structure → `references/context-structure.md`
+- Built-in subagent patterns → `references/subagent-patterns.md`
+- Post-implementation checklist → `references/checklist.md`
+- Verification task workflow → `references/verification.md`
+- Troubleshooting → `references/troubleshooting.md`

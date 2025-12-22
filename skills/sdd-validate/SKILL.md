@@ -46,11 +46,19 @@ Use `Skill(foundry:sdd-validate)` to:
 
 ## Core Workflow
 
-1. **Validate**: `mcp__plugin_foundry_foundry-mcp__spec action="validate" spec_id={spec-id}` - Check for issues
-2. **Fix**: `mcp__plugin_foundry_foundry-mcp__spec action="fix" spec_id={spec-id}` - Auto-fix common problems (creates backup)
-3. **Re-validate**: Check for newly revealed issues
-4. **Repeat**: Continue until error count stops decreasing
-5. **Manual fixes**: Use `--verbose` for details when plateau is reached
+> `[x?]`=decision · `(GATE)`=user approval · `→`=sequence · `↻`=loop · `§`=section ref
+
+```
+- **Entry** → `spec action="validate"`
+  - [exit 0] → **Exit**: valid
+  - [exit 3] → **Exit**: file error
+  - [exit 1-2] → continue
+- [AutoFixable?] → `spec action="fix"` (backup created)
+- ReValidate ↻ [errors decreasing?]
+  - [yes] → ↻ back to Fix
+  - [plateau 2+] → ManualFixes with verbose
+- **Exit**: valid
+```
 
 **Key concept:** Error count decreasing = keep fixing. Plateau (same count for 2+ passes) = switch to manual fixes.
 
@@ -215,7 +223,7 @@ Recommendation: Fix circular dependencies first to unblock work
 
 ## Common Patterns
 
-> For detailed issue-to-fix mapping, see `reference.md#issue-to-fix-mapping`
+> For detailed issue-to-fix mapping, see `references/issue-mapping.md`
 
 ### Issue → Fix Mapping
 
@@ -246,7 +254,7 @@ Pass 4: Validate → 0 errors ✅
 
 ## Troubleshooting
 
-For detailed troubleshooting, see **[reference.md#troubleshooting](./reference.md#troubleshooting)**.
+For detailed troubleshooting, see **[references/troubleshooting.md](./references/troubleshooting.md)**.
 
 **Quick tips:**
 - Re-validate after every fix pass
@@ -265,9 +273,7 @@ Available on all commands:
 ## Detailed Reference
 
 For comprehensive documentation including:
-- Detailed issue-to-fix mapping tables
-- Manual fix patterns for circular dependencies
-- Advanced troubleshooting scenarios
-- Edge cases and CI/CD integration
-
-See **[reference.md](./reference.md)**
+- Issue-to-fix mapping → `references/issue-mapping.md`
+- Manual fix patterns → `references/manual-fixes.md`
+- Troubleshooting → `references/troubleshooting.md`
+- Edge cases → `references/edge-cases.md`

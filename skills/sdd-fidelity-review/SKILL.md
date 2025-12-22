@@ -45,6 +45,24 @@ sdd-plan → sdd-next → Implementation → sdd-update → sdd-fidelity-review 
 - Updating task status (use `sdd-update`)
 - Running tests (use `run-tests`)
 
+### Flow
+
+> `[x?]`=decision · `(GATE)`=user approval · `→`=sequence · `↻`=loop · `§`=section ref
+
+```
+- **Entry** → [Familiar with code?]
+  - [no] → Explore subagent (optional)
+  - [yes] → skip
+- LSP PreCheck → `documentSymbol` → [structures exist?]
+  - [fail] → early exit with findings
+  - [pass] → continue
+- MCP Review → `fidelity action="review"` [phase|task] (up to 5 min)
+  - [deviations found?] ↻ LSP Investigate
+    - `goToDefinition` → `findReferences` → `incomingCalls`
+  - Assess[Exact|Minor|Major|Missing]
+- **Exit** → Report with recommendations
+```
+
 ## MCP Tooling
 
 This skill uses the Foundry MCP server with router+action pattern: `mcp__plugin_foundry_foundry-mcp__<router>` with `action="<action>"`.
@@ -110,7 +128,7 @@ refs = LSP(operation="findReferences", filePath="src/auth/service.py", line=45, 
 
 **Why:** Understand deviation impact before recommending fixes.
 
-> For detailed LSP patterns and examples, see `reference.md#lsp-integration-patterns`
+> For detailed LSP patterns and examples, see `references/lsp-integration.md`
 
 ## LSP Operations Quick Reference
 
@@ -141,7 +159,7 @@ mcp__plugin_foundry_foundry-mcp__review action="fidelity" spec_id="{spec-id}" ph
 mcp__plugin_foundry_foundry-mcp__review action="fidelity" spec_id="{spec-id}" task_id="{task-id}"
 ```
 
-> For query patterns and anti-patterns, see `reference.md#querying-spec-and-task-data-efficiently`
+> For query patterns and anti-patterns, see `references/querying.md`
 
 ## Review Types
 
@@ -150,7 +168,7 @@ mcp__plugin_foundry_foundry-mcp__review action="fidelity" spec_id="{spec-id}" ta
 | **Phase Review** | 3-10 tasks | Phase completion checkpoints |
 | **Task Review** | 1 file | Critical task validation, high-risk implementations |
 
-> For detailed workflow per review type, see `reference.md#review-types`
+> For detailed workflow per review type, see `references/review-types.md`
 
 ## Fidelity Assessment Categories
 
@@ -175,4 +193,16 @@ Skill(foundry:sdd-fidelity-review) "Review phase phase-1 in spec user-auth-001"
 
 ## Detailed Reference
 
-For comprehensive documentation including complete workflows, report templates, error handling, and best practices, see **[reference.md](./reference.md)**
+For comprehensive documentation including:
+- Long-running operations guidance → `references/long-running.md`
+- Review types → `references/review-types.md`
+- LSP integration patterns → `references/lsp-integration.md`
+- Querying spec data → `references/querying.md`
+- Workflow steps → `references/workflow.md`
+- Report structure → `references/report.md`
+- SDD workflow integration → `references/integration.md`
+- Assessment categories → `references/assessment.md`
+- Examples → `references/examples.md`
+- Error handling → `references/errors.md`
+- Best practices → `references/best-practices.md`
+- Subagent patterns → `references/subagent.md`

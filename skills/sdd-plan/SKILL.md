@@ -18,6 +18,21 @@ description: Plan-first development methodology that creates detailed specificat
 
 Use this skill when building new features, performing complex refactoring, or implementing changes that span multiple files.
 
+### Flow
+
+> `[x?]`=decision · `(GATE)`=user approval · `→`=sequence · `↻`=loop · `§`=section ref
+
+```
+- **Entry** → UnderstandIntent
+  - Analyze[Explore|Glob/Grep] → LSP analysis
+  - CreatePhasePlan → `plan action="create"`
+  - [AI Review?] → `plan action="review"` ↻ until no blockers
+  - (GATE: phase approval)
+  - SchemaExport → SpecCreate → `authoring action="spec-create"`
+  - Validate → `spec action="validate"` ↻ [errors?] → fix
+  - **Exit** → specs/pending/{spec-id}.json
+```
+
 ## Skill Family
 
 This skill is part of the **Spec-Driven Development** workflow:
@@ -84,7 +99,7 @@ Before creating any plan, deeply understand what needs to be accomplished:
 
 Use **Explore subagents** for large codebases (prevents context bloat), or `Glob`/`Grep`/`Read` for targeted lookups.
 
-> See reference.md#parallel-investigation-strategies for subagent patterns.
+> See `references/investigation.md` for subagent patterns.
 
 **LSP-Enhanced Analysis:** For refactoring and change planning, use LSP tools:
 - `documentSymbol` - Understand file structure before modifying
@@ -94,7 +109,7 @@ Use **Explore subagents** for large codebases (prevents context bloat), or `Glob
 
 If LSP unavailable, fall back to Explore agents or `Grep` for symbol search.
 
-> See reference.md#codebase-analysis-patterns for detailed LSP patterns.
+> See `references/codebase-analysis.md` for detailed LSP patterns.
 
 ### Step 3: Create High-Level Phase Plan
 
@@ -104,7 +119,7 @@ For complex features, create a markdown phase plan first and get user approval b
 mcp__plugin_foundry_foundry-mcp__plan action="create" name="Feature Name" template="detailed"
 ```
 
-> See reference.md#phase-plan-template for template structure.
+> See `references/phase-plan-template.md` for template structure.
 
 ### Step 3.5: AI Review of Phase Plan
 
@@ -116,7 +131,7 @@ mcp__plugin_foundry_foundry-mcp__plan action="review" plan_path="specs/.plans/fe
 
 Review types: `full`, `quick`, `security`, `feasibility`. Iterate until no critical blockers.
 
-> See reference.md#ai-plan-review for review output format and iteration workflow.
+> See `references/ai-review.md` for review output format and iteration workflow.
 
 ### Step 4: Create JSON Specification
 
@@ -128,7 +143,7 @@ mcp__plugin_foundry_foundry-mcp__authoring action="spec-create" name="feature-na
 
 The spec file is created at `specs/pending/{spec-id}.json`.
 
-> For JSON specification structure details, see `reference.md#json-specification-structure`
+> For JSON specification structure details, see `references/json-spec.md`
 
 ### Step 5: Validate the Specification
 
@@ -142,7 +157,7 @@ mcp__plugin_foundry_foundry-mcp__spec action="validate-fix" spec_id="{spec-id}" 
 
 **Splitting recommendation:** If >6 phases or >50 tasks, recommend splitting into multiple specs.
 
-> For size guidelines, task hierarchy, categories, and dependency tracking, see `reference.md#task-hierarchy`
+> For size guidelines, task hierarchy, categories, and dependency tracking, see `references/task-hierarchy.md`
 
 ## Output Artifacts
 
@@ -154,13 +169,12 @@ The spec file contains the full task hierarchy including phases, tasks, subtasks
 
 ## Detailed Reference
 
-For comprehensive documentation including:
-- Phase plan template with full structure
-- Task hierarchy (spec, phase, group, task, subtask, verify)
-- Task categories and verification types
-- Dependency tracking (hard/soft deps, blocks)
-- JSON specification structure
-- Codebase analysis patterns
-- Troubleshooting and edge cases
+- Investigation strategies → `references/investigation.md`
+- Phase plan template → `references/phase-plan-template.md`
+- AI review workflow → `references/ai-review.md`
+- JSON spec structure → `references/json-spec.md`
+- Task hierarchy & dependencies → `references/task-hierarchy.md`
+- Codebase analysis patterns → `references/codebase-analysis.md`
+- Troubleshooting → `references/troubleshooting.md`
 
-See **[reference.md](./reference.md)**
+See **[references/](./references/)**

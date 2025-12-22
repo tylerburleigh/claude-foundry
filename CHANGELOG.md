@@ -5,6 +5,15 @@ All notable changes to claude-foundry will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.5] - 2025-12-22
+
+### Changed
+
+- **Modular references**: Split single `reference.md` files into topic-specific files in `references/` directories
+- Each skill now has 5-7 focused reference files (e.g., `ai-review.md`, `troubleshooting.md`, `json-spec.md`)
+- Enables on-demand loading of specific topics vs loading entire reference
+- Added `docs/flow-notation.md` documentation
+
 ## [1.0.2] - 2025-12-22
 
 ### Changed
