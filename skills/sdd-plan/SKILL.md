@@ -52,7 +52,6 @@ This skill operates entirely through the Foundry MCP server (`foundry-mcp`). Too
 
 | Router | Actions | Purpose |
 |--------|---------|---------|
-| **code** | `find-class`, `find-function`, `trace-calls`, `impact-analysis` | Understand existing code structure |
 | **plan** | `create`, `list`, `review` | Create, list, and review markdown plans |
 | **authoring** | `spec-create` | Generate specification files |
 | **spec** | `validate`, `validate-fix`, `list`, `get`, `get-hierarchy`, `schema-export` | Validation and querying |
@@ -83,136 +82,41 @@ Before creating any plan, deeply understand what needs to be accomplished:
 
 ### Step 2: Analyze Codebase
 
-Use **Explore subagents** (preferred) for codebase exploration, or `Glob`, `Grep`, and `Read` for targeted lookups.
+Use **Explore subagents** for large codebases (prevents context bloat), or `Glob`/`Grep`/`Read` for targeted lookups.
 
-### 2.1 Subagent Guidance (Codebase Exploration)
+> See reference.md#parallel-investigation-strategies for subagent patterns.
 
-For large or unfamiliar codebases, use Claude Code's built-in subagents for efficient parallel exploration:
+**LSP-Enhanced Analysis:** For refactoring and change planning, use LSP tools:
+- `documentSymbol` - Understand file structure before modifying
+- `findReferences` - Assess impact (count affected files, map dependencies)
+- `goToDefinition` - Navigate to implementations
+- Zero references = safe to remove (dead code)
 
-| Scenario | Subagent | Thoroughness |
-|----------|----------|--------------|
-| Initial file structure discovery | Explore | quick |
-| Understanding existing patterns | Explore | medium |
-| Complex dependency analysis | Explore | very thorough |
-| Multi-area architectural research | general-purpose | N/A |
+If LSP unavailable, fall back to Explore agents or `Grep` for symbol search.
 
-**Example: Parallel Exploration**
-```
-Use the Explore agent (medium thoroughness) to find:
-- All files matching the feature area pattern
-- Existing implementations of similar functionality
-- Test coverage for affected modules
-- Related configuration files
-```
-
-**Benefits:**
-- Prevents context bloat during analysis phase
-- Haiku model is faster for search operations
-- Keeps main context available for spec creation
-- Can run multiple Explore agents in parallel for different areas
-
-> For detailed exploration patterns, see `reference.md#parallel-investigation-strategies`
-
-### 2.2 LSP-Enhanced Analysis
-
-For supported languages (TypeScript, Python, Go, Rust, etc.), Claude Code's built-in LSP tools provide precise semantic analysis that complements Explore subagents:
-
-| Analysis Need | LSP Tool | Fallback |
-|---------------|----------|----------|
-| Find all usages of a symbol | `findReferences` | `code action="trace-calls"` |
-| Understand file structure | `documentSymbol` | Explore agent (quick) |
-| Navigate to implementation | `goToDefinition` | `code action="find-function"` |
-
-**When to Use LSP Analysis:**
-- Planning refactoring that affects existing symbols
-- Assessing impact/blast radius of changes
-- Detecting dead code before removal
-- Understanding call hierarchies precisely
-
-**Impact Analysis Pattern:**
-
-When planning changes to existing code:
-
-1. **Identify target symbol** (class, function, variable to modify)
-2. **Try LSP first:**
-   ```
-   references = findReferences(file="src/auth/service.py", symbol="AuthService", line=15, character=6)
-   symbols = documentSymbol(file="src/auth/service.py")
-   ```
-3. **If LSP succeeds:**
-   - Count unique files referencing the symbol
-   - Identify import dependencies
-   - Map call hierarchy for functions
-   - Use reference data to inform phase/task structure
-4. **If LSP unavailable or fails:**
-   ```
-   # Fall back to MCP code router
-   mcp__plugin_foundry_foundry-mcp__code action="impact-analysis" target="AuthService" scope="src/"
-
-   # Or use Explore agent
-   Use the Explore agent (very thorough) to find all usages of AuthService
-   ```
-
-**Dead Code Detection:**
-
-Before planning removal of code:
-- Use `findReferences` to check for zero references
-- Zero refs = safe to remove, include as cleanup task
-- Non-zero refs = plan migration tasks first
-
-**LSP Availability Check:**
-```
-# Try documentSymbol on target file
-symbols = documentSymbol(file="target.py")
-
-if symbols returned: use LSP-enhanced analysis
-else: fall back to Explore/code router
-```
+> See reference.md#codebase-analysis-patterns for detailed LSP patterns.
 
 ### Step 3: Create High-Level Phase Plan
 
-For complex features (3+ phases expected), first create a phase-only markdown plan and **present to the user for approval before detailed planning**.
+For complex features, create a markdown phase plan first and get user approval before detailed spec creation:
 
-**Option A: Create plan with MCP tool (recommended)**
 ```bash
 mcp__plugin_foundry_foundry-mcp__plan action="create" name="Feature Name" template="detailed"
 ```
-This creates `specs/.plans/feature-name.md` with a structured template.
 
-**Option B: Create plan manually**
-Create a markdown file directly in `specs/.plans/` following the phase plan template.
-
-> For phase plan template, see `reference.md#phase-plan-template`
-
-After creating the plan template, **read and fill in the placeholders** with your actual plan content (objectives, phases, tasks, risks, success criteria).
+> See reference.md#phase-plan-template for template structure.
 
 ### Step 3.5: AI Review of Phase Plan
 
-Before converting your markdown plan to a formal JSON spec, get AI-powered feedback to catch issues early:
+Before converting to JSON spec, get AI feedback to catch issues early:
 
 ```bash
 mcp__plugin_foundry_foundry-mcp__plan action="review" plan_path="specs/.plans/feature-name.md" review_type="full"
 ```
 
-**Review Types:**
-| Type | Focus |
-|------|-------|
-| `full` | Comprehensive 6-dimension review (completeness, architecture, sequencing, feasibility, risk, clarity) |
-| `quick` | Critical blockers and questions only |
-| `security` | Security-focused analysis |
-| `feasibility` | Technical complexity and risk assessment |
+Review types: `full`, `quick`, `security`, `feasibility`. Iterate until no critical blockers.
 
-**Review → Revise → Repeat:**
-1. Create markdown plan with `plan action="create"` (creates template in `specs/.plans/`)
-2. Read template and fill in actual plan content
-3. Run AI review with `plan action="review"`
-4. Review feedback in `specs/.plan-reviews/<plan-name>-<review-type>.md`
-5. Revise plan based on feedback
-6. Repeat until no critical blockers
-
-**AI review is required** for all specs created with this skill. It catches issues early before they become expensive to fix during implementation.
-
-> For review output format and iteration examples, see `reference.md#ai-plan-review`
+> See reference.md#ai-plan-review for review output format and iteration workflow.
 
 ### Step 4: Create JSON Specification
 
@@ -236,15 +140,9 @@ mcp__plugin_foundry_foundry-mcp__spec action="validate-fix" spec_id="{spec-id}" 
 
 ## Size Guidelines
 
-| Complexity | Phases | Tasks | Verification Coverage |
-|------------|--------|-------|----------------------|
-| Short (<5 files) | 1-2 | 3-8 | 20% minimum |
-| Medium (5-15 files) | 2-4 | 10-25 | 30-40% |
-| Large (>15 files) | 4-6 | 25-50 | 40-50% |
-
 **Splitting recommendation:** If >6 phases or >50 tasks, recommend splitting into multiple specs.
 
-> For task hierarchy details, categories, and dependency tracking, see `reference.md#task-hierarchy`
+> For size guidelines, task hierarchy, categories, and dependency tracking, see `reference.md#task-hierarchy`
 
 ## Output Artifacts
 

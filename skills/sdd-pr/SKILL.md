@@ -65,39 +65,9 @@ Traditional PR creation uses static templates. The sdd-pr skill:
 
 ## PR Structure
 
-Generated PRs follow this template:
+Generated PRs include: Summary, What Changed, Technical Approach, Implementation Details, Testing, and Commits sections.
 
-```markdown
-## Summary
-{2-3 sentence overview}
-
-## What Changed
-
-### Key Features
-- {feature-1}
-- {feature-2}
-
-### Files Modified
-- `{file-path}`: {brief description}
-
-## Technical Approach
-{Key decisions from journal entries}
-
-## Implementation Details
-
-### Phase 1: {phase-title}
-- {task-1}: {status}
-- {task-2}: {status}
-
-## Testing
-- {verification-step-1}
-- {verification-step-2}
-
-## Commits
-- {sha}: {task-id}: {message}
-```
-
-> For full template with example, see `reference.md#draft-template`
+> For full template with examples, see `reference.md#draft-template`
 
 ## Quick Start
 
@@ -110,13 +80,9 @@ Skill(foundry:sdd-pr) "Create PR for spec oauth-feature-2025-11-03-001"
 
 ## Long-Running Operations
 
-**This skill may take up to 5 minutes.** Always use foreground execution:
+This skill may take up to 5 minutes. Always use foreground execution with appropriate timeout.
 
-```python
-Bash(command="...", timeout=300000)  # 5 minute timeout
-```
-
-**Never** use `run_in_background=True` with frequent polling.
+> For examples and anti-patterns, see `reference.md#long-running-operations`
 
 ## Detailed Reference
 

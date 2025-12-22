@@ -4,6 +4,9 @@ Detailed workflows, examples, and edge cases for the sdd-update skill.
 
 ## Table of Contents
 
+- [Comparison: sdd-update vs sdd-modify](#comparison)
+- [Task States](#task-states)
+- [Folder Structure](#folder-structure)
 - [Workflow Details](#workflow-details)
   - [Starting a Task](#workflow-1-starting-a-task)
   - [Tracking Progress](#workflow-2-tracking-progress)
@@ -20,6 +23,50 @@ Detailed workflows, examples, and edge cases for the sdd-update skill.
 - [Common Mistakes](#common-mistakes)
 - [Command Reference](#command-reference)
 - [Systematic Spec Modification](#systematic-spec-modification)
+
+---
+
+## Comparison
+
+### sdd-update vs sdd-modify
+
+| Operation | sdd-update | sdd-modify |
+|-----------|:----------:|:----------:|
+| Mark task completed | Yes | No |
+| Update task status | Yes | No |
+| Add journal entries | Yes | No |
+| Move spec between folders | Yes | No |
+| **Update task descriptions** | No | Yes |
+| **Add/remove tasks** | No | Yes |
+| **Add verification steps** | No | Yes |
+| **Apply review feedback** | No | Yes |
+
+**Key Distinction:**
+- **sdd-update** = Lightweight metadata updates (status, progress, journals)
+- **sdd-modify** = Heavyweight structural changes (tasks, descriptions, verifications)
+
+---
+
+## Task States
+
+| Status | Description |
+|--------|-------------|
+| `pending` | Not yet started |
+| `in_progress` | Currently being worked on |
+| `completed` | Successfully finished |
+| `blocked` | Cannot proceed due to dependencies or issues |
+
+---
+
+## Folder Structure
+
+```
+specs/
+├── pending/      # Backlog - planned but not activated
+├── active/       # Currently being implemented
+├── completed/    # Finished and verified
+└── archived/     # Old or superseded
+```
 
 ---
 

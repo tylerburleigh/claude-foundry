@@ -91,125 +91,25 @@ Gather information about what to refactor:
 
 **NEVER refactor without understanding impact first.**
 
-#### 2.1 LSP-Enhanced Impact Analysis
+1. Use `findReferences` to get all usages of the symbol
+2. Analyze: total count, unique files, reference types (import, call, annotation)
+3. Present impact report to user with risk assessment
+4. Get user approval before proceeding
 
-```
-# Get all references to the symbol
-references = findReferences(file="src/module.py", symbol="OldClassName", line=10, character=6)
-
-# Analyze results:
-- Total reference count
-- Unique files affected
-- Reference types (import, call, type annotation, assignment)
-- Test files vs production files
-```
-
-#### 2.2 Impact Report
-
-Present to user before proceeding:
-
-```markdown
-## Refactoring Impact: Rename OldClassName -> NewClassName
-
-**Total References:** 47 across 12 files
-
-**By Category:**
-- Imports: 12 files
-- Class instantiation: 8 locations
-- Type annotations: 15 locations
-- Inheritance: 2 locations
-
-**Files Affected:**
-- src/auth/service.py (8 refs)
-- src/api/handlers.py (12 refs)
-- tests/test_auth.py (15 refs)
-- ... (9 more files)
-
-**Risk Assessment:** MEDIUM
-- All references in controlled codebase
-- Good test coverage (15 test refs)
-
-Proceed? [Execute] [Dry Run] [Cancel]
-```
-
-#### 2.3 Fallback Impact Analysis
-
-If LSP unavailable:
-
-```
-Use Grep to find references:
-Grep(pattern="OldClassName", path="src/", output_mode="content")
-
-WARNING: Grep-based analysis may include false positives (comments, strings).
-Review each match before proceeding.
-```
+> See [reference.md#impact-analysis](./reference.md#impact-analysis) for detailed procedures and report format.
 
 ### Step 3: Execute Refactoring
 
-#### 3.1 Rename Operation
+Execute the appropriate operation based on refactoring type:
 
-**With LSP:**
-1. Collect all reference locations from `findReferences`
-2. Sort files by dependency order (imports first, then usages)
-3. For each file:
-   - Read file content
-   - Replace symbol at LSP-provided positions (precise, not text search)
-   - Write updated file
-4. Verify rename succeeded:
-   ```
-   findReferences(file="src/module.py", symbol="NewClassName")
-   # Should return same count as before
-   ```
+| Operation | Key Steps |
+|-----------|-----------|
+| **Rename** | Collect references → Sort by dependency → Batch edit → Verify |
+| **Extract** | Identify block → Analyze variables → Create function → Replace |
+| **Move** | Find references → Move definition → Update imports → Verify |
+| **Dead Code** | Check reference count → Remove if zero → Clean imports |
 
-**Without LSP (Manual):**
-1. Use Grep to find all occurrences
-2. Review each match for false positives
-3. Edit files one at a time
-4. Verify with Grep that old name no longer appears
-
-#### 3.2 Extract Function/Method
-
-1. **Identify code block** to extract (line range)
-2. **Analyze variables:**
-   - Inputs: referenced but not defined in block
-   - Outputs: defined in block, used after
-3. **Create new function** with appropriate signature
-4. **Replace original code** with function call
-5. **Verify structure:**
-   ```
-   documentSymbol(file="src/module.py")
-   # Confirm new function appears in symbols
-   ```
-
-#### 3.3 Move Symbol
-
-1. **Find all references** to the symbol
-2. **Move definition** to new file
-3. **Add export** in new location (if needed)
-4. **Update all imports** across codebase
-5. **Remove from original** file
-6. **Verify no broken references:**
-   ```
-   findReferences(file="new/location.py", symbol="MovedSymbol")
-   # All references should resolve
-   ```
-
-#### 3.4 Dead Code Cleanup
-
-1. **Identify candidate** symbols for removal
-2. **Check reference count:**
-   ```
-   references = findReferences(file="src/utils.py", symbol="unused_function")
-
-   if references.count == 0:
-       Safe to remove
-   elif references.count == 1 and reference is definition:
-       Safe to remove (only self-reference)
-   else:
-       NOT safe - has usages
-   ```
-3. **Remove symbol** if safe
-4. **Clean up imports** that referenced removed symbol
+> See [reference.md#refactoring-operations](./reference.md#refactoring-operations) for detailed procedures for each operation type.
 
 ### Step 4: Verify Correctness
 
@@ -248,23 +148,9 @@ mcp__plugin_foundry_foundry-mcp__journal action="add" spec_id="{spec-id}" title=
 
 ## LSP Availability Check
 
-Before using LSP-enhanced workflow, verify availability:
+Before using LSP-enhanced workflow, verify by calling `documentSymbol` on the target file. If it returns successfully, use LSP workflow. Otherwise, fall back to Grep-based workflow.
 
-```
-# Try to get symbols from target file
-symbols = documentSymbol(file="target_file.py")
-
-if symbols returned successfully:
-    Use LSP-enhanced workflow
-else:
-    Fall back to Grep-based workflow
-```
-
-**Fallback triggers:**
-- LSP tool returns error
-- No language server for file type (e.g., Makefile, .txt)
-- Empty result for known non-empty file
-- Timeout (>5 seconds)
+> See [reference.md#lsp-availability-check](./reference.md#lsp-availability-check) for fallback triggers and verification procedure.
 
 ## Size Guidelines
 
@@ -301,3 +187,13 @@ Skill(foundry:sdd-refactor) "Find and remove unused functions in src/legacy/"
 ```
 Skill(foundry:sdd-refactor) "Complete task-2-3: Rename UserDTO to UserResponse as specified"
 ```
+
+## Detailed Reference
+
+For comprehensive documentation including:
+- Impact analysis procedures and report templates
+- Detailed refactoring operation workflows
+- LSP availability verification and fallback procedures
+- Troubleshooting common issues
+
+See **[reference.md](./reference.md)**

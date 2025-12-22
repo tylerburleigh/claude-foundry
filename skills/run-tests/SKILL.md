@@ -61,57 +61,24 @@ Fix & Verify
 
 ## Phase 0: Pre-Flight Diagnostics (LSP-Enhanced)
 
-Before running tests, use LSP to catch issues early. Recommended after major refactoring or when tests are failing with import errors.
+Before running tests, optionally use LSP to catch import issues early.
 
-**When to use Phase 0:**
+**When to use:**
 - Full suite on unfamiliar code
 - Tests failing with import/resolution errors
 - After major refactoring
-- Before running on CI (catch errors locally first)
 
 **When to skip:**
 - Quick test run after small change
-- Tests already known to be working
-- File types not supported by LSP
+- Tests already known to work
 
-### Symbol Resolution Check
+**Key LSP operations:**
+- `documentSymbol()` - Get test file structure
+- `goToDefinition()` - Verify imports resolve
 
-Verify test files can resolve their imports:
+If LSP unavailable, skip to Phase 1. Import errors will surface as test failures.
 
-```
-# Get test file structure
-symbols = documentSymbol(file="tests/test_auth.py")
-
-# For key imports, verify targets exist
-definition = goToDefinition(file="tests/test_auth.py", symbol="AuthService", line=5)
-
-if definition not found:
-    Report: "Import AuthService cannot be resolved - likely import error"
-```
-
-### Pre-Flight Report
-
-```markdown
-## Pre-Flight Diagnostics
-
-| Test File | Status |
-|-----------|--------|
-| tests/test_auth.py | OK - all imports resolve |
-| tests/test_user.py | WARNING - cannot resolve 'UserService' (line 5) |
-| tests/test_api.py | OK |
-
-**Issues Found:** 1 unresolved import
-**Recommendation:** Fix import in test_user.py before running full suite
-
-Proceed? [Fix First] [Run Anyway]
-```
-
-### Fallback
-
-If LSP unavailable:
-- Skip Phase 0 entirely
-- Proceed directly to Phase 1 (Run Tests)
-- Import errors will surface as test failures (handled in Phase 2)
+> For pseudocode examples and report format, see `reference.md#pre-flight-diagnostics`
 
 ## Phase 1: Run Tests
 
@@ -174,11 +141,6 @@ Use the Explore agent (very thorough) to find:
 - Files importing the failing module
 - Test files that modify shared resources
 ```
-
-**Benefits:**
-- Prevents test output and search results from bloating context
-- Haiku model is faster for searching test directories
-- Returns focused findings for targeted debugging
 
 > For detailed investigation patterns with subagents, see `reference.md#subagent-investigation-patterns`
 

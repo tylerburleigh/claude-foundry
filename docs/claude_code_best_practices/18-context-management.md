@@ -31,10 +31,21 @@ Understanding when different content loads helps you budget tokens effectively:
 |-------|-------------|--------------|-----------------|
 | **CLAUDE.md** | Every turn | High | <100 lines ideal, <60 better |
 | **Skill metadata** | Startup (all skills) | Low | <1024 chars per description |
-| **SKILL.md body** | On activation | Medium | <2000 chars |
-| **Supporting files** | On-demand | Variable | Load selectively |
+| **SKILL.md body** | On activation | Medium | <500 lines, <2000 chars |
+| **Supporting files** | On-demand | Variable | Zero cost until read |
 | **Agent prompt** | On delegation | Medium-High | Summarize output |
 | **Conversation history** | Every turn | Grows over time | Use `/clear` frequently |
+
+### Critical Insight: Zero-Cost Bundling
+
+Reference files (reference.md, examples.md, etc.) consume **zero context tokens** until Claude actually reads them. This enables:
+
+- Bundling comprehensive API documentation
+- Including extensive examples
+- Adding large datasets or schemas
+- Providing detailed troubleshooting guides
+
+All without impacting performance—Claude loads only what each task requires.
 
 ### Always-On Content
 
@@ -137,6 +148,101 @@ Tier 3 (On-demand):   reference.md, examples.md, etc.
 
 ---
 
+## SKILL.md Best Practices (2025)
+
+Recent research from Anthropic confirms these critical guidelines:
+
+### The 500-Line Rule
+
+| Requirement | Details |
+|-------------|---------|
+| SHOULD | Keep SKILL.md body under 500 lines |
+| SHOULD | Aim for under 2000 characters for optimal performance |
+| MUST | Split content into separate files when approaching limit |
+
+### One-Level Reference Depth
+
+Claude may partially read files when they're referenced from other referenced files (using `head -100` previews). Keep references flat:
+
+```markdown
+# Bad: Nested references
+SKILL.md → advanced.md → details.md → actual-info.md
+
+# Good: Direct references
+SKILL.md → reference.md
+SKILL.md → examples.md
+SKILL.md → troubleshooting.md
+```
+
+| Requirement | Details |
+|-------------|---------|
+| MUST | Keep all references one level deep from SKILL.md |
+| MUST NOT | Chain reference files (A references B references C) |
+
+### Table of Contents for Long Files
+
+For reference files longer than 100 lines, include a TOC so Claude can see the full scope even when previewing:
+
+```markdown
+# reference.md
+
+## Contents
+- Authentication and setup
+- Core methods (create, read, update, delete)
+- Advanced features (batch operations, webhooks)
+- Error handling patterns
+- Code examples
+
+## Authentication and setup
+...
+```
+
+| Requirement | Details |
+|-------------|---------|
+| SHOULD | Include TOC for files over 100 lines |
+| SHOULD | Use descriptive section headers |
+
+### Description Writing (Critical for Discovery)
+
+Claude uses the description field to decide which skill to activate from potentially 100+ available skills.
+
+| Requirement | Details |
+|-------------|---------|
+| MUST | Write in third person ("Processes files..." not "I can process...") |
+| MUST | Include what the skill does AND when to use it |
+| SHOULD | Include key terms users might mention |
+| MUST NOT | Use first or second person |
+
+```yaml
+# Good
+description: Extracts text and tables from PDF files, fills forms, merges documents. Use when working with PDF files or when the user mentions PDFs, forms, or document extraction.
+
+# Bad
+description: I can help you process documents
+```
+
+### Conciseness Principle
+
+Only add context Claude doesn't already have:
+
+```markdown
+# Good (~50 tokens)
+## Extract PDF text
+Use pdfplumber:
+```python
+import pdfplumber
+with pdfplumber.open("file.pdf") as pdf:
+    text = pdf.pages[0].extract_text()
+```
+
+# Bad (~150 tokens)
+PDF (Portable Document Format) files are a common file format
+that contains text, images, and other content. To extract text
+from a PDF, you'll need to use a library...
+```
+
+---
+
 ## Progressive Disclosure
 
 ### Three-Tier Pattern
@@ -175,6 +281,46 @@ Guide Claude to load only what's needed:
 - `examples.md#Error Handling` - When implementing error responses
 - Skip reference files for simple tasks
 ```
+
+### Domain-Specific Organization
+
+For skills with multiple domains, organize to enable selective loading:
+
+```
+bigquery-skill/
+├── SKILL.md               # Overview and routing
+└── reference/
+    ├── finance.md         # Revenue, billing (~zero tokens until needed)
+    ├── sales.md           # Pipeline, opportunities
+    ├── product.md         # Usage analytics
+    └── marketing.md       # Campaigns, attribution
+```
+
+```markdown
+# SKILL.md routing example
+
+## Available Datasets
+
+**Finance**: Revenue, ARR, billing → See [reference/finance.md](reference/finance.md)
+**Sales**: Opportunities, pipeline → See [reference/sales.md](reference/sales.md)
+**Product**: API usage, features → See [reference/product.md](reference/product.md)
+```
+
+When a user asks about sales metrics, Claude loads only `reference/sales.md`. The other files remain unread, consuming zero tokens.
+
+---
+
+## Model-Specific Considerations
+
+Skills effectiveness varies by model. Test with all models you plan to use:
+
+| Model | Consideration | Adjustment |
+|-------|---------------|------------|
+| **Haiku** | Needs more explicit guidance | Add more detail, clearer steps |
+| **Sonnet** | Balanced performance | Standard skill structure |
+| **Opus** | Powerful reasoning | Reduce verbosity, avoid over-explaining |
+
+What works perfectly for Opus might need more detail for Haiku. Design for your target model mix.
 
 ---
 
@@ -439,7 +585,39 @@ description: Does everything
 [2000 lines of documentation, examples, schemas, history...]
 ```
 
-**Fix:** Keep SKILL.md under 2000 chars. Use progressive disclosure.
+**Fix:** Keep SKILL.md under 500 lines. Use progressive disclosure.
+
+### 6. Nested Reference Files
+
+```markdown
+# Bad: A references B references C
+SKILL.md: "See advanced.md for details"
+advanced.md: "See implementation.md for code"
+implementation.md: "Here's the actual info..."
+```
+
+**Fix:** All references should link directly from SKILL.md. Keep one level deep.
+
+### 7. Missing TOC in Long Files
+
+```markdown
+# Bad: 200-line reference.md with no navigation
+[Detailed content that Claude may only partially read...]
+```
+
+**Fix:** Add table of contents for files over 100 lines so Claude can see full scope.
+
+### 8. First-Person Descriptions
+
+```yaml
+# Bad: Causes discovery problems
+description: I can help you process PDF files
+
+# Good: Third person enables reliable activation
+description: Processes PDF files, extracts text, fills forms. Use when working with PDFs.
+```
+
+**Fix:** Always write skill descriptions in third person.
 
 ---
 
@@ -471,10 +649,15 @@ Your context may be bloated if:
 
 ## Related Documents
 
+- [04-skills.md](./04-skills.md) - Comprehensive skill authoring guide
+- [12-claude-md.md](./12-claude-md.md) - CLAUDE.md configuration and hierarchy
 - [16-description-writing.md](./16-description-writing.md) - Writing effective descriptions
 - [17-system-prompts.md](./17-system-prompts.md) - System prompt design
-- [12-claude-md.md](./12-claude-md.md) - CLAUDE.md configuration and hierarchy
-- [04-skills.md](./04-skills.md) - Skill structure and progressive disclosure
+
+## External References
+
+- [Skill authoring best practices - Claude Docs](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices)
+- [Effective context engineering for AI agents - Anthropic](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)
 
 ---
 

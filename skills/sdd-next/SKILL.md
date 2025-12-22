@@ -7,25 +7,25 @@ description: Task preparation skill for spec-driven workflows. Reads specificati
 
 ## Overview
 
-- **Purpose:** Repeatable workflow for discovering specs, selecting actionable tasks, and keeping the user in the loop from planning through wrap-up.
-- **Scope:** Single-task pulls and phase-focused loops; work happens inside project root.
-- **Audience:** AI agents orchestrating SDD workflows who must respect human checkpoints and CLI guardrails.
+- **Purpose:** Task execution workflow - select tasks, plan implementation, and track progress within an active spec.
+- **Scope:** Single-task execution with user approval at key checkpoints.
+- **Entry:** Invoked by `/sdd-next` command after spec has been identified.
 
 ### High-Level Flow
 
 ```
-Start -> Check Mode (Step 0)
+Start -> Check Mode
            |
            +-- minimal? --> EXIT: "Run /sdd-on, restart Claude, try again"
            |
-           +-- full? --> Select Task (3.2) -> Check Task Type (3.2.1)
-                                                    |
-                                                    +-- type: "verify" --> Verification Workflow (Section 6) --+
-                                                    |                                                          |
-                                                    +-- type: "task" --> Plan -> Implement -> Complete ---------+
-                                                                                                                |
-                                                                                                                v
-                                                                                                      Surface Next (3.5)
+           +-- full? --> Select Task -> Check Task Type
+                                              |
+                                              +-- type: "verify" --> Verification Workflow --+
+                                              |                                              |
+                                              +-- type: "task" --> Plan -> Implement --------+
+                                                                                             |
+                                                                                             v
+                                                                                       Surface Next
 ```
 
 ---
@@ -80,7 +80,7 @@ Before proceeding, verify that the full SDD toolkit is available.
 
 1. Call `mcp__plugin_foundry_foundry-ctl__get_sdd_mode`
 
-2. If mode is `"full"`: Proceed to Task Workflow (Step 3.1)
+2. If mode is `"full"`: Proceed to Task Workflow
 
 3. If mode is `"minimal"`:
    - Display message:
@@ -98,20 +98,14 @@ Before proceeding, verify that the full SDD toolkit is available.
 
 Execute one task at a time with explicit user approval.
 
-### 3.1 Choose the Spec (Skip if called from /sdd-next command)
+**Assumption:** The `/sdd-next` command has already identified the active spec and passed it to this skill.
 
-**IMPORTANT:** If this skill was invoked from the `/sdd-next` command with context indicating "Active spec detected", the spec has already been identified. **Skip this step** and proceed directly to Step 3.2.
-
-Only execute this step if entering the skill directly (not via command):
-- If the user supplies a spec identifier, confirm via `mcp__plugin_foundry_foundry-mcp__spec action="find"`
-- Otherwise list candidates with `mcp__plugin_foundry_foundry-mcp__spec action="find"` (filter `active`)
-
-### 3.2 Select Task
+### Select Task
 
 - **Recommendation path**: `mcp__plugin_foundry_foundry-mcp__task action="prepare"` -> surface task id, file, estimates, blockers
 - **Browsing path**: Use `mcp__plugin_foundry_foundry-mcp__task action="query"` -> present shortlist via `AskUserQuestion`
 
-### 3.2.1 Task Type Dispatch
+### Task Type Dispatch
 
 After selecting a task, check its type to determine the workflow path.
 
@@ -119,14 +113,14 @@ After selecting a task, check its type to determine the workflow path.
 
 | Task Type | Workflow Path |
 |-----------|---------------|
-| `type: "verify"` | Go to **Section 6: Verification Task Workflow** |
-| `type: "task"` (default) | Continue to **3.3 Deep Dive & Plan Approval** |
+| `type: "verify"` | Go to **Verification Task Workflow** |
+| `type: "task"` (default) | Continue to **Deep Dive & Plan Approval** |
 
-**CRITICAL:** Verification tasks must NOT go through the implementation workflow (3.3-3.4). They require MCP tool invocation, not code changes.
+**CRITICAL:** Verification tasks must NOT go through the implementation workflow. They require MCP tool invocation, not code changes.
 
-### 3.3 Deep Dive & Plan Approval (Implementation Tasks Only)
+### Deep Dive & Plan Approval (Implementation Tasks Only)
 
-**Note:** This section is for `type: "task"` only. Verification tasks (`type: "verify"`) are handled in Section 6.
+**Note:** This section is for `type: "task"` only. Verification tasks (`type: "verify"`) use the Verification Task Workflow.
 
 Invoke `mcp__plugin_foundry_foundry-mcp__task action="prepare"` with the target `spec_id`. The response contains:
 - `task_data`: title, metadata, instructions
@@ -146,7 +140,7 @@ Treat `context` as the authoritative source. Only fall back to `mcp__plugin_foun
 **Present plan via `AskUserQuestion`:**
 - Options: "Approve & Start", "Request Changes", "More Details", "Defer"
 
-### 3.3.1 Subagent Guidance (Pre-Implementation Exploration)
+### Subagent Guidance (Pre-Implementation Exploration)
 
 Before implementing, use Claude Code's built-in subagents for efficient codebase exploration:
 
@@ -172,69 +166,16 @@ Use the Explore agent (medium thoroughness) to find:
 
 > For more subagent patterns including autonomous mode usage, see `reference.md#built-in-subagent-patterns`
 
-### 3.3.2 LSP-Enhanced Dependency Preview
+### LSP Dependency Analysis
 
-For tasks modifying existing code, Claude Code's LSP tools can provide precise dependency information:
+Before implementing, use LSP tools to verify dependencies and preview impact:
 
-**Pre-Flight Dependency Check:**
+1. **Verify dependencies exist**: Use `goToDefinition` on symbols the task modifies
+2. **Preview impact**: Use `findReferences` to identify all affected files and call sites
+3. **Include in plan**: Surface LSP findings (usage count, affected files, test coverage) in plan approval
+4. **Fallback**: If LSP unavailable for file type, use Explore agent to find imports and usages
 
-Before starting implementation, verify dependencies exist:
-
-```
-# Task modifies AuthService.login() - verify it exists
-definition = goToDefinition(file="src/auth/service.py", symbol="login", line=25)
-
-if definition found:
-    Proceed with implementation
-else:
-    Surface missing dependency to user
-    Consider blocking task or checking spec accuracy
-```
-
-**Cross-File Impact Preview:**
-
-Show which files will be affected by this task:
-
-```
-# Task modifies a shared function
-references = findReferences(file="src/utils/helpers.py", symbol="format_date", line=10)
-
-# Present to user before implementation:
-"This task modifies format_date() which is used in 7 files:
-- src/reports/generator.py (3 calls)
-- src/api/handlers.py (2 calls)
-- tests/test_reports.py (5 calls)
-Consider impact on these files during implementation."
-```
-
-**Enhanced Plan Presentation:**
-
-Include LSP-derived context in plan approval:
-
-```markdown
-## Task: Modify AuthService.login() for 2FA
-
-**Impact Analysis (via LSP):**
-- Direct usages: 12 call sites across 5 files
-- Test coverage: 8 tests reference this method
-- Dependent methods: validate_credentials(), create_session()
-
-**Recommended approach:** [details]
-
-Proceed? [Approve & Start] [Request Changes] [More Details]
-```
-
-**Fallback:**
-
-If LSP unavailable for the file type:
-```
-Use the Explore agent (medium thoroughness) to find:
-- All files importing the target module
-- Usages of the function/class being modified
-- Related test files
-```
-
-### 3.4 Implementation Handoff
+### Implementation Handoff
 
 **Before coding:**
 ```bash
@@ -254,7 +195,7 @@ Mark task complete using the sdd-update skill:
 Skill(foundry:sdd-update) "Complete task {task-id} in spec {spec-id}. Completion note: [Summary of what was accomplished, tests run, verification performed]."
 ```
 
-### 3.5 Surface Next Recommendation
+### Surface Next Recommendation
 
 **Context Awareness:** The `context-monitor` hook automatically warns when context exceeds 85%. If you see `[CONTEXT X%]` warnings, follow the recommendation to `/clear` then `/sdd-next` after completing the current task.
 
@@ -310,102 +251,11 @@ Skill(foundry:sdd-update) "Complete task task-2-3 in spec my-spec-001. Completio
 
 ---
 
-## 6. Verification Task Workflow
+## Verification Task Workflow
 
-**Entry:** Routed here from 3.2.1 when task has `type: "verify"`
+**Entry:** Routed here from Task Type Dispatch when task has `type: "verify"`
 
-### 6.1 Mark Task In Progress
-
-```bash
-mcp__plugin_foundry_foundry-mcp__task action="start" spec_id={spec-id} task_id={task-id}
-```
-
-### 6.2 Detect Verification Type
-
-Read `verification_type` from task metadata (already available from `task action="prepare"` or `task action="info"`):
-
-```bash
-mcp__plugin_foundry_foundry-mcp__task action="info" spec_id={spec-id} task_id={task-id}
-```
-
-### 6.3 Dispatch by Verification Type
-
-| verification_type | Skill Invocation |
-|-------------------|------------------|
-| `"run-tests"` | `Skill(foundry:run-tests)` |
-| `"fidelity"` | `Skill(foundry:sdd-fidelity-review)` |
-
-**For fidelity reviews**, extract `scope` and `target` from task metadata to pass to the skill.
-
-### 6.4 Execute Verification Skill
-
-**MANDATORY:** You MUST invoke the Skill. Do NOT perform manual verification by reading files.
-
-**For fidelity review:**
-```bash
-Skill(foundry:sdd-fidelity-review) "Review {scope} {target} in spec {spec-id}"
-```
-
-Example: `Skill(foundry:sdd-fidelity-review) "Review phase phase-1 in spec my-spec-001"`
-
-**For run-tests:**
-```bash
-Skill(foundry:run-tests) "Run tests for spec {spec-id}"
-```
-
-### 6.5 Present Results
-
-After the skill returns:
-1. Display the verdict (pass/fail/partial)
-2. List any deviations or failures found
-3. Show recommendations from the review
-
-### 6.6 Complete or Remediate
-
-**If verdict = pass:**
-```bash
-Skill(foundry:sdd-update) "Complete verify task {task-id}. Fidelity review passed with verdict: {verdict}."
-```
-
-**If verdict = fail or partial:**
-- Do NOT mark the verify task complete
-- Present failures to user via `AskUserQuestion`
-- Options: "Fix Issues & Re-run", "Create Remediation Tasks", "Override & Complete"
-- If user chooses to fix, address deviations then re-run verification skill (6.4)
-
-### 6.7 Return to Main Workflow
-
-After verification task is complete, go to **3.5 Surface Next Recommendation** to continue with the next task.
-
----
-
-## Quick Reference
-
-### Core Commands
-
-```bash
-# Discovery
-mcp__plugin_foundry_foundry-mcp__spec action="find" status="active"
-mcp__plugin_foundry_foundry-mcp__spec action="list" status="active"
-
-# Task Selection
-mcp__plugin_foundry_foundry-mcp__task action="prepare" spec_id={spec-id}    # Primary - includes all context
-mcp__plugin_foundry_foundry-mcp__task action="next" spec_id={spec-id}       # Simpler alternative - just task ID
-
-# Task Operations
-mcp__plugin_foundry_foundry-mcp__task action="query" spec_id={spec-id} status="pending"
-mcp__plugin_foundry_foundry-mcp__task action="list-blocked" spec_id={spec-id}
-mcp__plugin_foundry_foundry-mcp__task action="unblock" spec_id={spec-id} task_id={task-id} resolution="reason"
-```
-
-### Critical Patterns Summary
-
-| Pattern | Requirement |
-|---------|-------------|
-| **Spec reading** | Always use MCP tools, NEVER `Read()` or `cat` on JSON |
-| **Task completion** | Never mark complete if tests failing/partial/errors |
-| **Verification tasks** | Route via 3.2.1 to Section 6; MUST invoke MCP tools, NOT manual file reads |
-| **User decisions** | Always use `AskUserQuestion`, never text lists |
+> For the complete verification workflow (mark in progress, detect type, dispatch, execute, complete/remediate), see [reference.md#verification-task-workflow](./reference.md#verification-task-workflow)
 
 ---
 
@@ -413,12 +263,11 @@ mcp__plugin_foundry_foundry-mcp__task action="unblock" spec_id={spec-id} task_id
 
 For comprehensive documentation including:
 - Context gathering best practices and anti-patterns
-- Tool value matrix
 - Deep dive context JSON structure
+- Built-in subagent patterns
 - Using doc-scope during implementation
 - Post-implementation checklist
-- Autonomous mode workflow (full)
-- Phase loop with human checkpoints
+- Verification task workflow
 - Troubleshooting
 
 See **[reference.md](./reference.md)**

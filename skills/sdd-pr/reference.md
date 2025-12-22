@@ -5,7 +5,7 @@ Templates, examples, and detailed workflows for the sdd-pr skill.
 ## Table of Contents
 
 - [Long-Running Operations](#long-running-operations)
-- [Workflow Steps](#workflow)
+- [Workflow](#workflow)
 - [Context Sources](#context-sources)
 - [PR Description Structure](#pr-description-structure)
 - [Draft Template](#draft-template)

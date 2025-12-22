@@ -74,7 +74,7 @@ When in doubt, choose the mechanism that gives the right balance of discoverabil
 |---|----------|-------------|
 | 02 | [Commands](./02-commands.md) | User-invoked slash commands with templating and bash execution |
 | 03 | [Agents](./03-agents.md) | Autonomous subagents for complex, isolated task execution |
-| 04 | [Skills](./04-skills.md) | Model-invoked capabilities automatically activated by context |
+| 04 | [Skills](./04-skills.md) | Model-invoked capabilities with progressive disclosure and token optimization |
 
 ### Automation and Integration
 
@@ -239,4 +239,4 @@ my-plugin/
 
 ---
 
-*Last updated: 2025-12*
+*Last updated: 2025-12-22*

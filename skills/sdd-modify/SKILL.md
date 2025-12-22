@@ -26,16 +26,12 @@ Use `Skill(foundry:sdd-modify)` to:
 
 ## MCP Tooling
 
-This skill operates entirely through the Foundry MCP server (`foundry-mcp`). Tools use the router+action pattern: `mcp__plugin_foundry_foundry-mcp__<router>` with `action="<action>"`.
-
-| Router | Actions | Purpose |
-|--------|---------|---------|
-| `spec` | `apply-plan`, `validate`, `validate-fix`, `get`, `get-hierarchy`, `list` | Modifications and validation |
-| `review` | `parse-feedback` | Convert review markdown to modifications JSON |
-| `authoring` | `update-frontmatter`, `task-add`, `task-remove` | Add/remove nodes |
-| `task` | `update-metadata` | Update task metadata fields |
-| `verification` | `add` | Add verification results |
-| `journal` | `add` | Document modifications |
+| Router | Key Actions |
+|--------|-------------|
+| `spec` | `apply-plan`, `validate`, `validate-fix` |
+| `review` | `parse-feedback` |
+| `authoring` | `task-add`, `task-remove` |
+| `task` | `update-metadata` |
 
 **Critical Rules:**
 - **ALWAYS** use MCP tools for spec operations
@@ -55,86 +51,31 @@ sdd-plan --> sdd-plan-review --> sdd-modify (this skill) --> sdd-next --> Implem
 
 Use after `sdd-plan-review` or `sdd-fidelity-review` to apply suggested changes.
 
-## sdd-modify vs sdd-update
+**Key Distinction:** sdd-modify = structural changes; sdd-update = status updates.
 
-| Operation | sdd-modify | sdd-update |
-|-----------|:----------:|:----------:|
-| **Update task descriptions** | Yes | No |
-| **Add/remove tasks** | Yes | No |
-| **Add verification steps** | Yes | No |
-| **Apply review feedback** | Yes | No |
-| Mark task completed | No | Yes |
-| Update task status | No | Yes |
-| Add journal entries | Both | Yes |
-| Move spec between folders | No | Yes |
-
-**Key Distinction:**
-- **sdd-modify** = Structural changes (tasks, descriptions, verifications)
-- **sdd-update** = Status updates (progress, journals, lifecycle)
+> For detailed comparison, see `reference.md#comparison`
 
 ## Core Workflow
 
-> For detailed workflow steps with examples, see `reference.md#workflow-details`
+1. **Understand** → Identify spec ID, source (review report or modifications JSON), mode
+2. **Parse** → Convert review feedback to modifications JSON (if needed)
+3. **Preview** → Always dry-run first
+4. **Apply** → Apply modifications (auto-backup, validation, rollback on failure)
+5. **Validate** → Confirm spec is valid
 
-### Step 1: Understand the Request
-
-Parse the input to identify:
-- **Spec ID**: Which specification to modify
-- **Source**: Review report path OR modifications JSON path
-- **Mode**: Apply vs dry-run preview
-
-### Step 2: Parse Review Feedback (if review report provided)
-
-```bash
-mcp__plugin_foundry_foundry-mcp__review action="parse-feedback" spec_id="{spec-id}" review_path="{path}"
-```
-
-This converts markdown review findings into structured modification JSON.
-
-### Step 3: Preview Modifications (always do this first)
+**Essential Command:**
 
 ```bash
 mcp__plugin_foundry_foundry-mcp__spec action="apply-plan" spec_id="{spec-id}" modifications_file="{path}" dry_run=true
 ```
 
-Review the preview output: tasks to update, verification steps to add, metadata changes, impact summary.
-
-### Step 4: Apply Modifications
-
-After confirming preview looks correct:
-
-```bash
-mcp__plugin_foundry_foundry-mcp__spec action="apply-plan" spec_id="{spec-id}" modifications_file="{path}"
-```
-
-The tool automatically creates backup, applies modifications, validates result, and rolls back if validation fails.
-
-### Step 5: Validate and Report
-
-Confirm spec is valid:
-
-```bash
-mcp__plugin_foundry_foundry-mcp__spec action="validate" spec_id="{spec-id}"
-```
-
-If validation issues found, apply auto-fixes:
-
-```bash
-mcp__plugin_foundry_foundry-mcp__spec action="validate-fix" spec_id="{spec-id}" auto_fix=true
-```
+> For detailed workflow steps with examples, see `reference.md#workflow-details`
 
 ## Supported Operations
 
-| Operation | Purpose |
-|-----------|---------|
-| `update_task` | Modify task title, description, file_path, category |
-| `add_verification` | Add verification step to task |
-| `update_metadata` | Update task metadata (hours, priority, etc.) |
-| `batch_update` | Apply same change to multiple nodes |
-| `add_node` | Add new task/subtask/verify node |
-| `remove_node` | Remove node (optionally cascading) |
+Operations: `update_task`, `add_verification`, `update_metadata`, `batch_update`, `add_node`, `remove_node`
 
-> For detailed operation formats and examples, see `reference.md#operation-formats`
+> For operation formats and examples, see `reference.md#supported-operations`
 
 ## Safety Features
 
@@ -148,28 +89,9 @@ mcp__plugin_foundry_foundry-mcp__spec action="validate-fix" spec_id="{spec-id}" 
 
 ## Output Format
 
-Return a structured summary:
+Return a structured markdown summary including: spec ID, source, changes applied, backup location, validation status, and next steps.
 
-```markdown
-## Modification Summary
-
-**Spec:** {spec-id}
-**Source:** {review report or modifications file}
-
-### Changes Applied
-- Updated X task descriptions
-- Added Y verification steps
-- Modified Z metadata fields
-
-### Backup Location
-`specs/.backups/{spec-id}-{timestamp}.json`
-
-### Validation Status
-{PASSED | FAILED with details}
-
-### Next Steps
-- {Contextual recommendations}
-```
+> For full template, see `reference.md#output-format`
 
 ## Detailed Reference
 

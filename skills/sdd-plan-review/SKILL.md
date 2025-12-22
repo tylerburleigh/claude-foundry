@@ -63,119 +63,33 @@ This skill relies entirely on the Foundry MCP server (`foundry-mcp`). Tools use 
 
 > For detailed dimension descriptions, see `reference.md#review-dimensions`
 
-## Essential Commands
+## Essential Command
 
-**Run a review:**
 ```bash
 mcp__plugin_foundry_foundry-mcp__review action="spec-review" spec_id="{spec-id}" review_type="{type}"
 ```
 
-**Check available tools:**
-```bash
-mcp__plugin_foundry_foundry-mcp__review action="list-tools"
-```
-
-**Check provider status:**
-```bash
-mcp__plugin_foundry_foundry-mcp__provider action="list"
-```
+Use `action="list-tools"` to check available toolchains before running.
 
 ## Core Workflow
 
-### Step 1: Verify Available Tools
-
-```bash
-mcp__plugin_foundry_foundry-mcp__review action="list-tools"
+```
+1. Tool Check     → Verify available review toolchains (min 1, recommended 2+)
+2. Type Select    → Choose review type based on spec risk/complexity
+3. Execute        → Run spec-review with selected type
+4. Interpret      → Organize findings by priority (CRITICAL → LOW)
+5. Report         → Present summary, provide full report paths
+6. Handoff        → Ask user before proceeding to sdd-modify
 ```
 
-Check which AI review toolchains are installed:
-- Need at least 1 tool for basic review
-- 2+ tools recommended for multi-model feedback
-- All 3 tools ideal for comprehensive analysis
+> For detailed workflow steps, see `reference.md#core-workflow-detailed`
 
-### Step 2: Select Review Type
+## Output
 
-Use this decision matrix:
+- Reports written to `specs/.plan-reviews/{spec-id}-review-{type}.md`
+- Full results go to files; conversation receives summary only
 
-| Condition | Review Type |
-|-----------|-------------|
-| Task count ≤ 10 AND no auth/payment/PII tasks | `quick` |
-| Task count > 10 OR has architectural decisions | `full` |
-| Contains auth, payment, encryption, or PII handling | `security` |
-| Phase has deadline pressure OR external dependencies | `feasibility` |
-
-**Priority when multiple conditions match:**
-1. `security` (always takes precedence for sensitive data)
-2. `full` (for complex specs)
-3. `feasibility` (for time-constrained work)
-4. `quick` (default fallback)
-
-### Step 3: Execute Review
-
-```bash
-mcp__plugin_foundry_foundry-mcp__review action="spec-review" spec_id="{spec-id}" review_type="{type}"
-```
-
-The tool automatically:
-1. Initiates each model review in parallel
-2. Collects responses as they complete (60-120s per tool)
-3. Handles failures gracefully
-4. Parses and synthesizes responses
-
-### Step 4: Interpret Results
-
-**Priority Levels:**
-- **CRITICAL**: Security vulnerabilities, blockers → Address immediately
-- **HIGH**: Design flaws, missing info → Address before implementation
-- **MEDIUM**: Improvements, unclear requirements → Consider addressing
-- **LOW**: Nice-to-have enhancements → Note for future
-
-> For consensus interpretation details, see `reference.md#interpreting-consensus`
-
-### Step 5: Synthesize & Report
-
-1. Organize feedback by category and priority
-2. Note reviewer consensus and diverse perspectives
-3. Identify type of downstream work needed
-4. Return report path for full context
-
-### Step 6: Handoff
-
-After completing the review:
-
-1. Present summary to user with finding counts by priority level
-2. Provide paths to full reports (markdown + JSON)
-3. Ask: "Would you like me to apply any of these recommendations using sdd-modify?"
-4. Do NOT automatically proceed to sdd-modify without user approval
-
-## Output Format
-
-Reports are written to `specs/.plan-reviews/{spec-id}-review-{type}.md`:
-
-```markdown
-## Feedback Summary
-
-### Risk Flags (CRITICAL)
-1. Missing authentication on admin endpoints
-   Priority: CRITICAL | Flagged by: gemini, codex
-   Impact: Unauthorized access to sensitive operations
-   Recommendation: Add JWT validation middleware
-```
-
-> For complete output template, see `reference.md#output-format`
-
-## Output Isolation
-
-**Why Isolation Matters:**
-Review output can be extensive (hundreds of lines). Writing directly to the conversation wastes tokens.
-
-**Isolation Behavior:**
-1. Full results go to files, not conversation
-2. Conversation receives summary only (counts + paths)
-3. Callers access full data via file paths
-
-**Output Locations:**
-- Markdown report: `specs/.plan-reviews/{plan-name}-{review-type}.md`
+> For output format and isolation details, see `reference.md#output-format`
 
 ## Example Invocation
 

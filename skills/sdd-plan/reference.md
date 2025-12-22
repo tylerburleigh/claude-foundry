@@ -371,6 +371,16 @@ mcp__plugin_foundry_foundry-mcp__authoring action="spec-create" name="feature-na
 
 The specification uses a hierarchical task structure for organization.
 
+### Size Guidelines
+
+| Complexity | Phases | Tasks | Verification Coverage |
+|------------|--------|-------|----------------------|
+| Short (<5 files) | 1-2 | 3-8 | 20% minimum |
+| Medium (5-15 files) | 2-4 | 10-25 | 30-40% |
+| Large (>15 files) | 4-6 | 25-50 | 40-50% |
+
+**Splitting recommendation:** If >6 phases or >50 tasks, split into multiple specs.
+
 ### Hierarchy Levels
 
 ```
@@ -469,23 +479,9 @@ Spec
 
 Strategies for understanding existing code before planning.
 
-### MCP Code Router
+### LSP Analysis (Preferred)
 
-```bash
-# Find a class definition
-mcp__plugin_foundry_foundry-mcp__code action="find-class" name="AuthService" scope="src/"
-
-# Find a function
-mcp__plugin_foundry_foundry-mcp__code action="find-function" name="validateToken" scope="src/"
-
-# Trace call hierarchy
-mcp__plugin_foundry_foundry-mcp__code action="trace-calls" function="login" scope="src/" depth=3
-
-# Analyze impact of changes
-mcp__plugin_foundry_foundry-mcp__code action="impact-analysis" target="AuthService" scope="src/"
-```
-
-### LSP Analysis (When Available)
+Use Claude Code's built-in LSP tools for precise semantic analysis:
 
 ```python
 # Find all references to a symbol
@@ -499,6 +495,23 @@ definition = goToDefinition(file="src/api/routes.py", symbol="authenticate", lin
 
 # Find implementations of interface
 implementations = goToImplementation(file="src/auth/base.py", symbol="AuthProvider", line=8, character=6)
+
+# Call hierarchy
+incoming = incomingCalls(file="src/auth/service.py", symbol="authenticate", line=42, character=10)
+outgoing = outgoingCalls(file="src/auth/service.py", symbol="authenticate", line=42, character=10)
+```
+
+### Fallback: Explore Agents and Grep
+
+When LSP is unavailable, use:
+
+```bash
+# Find class/function definitions
+Grep pattern="class AuthService" type="py"
+Grep pattern="def validateToken" type="py"
+
+# Use Explore agent for broader searches
+Use the Explore agent (medium thoroughness) to find all usages of AuthService
 ```
 
 ### Analysis Decision Tree
@@ -510,18 +523,18 @@ Need to understand code?
     |       |
     |       +-- Yes → LSP tools (findReferences, documentSymbol)
     |       |
-    |       +-- No → Explore agent or code router
+    |       +-- No → Explore agent or Grep
     |
     +-- Need call hierarchy?
     |       |
     |       +-- LSP available → incomingCalls/outgoingCalls
     |       |
-    |       +-- No LSP → code action="trace-calls"
+    |       +-- No LSP → Explore agent (very thorough)
     |
     +-- Need impact analysis?
             |
-            +-- code action="impact-analysis"
-            +-- Or: findReferences + manual analysis
+            +-- findReferences → count affected files
+            +-- Or: Grep + manual analysis
 ```
 
 ### Combining Approaches
@@ -529,9 +542,8 @@ Need to understand code?
 ```
 1. Explore agent (quick) → Find relevant files
 2. documentSymbol → Understand file structure
-3. findReferences → Map dependencies
-4. code action="impact-analysis" → Assess change scope
-5. Read critical files → Deep understanding
+3. findReferences → Map dependencies and assess impact
+4. Read critical files → Deep understanding
 ```
 
 ---
@@ -582,9 +594,8 @@ Need to understand code?
 **Symptoms:** LSP tools return errors
 
 **Fallbacks:**
-1. Use `code action="find-class"` or `code action="find-function"`
-2. Use Explore agent with specific search terms
-3. Use Grep for symbol search: `Grep pattern="class AuthService"`
+1. Use Explore agent with specific search terms
+2. Use Grep for symbol search: `Grep pattern="class AuthService"`
 
 ---
 
@@ -612,17 +623,15 @@ mcp__plugin_foundry_foundry-mcp__spec action="validate-fix" spec_id="{spec-id}" 
 ### Analysis Commands
 
 ```bash
-# Find class
-mcp__plugin_foundry_foundry-mcp__code action="find-class" name="ClassName" scope="src/"
+# LSP tools (preferred)
+documentSymbol(file="src/auth/service.py")
+findReferences(file="src/auth/service.py", symbol="AuthService", line=15, character=6)
+goToDefinition(file="src/api/routes.py", symbol="authenticate", line=42, character=10)
+incomingCalls(file="src/auth/service.py", symbol="authenticate", line=42, character=10)
 
-# Find function
-mcp__plugin_foundry_foundry-mcp__code action="find-function" name="functionName" scope="src/"
-
-# Trace calls
-mcp__plugin_foundry_foundry-mcp__code action="trace-calls" function="functionName" scope="src/"
-
-# Impact analysis
-mcp__plugin_foundry_foundry-mcp__code action="impact-analysis" target="SymbolName" scope="src/"
+# Fallback: Grep
+Grep pattern="class ClassName" type="py"
+Grep pattern="def functionName" type="py"
 ```
 
 ### File Locations

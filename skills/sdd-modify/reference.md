@@ -4,6 +4,8 @@ Detailed workflows, examples, and edge cases for the sdd-modify skill.
 
 ## Table of Contents
 
+- [Comparison: sdd-modify vs sdd-update](#comparison)
+- [Supported Operations](#supported-operations)
 - [Workflow Details](#workflow-details)
   - [Parse Review Feedback](#workflow-1-parse-review-feedback)
   - [Preview Modifications](#workflow-2-preview-modifications)
@@ -16,7 +18,44 @@ Detailed workflows, examples, and edge cases for the sdd-modify skill.
 - [Constraints](#constraints)
 - [Troubleshooting](#troubleshooting)
 - [Best Practices](#best-practices)
+- [Output Format](#output-format)
 - [Command Reference](#command-reference)
+
+---
+
+## Comparison
+
+**sdd-modify vs sdd-update** - Choose the right skill:
+
+| Operation | sdd-modify | sdd-update |
+|-----------|:----------:|:----------:|
+| **Update task descriptions** | Yes | No |
+| **Add/remove tasks** | Yes | No |
+| **Add verification steps** | Yes | No |
+| **Apply review feedback** | Yes | No |
+| Mark task completed | No | Yes |
+| Update task status | No | Yes |
+| Add journal entries | Both | Yes |
+| Move spec between folders | No | Yes |
+
+**Key Distinction:**
+- **sdd-modify** = Structural changes (tasks, descriptions, verifications)
+- **sdd-update** = Status updates (progress, journals, lifecycle)
+
+---
+
+## Supported Operations
+
+| Operation | Purpose |
+|-----------|---------|
+| `update_task` | Modify task title, description, file_path, category |
+| `add_verification` | Add verification step to task |
+| `update_metadata` | Update task metadata (hours, priority, etc.) |
+| `batch_update` | Apply same change to multiple nodes |
+| `add_node` | Add new task/subtask/verify node |
+| `remove_node` | Remove node (optionally cascading) |
+
+See [Operation Formats](#operation-formats) for detailed JSON structures.
 
 ---
 
@@ -513,6 +552,33 @@ mcp__plugin_foundry_foundry-mcp__spec action="apply-plan" spec_id="my-spec" modi
 - **Manually edit** spec JSON files
 - **Make multiple separate** modifications when batch_update would work
 - **Ignore** validation warnings
+
+---
+
+## Output Format
+
+Return a structured summary after modifications:
+
+```markdown
+## Modification Summary
+
+**Spec:** {spec-id}
+**Source:** {review report or modifications file}
+
+### Changes Applied
+- Updated X task descriptions
+- Added Y verification steps
+- Modified Z metadata fields
+
+### Backup Location
+`specs/.backups/{spec-id}-{timestamp}.json`
+
+### Validation Status
+{PASSED | FAILED with details}
+
+### Next Steps
+- {Contextual recommendations}
+```
 
 ---
 

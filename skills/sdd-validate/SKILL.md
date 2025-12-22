@@ -246,40 +246,13 @@ Pass 4: Validate → 0 errors ✅
 
 ## Troubleshooting
 
-> For advanced troubleshooting and edge cases, see `reference.md#advanced-troubleshooting`
+For detailed troubleshooting, see **[reference.md#troubleshooting](./reference.md#troubleshooting)**.
 
-### Auto-fix Succeeded But Errors Remain
-
-This is normal. `mcp__plugin_foundry_foundry-mcp__spec action="fix"` reports success when it applies fixes successfully, not when all issues are resolved. Fixing one problem often reveals another (e.g., fixing parent-child mismatches may reveal orphaned nodes).
-
-**Solution:** Re-validate to see remaining issues, then run fix again or address manually.
-
-### Error Count Plateau
-
-When error count stays the same for 2+ passes:
-
-1. Run `mcp__plugin_foundry_foundry-mcp__spec action="validate" spec_id="{spec-id}"` to see detailed issue information
-2. Identify issues marked "requires manual intervention"
-3. Manually fix issues that need context or human judgment
-4. Re-validate after manual fixes
-
-**Understanding Spec Requirements:**
-- Run `mcp__plugin_foundry_foundry-mcp__spec action="schema-export"` to see the complete spec structure, required fields, and valid values
-- The schema shows all field types, enum values (like `status`, `type`, `verification_type`), and optional vs required fields
-- Use this when validation errors reference unknown fields or invalid values
-
-**Common manual-only issues:**
-- Circular dependencies (remove one dependency edge)
-- Orphaned dependencies (fix task ID typos)
-- Logical inconsistencies (requires understanding spec intent)
-- Custom metadata problems
-
-### How Many Passes Are Normal?
-
-- **2-3 passes**: Typical for most specs
-- **5+ passes**: May indicate circular dependencies or structural issues
-
-**Rule:** If error count decreases each pass, keep going. If it plateaus, switch to manual.
+**Quick tips:**
+- Re-validate after every fix pass
+- Plateau (same error count 2+ passes) = switch to manual fixes
+- 2-3 passes is normal; 5+ suggests circular dependencies
+- Use `mcp__plugin_foundry_foundry-mcp__spec action="schema-export"` to understand valid spec structure
 
 ## Advanced Usage
 

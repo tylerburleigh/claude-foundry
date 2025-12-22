@@ -5,13 +5,27 @@ description: Review implementation fidelity against specifications by comparing 
 
 # Implementation Fidelity Review Skill
 
+## Table of Contents
+
+- [Overview](#overview)
+- [Skill Family](#skill-family)
+- [When to Use](#when-to-use-this-skill)
+- [MCP Tooling](#mcp-tooling)
+- [Core Workflow](#core-workflow)
+- [LSP Operations Quick Reference](#lsp-operations-quick-reference)
+- [Essential Commands](#essential-commands)
+- [Review Types](#review-types)
+- [Assessment Categories](#fidelity-assessment-categories)
+- [Long-Running Operations](#long-running-operations)
+- [Example Invocation](#example-invocation)
+
 ## Overview
 
-The `sdd-fidelity-review` skill compares actual implementation against SDD specification requirements to ensure fidelity between plan and code. It identifies deviations, assesses their impact, and generates detailed compliance reports.
+The `sdd-fidelity-review` skill compares actual implementation against SDD specification requirements. It uses LSP for structural verification and MCP for AI-powered deviation analysis.
 
 ## Skill Family
 
-This skill is part of the **Spec-Driven Development** quality assurance family:
+Part of the **Spec-Driven Development** quality assurance family:
 
 ```
 sdd-plan → sdd-next → Implementation → sdd-update → sdd-fidelity-review (this skill) → run-tests
@@ -19,12 +33,11 @@ sdd-plan → sdd-next → Implementation → sdd-update → sdd-fidelity-review 
 
 ## When to Use This Skill
 
-Use this skill when you need to:
-- Verify implementation matches specification requirements
-- Identify deviations between plan and actual code
-- Assess task or phase completion accuracy
-- Review pull requests for spec compliance
-- Audit completed work for fidelity
+**Use when:**
+- Verifying implementation matches specification requirements
+- Identifying deviations between plan and actual code
+- Reviewing pull requests for spec compliance
+- Auditing completed phases or tasks
 
 **Do NOT use for:**
 - Creating specifications (use `sdd-plan`)
@@ -34,115 +47,89 @@ Use this skill when you need to:
 
 ## MCP Tooling
 
-This skill relies entirely on the Foundry MCP server (`foundry-mcp`). Tools use the router+action pattern: `mcp__plugin_foundry_foundry-mcp__<router>` with `action="<action>"`.
+This skill uses the Foundry MCP server with router+action pattern: `mcp__plugin_foundry_foundry-mcp__<router>` with `action="<action>"`.
 
 **Critical Rules:**
 - **ALWAYS** use MCP tools for spec operations
 - **NEVER** use `Read()` on spec JSON files
 - **NEVER** use shell commands (`cat`, `grep`, `jq`) on specs
-- **NEVER** create temp scripts or bash loops for task iteration
 
-## Review Types
+## Core Workflow
 
-| Type | Scope | When to Use |
-|------|-------|-------------|
-| **Phase Review** | 3-10 tasks | Phase completion checkpoints |
-| **Task Review** | 1 file | Critical task validation, high-risk implementations |
+The fidelity review workflow integrates LSP verification with MCP AI analysis:
 
-> For detailed workflow steps per review type, see `reference.md#review-types`
+### Step 1: Gather Context (Optional)
 
-### Subagent Guidance (Context Gathering)
-
-For complex reviews or unfamiliar code, use Claude Code's built-in subagents to gather context before and after running the MCP fidelity review:
-
-| Scenario | Subagent | Thoroughness |
-|----------|----------|--------------|
-| Pre-review: understand implementation scope | Explore | medium |
-| Pre-review: find all files in a phase | Explore | quick |
-| Post-review: investigate deviation causes | Explore | very thorough |
-| Post-review: complex multi-file deviations | general-purpose | N/A |
-
-**Example: Pre-review context (phase review)**
+For unfamiliar code, use Explore subagent to find implementation files:
 ```
-Use the Explore agent (medium thoroughness) to find:
-- All implementation files referenced in phase-1 tasks
-- Related test files for the phase
-- Configuration files that may affect behavior
+Explore agent (medium thoroughness): Find all files in phase-1, related tests, config files
 ```
 
-**Example: Post-review investigation**
-```
-Use the Explore agent (very thorough) to investigate:
-- Why task-2-3 has a major deviation
-- What other files depend on the deviated implementation
-- Whether the deviation is documented in comments or commit messages
-```
+### Step 2: LSP Structural Pre-Check
 
-> For detailed patterns, see `reference.md#subagent-investigation-patterns`
+Before the AI review, verify structural requirements with LSP:
 
-## Pre-Review Structural Check (LSP-Enhanced)
+```python
+# Get symbols in implementation file
+symbols = LSP(operation="documentSymbol", filePath="src/auth/service.py", line=1, character=1)
 
-Before running the full MCP fidelity review, use LSP to quickly verify structural requirements. This catches obvious issues before the more expensive AI-powered review.
-
-### Symbol Existence Check
-
-For each implementation task in the phase, verify expected symbols exist:
-
-```
-# Get all symbols in implementation file
-symbols = documentSymbol(file="src/auth/service.py")
-
-# Compare against spec requirements
-# E.g., spec expects: class AuthService with methods login(), logout(), refresh_token()
-expected = ["AuthService", "login", "logout", "refresh_token"]
-
-# Identify gaps
-missing = expected - symbols.names
-extra = symbols.names - expected
+# Compare against spec: expects AuthService with login(), logout(), refresh_token()
+# Identify missing symbols before expensive AI review
 ```
 
-### Quick Structural Report
+**Why:** Catches missing implementations in seconds before 5-minute AI review.
 
-If LSP succeeds, generate a quick pre-check:
+### Step 3: MCP Fidelity Review
 
-```markdown
-## Structural Pre-Check: phase-1
+Run the AI-powered fidelity analysis:
 
-| Task | File | Expected Symbols | Status |
-|------|------|------------------|--------|
-| task-1-1 | src/auth/service.py | AuthService, login, logout | All present |
-| task-1-2 | src/auth/validator.py | TokenValidator, validate | MISSING: validate |
-| task-1-3 | src/auth/session.py | SessionManager | Present + 1 extra |
+```bash
+# Phase review
+mcp__plugin_foundry_foundry-mcp__review action="fidelity" spec_id="{spec-id}" phase_id="{phase-id}"
 
-**Issues Found:** 1 missing symbol, 1 unexpected symbol
-**Recommendation:** Review task-1-2 before full fidelity review
+# Task review
+mcp__plugin_foundry_foundry-mcp__review action="fidelity" spec_id="{spec-id}" task_id="{task-id}"
 ```
 
-### Benefits
+The MCP tool handles spec loading, implementation analysis, AI consultation, and report generation.
 
-- Catches missing implementations before expensive AI review
-- Flags unexpected symbols for review
-- Provides early warning of structural deviations
-- Fast feedback (seconds vs minutes for full review)
+### Step 4: LSP-Assisted Investigation
 
-### Fallback
+For deviations found, use LSP to investigate:
 
-If LSP unavailable for the file type:
-- Skip structural pre-check
-- Proceed directly to MCP fidelity review (existing behavior)
+```python
+# Trace deviation origin
+definition = LSP(operation="goToDefinition", filePath="src/auth/service.py", line=45, character=10)
 
+# Find what depends on deviated code
+calls = LSP(operation="incomingCalls", filePath="src/auth/service.py", line=45, character=10)
+
+# Assess blast radius
+refs = LSP(operation="findReferences", filePath="src/auth/service.py", line=45, character=10)
 ```
-# LSP check
-symbols = documentSymbol(file=task.file_path)
 
-if symbols returned:
-    Run structural pre-check
-    Then run full fidelity review
-else:
-    Skip to full fidelity review
-```
+**Why:** Understand deviation impact before recommending fixes.
+
+> For detailed LSP patterns and examples, see `reference.md#lsp-integration-patterns`
+
+## LSP Operations Quick Reference
+
+| Operation | When to Use | Purpose |
+|-----------|-------------|---------|
+| `documentSymbol` | Pre-check | List all symbols in a file for structural verification |
+| `workspaceSymbol` | Pre-check | Find symbols across codebase |
+| `hover` | During review | Get type info and documentation |
+| `goToDefinition` | Investigation | Trace where symbols are defined |
+| `findReferences` | Investigation | Find all usages of a symbol |
+| `incomingCalls` | Investigation | Find what calls a function |
+| `outgoingCalls` | Investigation | Find what a function calls |
 
 ## Essential Commands
+
+**Query tasks before review:**
+```bash
+mcp__plugin_foundry_foundry-mcp__task action="query" spec_id="{spec-id}" parent="{phase-id}"
+```
 
 **Phase review:**
 ```bash
@@ -154,12 +141,16 @@ mcp__plugin_foundry_foundry-mcp__review action="fidelity" spec_id="{spec-id}" ph
 mcp__plugin_foundry_foundry-mcp__review action="fidelity" spec_id="{spec-id}" task_id="{task-id}"
 ```
 
-**Query tasks before review:**
-```bash
-mcp__plugin_foundry_foundry-mcp__task action="query" spec_id="{spec-id}" parent="{phase-id}"
-```
-
 > For query patterns and anti-patterns, see `reference.md#querying-spec-and-task-data-efficiently`
+
+## Review Types
+
+| Type | Scope | When to Use |
+|------|-------|-------------|
+| **Phase Review** | 3-10 tasks | Phase completion checkpoints |
+| **Task Review** | 1 file | Critical task validation, high-risk implementations |
+
+> For detailed workflow per review type, see `reference.md#review-types`
 
 ## Fidelity Assessment Categories
 
@@ -169,57 +160,6 @@ mcp__plugin_foundry_foundry-mcp__task action="query" spec_id="{spec-id}" parent=
 | **Minor Deviation** | Small differences with no functional impact |
 | **Major Deviation** | Significant differences affecting functionality |
 | **Missing** | Specified features not implemented |
-
-## Report Structure
-
-Generate reports in this format:
-
-```markdown
-# Implementation Fidelity Review
-
-**Spec:** {spec-title} ({spec-id})
-**Scope:** {review-scope}
-**Date:** {review-date}
-
-## Summary
-
-- **Tasks Reviewed:** {count}
-- **Files Analyzed:** {count}
-- **Overall Fidelity:** {percentage}%
-- **Deviations Found:** {count}
-
-## Fidelity Score
-
-- Exact Matches: {count} tasks
-- Minor Deviations: {count} tasks
-- Major Deviations: {count} tasks
-- Missing Functionality: {count} items
-
-## Detailed Findings
-
-### Task: {task-id} - {task-title}
-
-**Assessment:** {exact-match|minor-deviation|major-deviation}
-
-**Deviations:**
-1. {deviation-description}
-   - **Impact:** {low|medium|high}
-   - **Recommendation:** {action}
-
-## Recommendations
-
-1. {recommendation-1}
-2. {recommendation-2}
-```
-
-> For complete template with all sections, see `reference.md#report-structure`
-
-## When to Invoke
-
-1. **Phase completion** (Recommended) - Before moving to next phase
-2. **Task completion** - For high-risk tasks (auth, data, APIs)
-3. **Spec completion** - Pre-PR audit
-4. **PR review** - Compliance checks
 
 ## Long-Running Operations
 
@@ -235,12 +175,4 @@ Skill(foundry:sdd-fidelity-review) "Review phase phase-1 in spec user-auth-001"
 
 ## Detailed Reference
 
-For comprehensive documentation including:
-- Complete workflow steps with examples
-- Report structure template
-- Integration with SDD workflow
-- Query patterns and anti-patterns
-- Error handling scenarios
-- Best practices (DO/DON'T lists)
-
-See **[reference.md](./reference.md)**
+For comprehensive documentation including complete workflows, report templates, error handling, and best practices, see **[reference.md](./reference.md)**
