@@ -117,27 +117,13 @@ mcp__plugin_foundry_foundry-mcp__test action="run" target="tests/test_module.py:
 
 Use **Explore subagents** (preferred) for code context, or `Glob`, `Grep`, and `Read` for targeted lookups.
 
-### 3.1 Subagent Guidance (Context Exploration)
+**Subagent selection:**
+- **Explore (quick)** - Find related test files
+- **Explore (medium)** - Understand module dependencies
+- **Explore (very thorough)** - Multi-file state/fixture investigation
+- **general-purpose** - Complex debugging across packages
 
-For complex failures or unfamiliar code, use Claude Code's built-in subagents:
-
-| Scenario | Subagent | Thoroughness |
-|----------|----------|--------------|
-| Find related test files | Explore | quick |
-| Understand module dependencies | Explore | medium |
-| Multi-file state/fixture investigation | Explore | very thorough |
-| Complex debugging across packages | general-purpose | N/A |
-
-**Example: Investigating shared state (flaky tests)**
-```
-Use the Explore agent (very thorough) to find:
-- All fixtures in conftest.py files
-- Global state or module-level variables
-- Files importing the failing module
-- Test files that modify shared resources
-```
-
-> For detailed investigation patterns with subagents, see `references/subagent-patterns.md`
+> For detailed subagent patterns (including flaky test investigation), see `references/subagent-patterns.md`
 
 ## Phase 4: Consult External Tools
 

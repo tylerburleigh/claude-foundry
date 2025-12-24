@@ -7,6 +7,9 @@ High-level markdown plan created before JSON specification.
 ```markdown
 # {Feature Name} Implementation Plan
 
+## Mission
+{Single sentence – this becomes metadata.mission in the JSON spec}
+
 ## Objective
 {One paragraph describing the core goal}
 
@@ -60,7 +63,7 @@ mcp__plugin_foundry_foundry-mcp__plan action="create" name="Feature Name" templa
 # Plan created at: specs/.plans/feature-name.md
 ```
 
-After creation, read the template and fill in all placeholders with actual content.
+After creation, read the template and fill in all placeholders with actual content. The Mission sentence you write here is copied verbatim into the JSON spec's `metadata.mission` field.
 
 ## Phase Naming Conventions
 

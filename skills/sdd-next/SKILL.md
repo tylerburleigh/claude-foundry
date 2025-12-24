@@ -74,6 +74,7 @@ Direct JSON access (`Read()`, `cat`, `jq`, `grep`, etc.) is prohibited.
 - Plan approval (before implementation)
 - Blocker handling (alternative tasks or resolve)
 - Completion verification (for verify tasks)
+- **Continuation after task completion** (when context < 85% and more tasks remain)
 
 **Anti-Pattern:** Never use text-based numbered lists. Always use `AskUserQuestion` for structured choices.
 
@@ -171,6 +172,21 @@ Before implementing, use LSP tools to verify dependencies and preview impact:
 3. **Include in plan**: Surface LSP findings (usage count, affected files, test coverage) in plan approval
 4. **Fallback**: If LSP unavailable for file type, use Explore agent to find imports and usages
 
+### Verification Scoping
+
+Before implementing, check `context.parent_task.children` for sibling verify tasks to determine appropriate verification scope:
+
+| Phase Has Verify Task? | Implementation Task Should |
+|------------------------|---------------------------|
+| Yes (e.g., "Run tests") | Defer formal testing to verify task. Only do basic checks: imports work, no syntax errors, code compiles |
+| No | Run tests as part of implementation (include results in journal) |
+
+**Detection**: Look for siblings with `type: "verify"` in the `task action="prepare"` response's `context.parent_task.children` array.
+
+**Rationale**: When the spec author created a verify task, they intended testing to be a separate tracked step. Respect this structure by deferring formal test execution to the verify task.
+
+**Include in plan**: State verification scope in the execution plan presented for approval (e.g., "Basic verification only - full tests handled by verify-1-1").
+
 ### Implementation Handoff
 
 **Before coding:**
@@ -199,8 +215,16 @@ mcp__plugin_foundry_foundry-mcp__task action="prepare" spec_id={spec-id}
 ```
 
 - Summarize next task's scope and blockers
-- Check with user before proceeding
-- If no pending work or spec complete, surface that clearly
+- If no pending work or spec complete, surface that clearly and exit
+
+**MANDATORY: Continuation Gate**
+
+After surfacing the next task, you MUST prompt the user with `AskUserQuestion`:
+- **When context < 85%**: Ask "Continue to next task?" with options: "Yes, continue" / "No, exit"
+- **When context >= 85%**: Exit with guidance to `/clear` then `/next-cmd`
+- **When spec is complete**: Report completion status and exit (no prompt needed)
+
+This gate ensures the user controls the workflow pace and prevents runaway execution.
 
 > For post-implementation checklist, see `references/checklist.md`
 
@@ -210,7 +234,8 @@ mcp__plugin_foundry_foundry-mcp__task action="prepare" spec_id={spec-id}
 
 ### Never Mark Complete If:
 
-- Tests are failing
+- Basic checks fail (imports, syntax, compiles)
+- Tests are failing (only applies if no sibling verify task - see `Verification Scoping`)
 - Implementation is partial
 - You encountered unresolved errors
 - You couldn't find necessary files or dependencies
@@ -233,12 +258,18 @@ mcp__plugin_foundry_foundry-mcp__task action="unblock" spec_id={spec-id} task_id
 
 **MUST provide journal content** describing:
 - What was accomplished
-- Tests run and results
-- Verification performed
+- Verification performed (scope depends on sibling verify tasks - see `Verification Scoping`):
+  - **If phase has verify tasks**: "Basic checks passed (imports, syntax). Full testing deferred to {verify-task-id}"
+  - **If no verify tasks**: "Tests run and results: {summary}"
 - Any deviations from plan
 - Files created/modified
 
-**Example:**
+**Example (with sibling verify task - deferred testing):**
+```bash
+Skill(foundry:sdd-update) "Complete task task-1-2 in spec my-spec-001. Completion note: Implemented phase-add-bulk handler. Basic verification: imports work, no syntax errors. Full test run deferred to verify-1-1. Created src/tools/authoring.py handler (200 lines)."
+```
+
+**Example (without sibling verify task - full testing):**
 ```bash
 Skill(foundry:sdd-update) "Complete task task-2-3 in spec my-spec-001. Completion note: Implemented JWT auth middleware with PKCE flow. All 12 unit tests passing. Manual verification: login flow works in dev environment. Created src/middleware/auth.ts (180 lines) and tests/middleware/auth.spec.ts (45 tests)."
 ```

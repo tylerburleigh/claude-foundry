@@ -7,8 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.10] - 2025-12-23
 
+### Changed
+
+- **Phase-first authoring workflow**: New recommended approach in `sdd-plan` skill
+  - Use `spec-create` → `phase-add-bulk` → `sdd-modify` → `spec-update-frontmatter`
+  - Updated Flow diagram to align with phase-first approach
+  - Added "Phase-First Authoring Workflow" section with step-by-step guide
+
 ### Removed
 
+- **Retire schema-export references**: Removed deprecated `schema-export` workflow from `sdd-plan` skill
+  - Schema-export was non-portable (absolute paths) and required manual JSON editing
+  - Replaced by `phase-add-bulk` macro which creates phases with tasks atomically
+  - Updated MCP Tooling table to remove non-existent spec actions (`get`, `get-hierarchy`, `schema-export`)
 - **Remove foundry-ctl**: Removed mode toggling functionality (`/on-cmd`, `/off-cmd` commands) since foundry-mcp-ctl has been removed from foundry-mcp package
 - Simplified MCP server configuration to direct `python -m foundry_mcp.server` command
 - Removed `mcp_ctl` permission category and foundry-ctl references from documentation

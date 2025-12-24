@@ -13,6 +13,7 @@ The formal specification format used by all SDD tools.
   "created": "2025-01-15T10:00:00Z",
   "updated": "2025-01-15T10:00:00Z",
   "metadata": {
+    "mission": "Ensure every school admin sees accurate trust signals before launch",
     "status": "pending",
     "priority": "high",
     "owner": "developer@example.com",
@@ -28,13 +29,17 @@ The formal specification format used by all SDD tools.
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
+| `mission` | string | Yes (skill) | Single-sentence mission describing the spec's purpose |
 | `status` | string | Yes | `pending`, `active`, `completed`, `archived` |
 | `priority` | string | No | `low`, `medium`, `high`, `critical` |
 | `owner` | string | No | Email or identifier of owner |
 | `tags` | array | No | Categorization tags |
 | `estimated_hours` | number | No | Total estimated hours |
 
+> Mission is treated as required by `Skill(foundry:sdd-plan)` even if schema validation marks it optional; always populate it before handing off the spec.
+ 
 ## Phase Structure
+
 
 ```json
 {
@@ -83,13 +88,6 @@ The formal specification format used by all SDD tools.
     ]
   }
 }
-```
-
-## Getting the Schema
-
-```bash
-# Export full JSON schema for reference
-mcp__plugin_foundry_foundry-mcp__spec action="schema-export"
 ```
 
 ## Creating a Spec

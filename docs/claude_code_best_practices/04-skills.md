@@ -430,6 +430,30 @@ references/guide.md
 |-------------|---------|
 | MUST | Use forward slashes in all file paths |
 
+### 6. Sub-Numbered Steps
+
+Complex sub-numbering (3a, 3b, 3.5) reduces scannability. If a step has multiple sub-steps, it likely belongs in a reference file.
+
+```markdown
+# Bad: Sub-numbered steps
+### Step 3: Create Plan
+### Step 3a: Use Templates
+### Step 3b: Use Bulk Macro
+### Step 3.5: AI Review
+### Step 4: Validate
+
+# Good: Flat steps with reference link
+### Step 3: Create Plan
+Options: templates, bulk macro, AI review
+> See `references/plan-authoring.md` for details
+### Step 4: Validate
+```
+
+| Requirement | Details |
+|-------------|---------|
+| SHOULD | Use flat step numbering (1, 2, 3, 4, 5) |
+| SHOULD | Move sub-step details to reference files |
+
 ---
 
 ## Scripts and Utilities
