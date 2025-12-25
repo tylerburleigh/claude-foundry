@@ -53,7 +53,7 @@ Claude Code requires explicit permissions for plugin tools. This phase automatic
 Execute the permission check script:
 
 ```bash
-WORKSPACE_DIR="$PWD" ${CLAUDE_PLUGIN_ROOT}/scripts/setup-permissions --diff
+bash -c 'cd "$0" && WORKSPACE_DIR="$1" ./scripts/setup-permissions --diff' "${CLAUDE_PLUGIN_ROOT}" "$PWD"
 ```
 
 Parse the JSON output to determine the permission status.
@@ -89,7 +89,7 @@ Use `AskUserQuestion`:
 
 **If "Yes":** Run the script with `--create`:
 ```bash
-WORKSPACE_DIR="$PWD" ${CLAUDE_PLUGIN_ROOT}/scripts/setup-permissions --create
+bash -c 'cd "$0" && WORKSPACE_DIR="$1" ./scripts/setup-permissions --create' "${CLAUDE_PLUGIN_ROOT}" "$PWD"
 ```
 
 Display: "Created `.claude/settings.local.json` with plugin permissions."
@@ -152,7 +152,7 @@ Use `AskUserQuestion`:
 
 **If "Add all missing":** Run the script with `--apply`:
 ```bash
-WORKSPACE_DIR="$PWD" ${CLAUDE_PLUGIN_ROOT}/scripts/setup-permissions --apply
+bash -c 'cd "$0" && WORKSPACE_DIR="$1" ./scripts/setup-permissions --apply' "${CLAUDE_PLUGIN_ROOT}" "$PWD"
 ```
 
 Display: "Permissions updated! Added {X} allow permissions and {Y} deny rules."
