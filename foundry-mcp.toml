@@ -4,6 +4,7 @@
 
 [workspace]
 specs_dir = "./specs"
+bikelane = "/bikelane"
 
 [logging]
 level = "INFO"

@@ -57,6 +57,7 @@ This skill interacts solely with the Foundry MCP server (`foundry-mcp`). Tools u
 | `journal` | `add`, `list` |
 | `lifecycle` | `activate`, `move`, `complete` |
 | `spec` | `find`, `list` |
+| `intake` | `add`, `list`, `dismiss` |
 
 **Critical Rules:**
 - The agent never invokes the CLI directly
@@ -222,6 +223,21 @@ This atomically:
 3. Creates a journal entry
 4. Auto-journals parent nodes (phases) when they complete
 
+### Bikelane (Autonomous Capture)
+
+**Proactively add to bikelane** when you encounter:
+- Ideas/improvements beyond current task scope
+- Bugs noticed but not immediately actionable
+- Documentation gaps or confusing behavior
+
+```bash
+mcp__plugin_foundry_foundry-mcp__intake action="add" title="[Type] description" source="sdd-implement"
+```
+
+**Do NOT prompt the user.** Silently capture and continue working.
+
+> For capture patterns and examples, see `references/bikelane.md`
+
 ### Surface Next Recommendation
 
 **Context Awareness:** The `context-monitor` hook automatically warns when context exceeds 85%. If you see `[CONTEXT X%]` warnings, follow the recommendation to `/clear` then `/next-cmd` after completing the current task.
@@ -328,6 +344,7 @@ For comprehensive documentation including:
 - Built-in subagent patterns → `references/subagent-patterns.md`
 - Post-implementation checklist → `references/checklist.md`
 - Verification task workflow → `references/verification.md`
+- Bikelane quick capture → `references/bikelane.md`
 
 **Task Lifecycle:**
 - Task status transitions → `references/task-lifecycle.md`
