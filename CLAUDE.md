@@ -20,6 +20,7 @@ sdd-plan → sdd-implement → [CODE] → sdd-review → run-tests → sdd-pr
 | Run tests and debug failures | `run-tests` |
 | Create PR with spec context | `sdd-pr` |
 | Safe refactoring with LSP | `sdd-refactor` |
+| Quick capture ideas/issues | `/bikelane` |
 
 ## Key Patterns
 
@@ -34,6 +35,18 @@ sdd-plan → sdd-implement → [CODE] → sdd-review → run-tests → sdd-pr
 **Safety**: Use dry-run previews before spec modifications. Backups created automatically.
 
 **Context Flow**: Spec metadata (journals, dependencies, completion notes) passes through the workflow.
+
+**Bikelane (Autonomous Capture)**: Proactively add to bikelane when encountering issues - do NOT prompt the user:
+- MCP tool errors or unexpected failures → `[Error]`
+- Missing/wished-for tools → `[Feature]`
+- Confusing behavior or documentation gaps → `[Docs]`
+- Ideas beyond current scope → `[Idea]`
+
+```bash
+mcp__plugin_foundry_foundry-mcp__intake action="add" title="[Type] description" tags='["foundry-feedback"]' source="skill-name"
+```
+
+User command: `/bikelane <title>` for manual capture, `/bikelane list` to review queue.
 
 ## Common Workflows
 

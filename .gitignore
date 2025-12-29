@@ -52,6 +52,7 @@ specs/.backups/
 specs/.human-readable/
 specs/.fidelity-reviews/
 specs/.*/
+!specs/.bikelane/
 
 # MCP config
 #.mcp.json
