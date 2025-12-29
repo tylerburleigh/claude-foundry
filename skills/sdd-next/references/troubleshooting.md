@@ -35,7 +35,7 @@ mcp__plugin_foundry_foundry-mcp__lifecycle action="activate" spec_id={spec-id}
 **Resolution:**
 1. Check dependency graph with `task action="info"`
 2. Identify circular reference
-3. Use `Skill(foundry:sdd-modify)` to fix spec
+3. Use `Skill(foundry:sdd-plan)` to fix spec (includes modify capabilities)
 
 ## Context Limit Warnings
 
@@ -67,8 +67,8 @@ mcp__plugin_foundry_foundry-mcp__task action="prepare" spec_id={spec-id}
 # Task status update
 mcp__plugin_foundry_foundry-mcp__task action="start" spec_id={spec-id} task_id={task-id}
 
-# Task completion (via sdd-update skill)
-Skill(foundry:sdd-update) "Complete task {task-id} in spec {spec-id}. Completion note: ..."
+# Task completion (atomic status + journal)
+mcp__plugin_foundry_foundry-mcp__task action="complete" spec_id={spec-id} task_id={task-id} completion_note="..."
 
 # Blocking
 mcp__plugin_foundry_foundry-mcp__task action="block" spec_id={spec-id} task_id={task-id} reason="..."

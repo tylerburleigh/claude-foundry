@@ -27,12 +27,12 @@ Every task completion MUST include a journal entry with:
 
 **With sibling verify task (deferred testing):**
 ```bash
-Skill(foundry:sdd-update) "Complete task task-1-2 in spec my-spec-001. Completion note: Implemented phase-add-bulk handler. Basic verification: imports work, no syntax errors. Full test run deferred to verify-1-1. Created src/tools/authoring.py (200 lines)."
+mcp__plugin_foundry_foundry-mcp__task action="complete" spec_id="my-spec-001" task_id="task-1-2" completion_note="Implemented phase-add-bulk handler. Basic verification: imports work, no syntax errors. Full test run deferred to verify-1-1. Created src/tools/authoring.py (200 lines)."
 ```
 
 **Without sibling verify task (full testing):**
 ```bash
-Skill(foundry:sdd-update) "Complete task task-2-3 in spec my-spec-001. Completion note: Implemented JWT verification middleware with RS256 support. All 8 unit tests passing. Manual verification: auth flow works in dev. Created src/middleware/auth.ts (120 lines) and tests/middleware/auth.spec.ts (8 tests)."
+mcp__plugin_foundry_foundry-mcp__task action="complete" spec_id="my-spec-001" task_id="task-2-3" completion_note="Implemented JWT verification middleware with RS256 support. All 8 unit tests passing. Manual verification: auth flow works in dev. Created src/middleware/auth.ts (120 lines) and tests/middleware/auth.spec.ts (8 tests)."
 ```
 
 ## Never Mark Complete If

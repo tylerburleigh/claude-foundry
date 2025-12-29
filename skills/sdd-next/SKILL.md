@@ -30,7 +30,7 @@ description: Task preparation skill for spec-driven workflows. Reads specificati
       - PreImpl: LSP analysis → Explore subagent
       - `task action="update-status" status="in_progress"`
       - **Implement**
-      - PostImpl: `Skill(sdd-update)` to complete
+      - PostImpl: `task action="complete"` + journal (auto)
       - [success?] → SurfaceNext
         - `task action="prepare"` → ShowNextTask
         - (GATE: continue?) → ↻ back to SelectTask | **Exit**
@@ -53,7 +53,9 @@ This skill interacts solely with the Foundry MCP server (`foundry-mcp`). Tools u
 
 | Router | Key Actions |
 |--------|-------------|
-| `task` | `prepare`, `query`, `info`, `update-status`, `block`, `unblock`, `add-dependency`, `add-requirement` |
+| `task` | `prepare`, `query`, `info`, `start`, `complete`, `update-status`, `block`, `unblock`, `add-dependency`, `add-requirement` |
+| `journal` | `add`, `list` |
+| `lifecycle` | `activate`, `move`, `complete` |
 | `spec` | `find`, `list` |
 
 **Critical Rules:**
@@ -209,10 +211,16 @@ mcp__plugin_foundry_foundry-mcp__task action="update-status" spec_id={spec-id} t
 
 **After implementation:**
 
-Mark task complete using the sdd-update skill:
+Mark task complete using the atomic complete action (updates status AND journals automatically):
 ```bash
-Skill(foundry:sdd-update) "Complete task {task-id} in spec {spec-id}. Completion note: [Summary of what was accomplished, tests run, verification performed]."
+mcp__plugin_foundry_foundry-mcp__task action="complete" spec_id={spec-id} task_id={task-id} completion_note="Summary of what was accomplished, tests run, verification performed"
 ```
+
+This atomically:
+1. Updates task status to `completed`
+2. Records completion timestamp
+3. Creates a journal entry
+4. Auto-journals parent nodes (phases) when they complete
 
 ### Surface Next Recommendation
 
@@ -291,12 +299,12 @@ mcp__plugin_foundry_foundry-mcp__task action="unblock" spec_id={spec-id} task_id
 
 **Example (with sibling verify task - deferred testing):**
 ```bash
-Skill(foundry:sdd-update) "Complete task task-1-2 in spec my-spec-001. Completion note: Implemented phase-add-bulk handler. Basic verification: imports work, no syntax errors. Full test run deferred to verify-1-1. Created src/tools/authoring.py handler (200 lines)."
+mcp__plugin_foundry_foundry-mcp__task action="complete" spec_id="my-spec-001" task_id="task-1-2" completion_note="Implemented phase-add-bulk handler. Basic verification: imports work, no syntax errors. Full test run deferred to verify-1-1. Created src/tools/authoring.py handler (200 lines)."
 ```
 
 **Example (without sibling verify task - full testing):**
 ```bash
-Skill(foundry:sdd-update) "Complete task task-2-3 in spec my-spec-001. Completion note: Implemented JWT auth middleware with PKCE flow. All 12 unit tests passing. Manual verification: login flow works in dev environment. Created src/middleware/auth.ts (180 lines) and tests/middleware/auth.spec.ts (45 tests)."
+mcp__plugin_foundry_foundry-mcp__task action="complete" spec_id="my-spec-001" task_id="task-2-3" completion_note="Implemented JWT auth middleware with PKCE flow. All 12 unit tests passing. Manual verification: login flow works in dev environment. Created src/middleware/auth.ts (180 lines) and tests/middleware/auth.spec.ts (45 tests)."
 ```
 
 ---
@@ -312,10 +320,20 @@ Skill(foundry:sdd-update) "Complete task task-2-3 in spec my-spec-001. Completio
 ## Detailed Reference
 
 For comprehensive documentation including:
+
+**Task Execution:**
 - Context gathering best practices → `references/context-gathering.md`
 - Agent delegation patterns → `references/agent-delegation.md`
 - Deep dive context JSON structure → `references/context-structure.md`
 - Built-in subagent patterns → `references/subagent-patterns.md`
 - Post-implementation checklist → `references/checklist.md`
 - Verification task workflow → `references/verification.md`
+
+**Task Lifecycle:**
+- Task status transitions → `references/task-lifecycle.md`
+- Progress tracking & verification → `references/progress-tracking.md`
+- Journaling decisions & deviations → `references/journaling.md`
+- Spec folder management → `references/spec-lifecycle.md`
+
+**General:**
 - Troubleshooting → `references/troubleshooting.md`

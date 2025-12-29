@@ -21,7 +21,7 @@ mcp__plugin_foundry_foundry-mcp__task action="info" spec_id={spec-id} task_id={t
 | verification_type | Skill Invocation |
 |-------------------|------------------|
 | `"run-tests"` | `Skill(foundry:run-tests)` |
-| `"fidelity"` | `Skill(foundry:sdd-fidelity-review)` |
+| `"fidelity"` | `Skill(foundry:sdd-review)` |
 
 **For fidelity reviews**, extract `scope` and `target` from task metadata to pass to the skill.
 
@@ -31,10 +31,10 @@ mcp__plugin_foundry_foundry-mcp__task action="info" spec_id={spec-id} task_id={t
 
 **For fidelity review:**
 ```bash
-Skill(foundry:sdd-fidelity-review) "Review {scope} {target} in spec {spec-id}"
+Skill(foundry:sdd-review) "Review {scope} {target} in spec {spec-id}"
 ```
 
-Example: `Skill(foundry:sdd-fidelity-review) "Review phase phase-1 in spec my-spec-001"`
+Example: `Skill(foundry:sdd-review) "Review phase phase-1 in spec my-spec-001"`
 
 **For run-tests:**
 ```bash
@@ -52,7 +52,7 @@ After the skill returns:
 
 **If verdict = pass:**
 ```bash
-Skill(foundry:sdd-update) "Complete verify task {task-id}. Fidelity review passed with verdict: {verdict}."
+mcp__plugin_foundry_foundry-mcp__task action="complete" spec_id={spec-id} task_id={task-id} completion_note="Fidelity review passed with verdict: {verdict}."
 ```
 
 **If verdict = fail or partial:**
