@@ -278,7 +278,72 @@ Then re-run `/setup` or manually edit foundry-mcp.toml.
 
 ---
 
-## Phase 2.6: Test Configuration
+## Phase 2.6: Research Configuration
+
+**Only run this phase if foundry-mcp.toml exists (either created in Phase 2 or already present).**
+
+This phase configures the `[research]` section for the research skill (chat, consensus, thinkdeep, ideate workflows).
+
+### Step 1: Check Existing Configuration
+
+Read the `foundry-mcp.toml` file and check if it already contains a `[research]` section.
+
+**If `[research]` section exists:** Skip this phase and display:
+> "Research configuration already present in foundry-mcp.toml. Your existing settings are preserved."
+
+Continue to Phase 2.7.
+
+### Step 2: Build Research Configuration
+
+Use the available providers from Phase 2.5 to configure research defaults.
+
+**Format:** Use the same format as consultation: `[cli]provider:model`
+
+Reuse the priority entries already built in Phase 2.5 for the consultation section.
+
+Select the default provider (first entry from consultation priority list).
+
+Build consensus_providers list from the first 3 entries in the consultation priority list.
+
+### Step 3: Append Research Section to TOML
+
+Read the existing `foundry-mcp.toml` file content.
+
+Append the research configuration section:
+
+```toml
+
+[research]
+# Research tool configuration (chat, consensus, thinkdeep, ideate)
+# Uses same format as consultation: "[cli]provider:model"
+default_provider = "[cli]{provider}:{model}"
+consensus_providers = [
+    "[cli]{provider1}:{model1}",
+    "[cli]{provider2}:{model2}",
+    "[cli]{provider3}:{model3}",
+]
+```
+
+Use the Write tool to save the updated file.
+
+### Step 4: Display Results
+
+```
+## Research Configuration
+
+Configured research defaults:
+
+| Setting | Value |
+|---------|-------|
+| Default Provider | [cli]{provider}:{model} |
+| Consensus Providers | (list of up to 3 providers) |
+
+Research workflows (chat, consensus, thinkdeep, ideate) are now configured.
+```
+
+---
+
+## Phase 2.7: Test Configuration
 
 **Only run this phase if foundry-mcp.toml exists (either created in Phase 2 or already present).**
 
@@ -368,6 +433,7 @@ Summarize what was configured:
 - Permissions status (created/updated/skipped)
 - Workspace setup (specs directory, foundry-mcp.toml)
 - AI providers configured (list providers added to consultation priority, or note if skipped)
+- Research configuration (default provider and consensus providers, or note if skipped/already configured)
 - Test runner configured (runner name, or note if skipped/already configured)
 
 **Important:** If permissions were added or modified, display:
