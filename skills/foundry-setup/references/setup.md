@@ -190,6 +190,47 @@ Report what was created or skipped.
 
 ---
 
+## Phase 2.1: Feature Flags Configuration
+
+**Only run this phase if foundry-mcp.toml was created in Phase 2.**
+
+This phase ensures required feature flags are enabled in the `[features]` section.
+
+### Step 1: Check Existing Configuration
+
+Read the `foundry-mcp.toml` file and check if it contains a `[features]` section with the required flags.
+
+Required feature flags:
+- `research_tools = true` - Enables the research skill workflows
+- `intake_tools = true` - Enables bikelane intake queue
+
+### Step 2: Add or Update Features Section
+
+**If `[features]` section doesn't exist:** Append it after `[server]`:
+
+```toml
+
+[features]
+research_tools = true
+intake_tools = true
+```
+
+**If `[features]` section exists but is missing flags:** Add the missing flags.
+
+Use the Edit tool to update the file.
+
+### Step 3: Display Results
+
+```
+## Feature Flags
+
+Enabled features:
+- research_tools: AI-powered research workflows (chat, consensus, thinkdeep, ideate)
+- intake_tools: Bikelane fast-capture intake queue
+```
+
+---
+
 ## Phase 2.5: AI Provider Configuration
 
 **Only run this phase if foundry-mcp.toml was created in Phase 2.**
@@ -432,6 +473,7 @@ Summarize what was configured:
 - Pre-flight check results (what passed/failed)
 - Permissions status (created/updated/skipped)
 - Workspace setup (specs directory, foundry-mcp.toml)
+- Feature flags enabled (research_tools, intake_tools)
 - AI providers configured (list providers added to consultation priority, or note if skipped)
 - Research configuration (default provider and consensus providers, or note if skipped/already configured)
 - Test runner configured (runner name, or note if skipped/already configured)

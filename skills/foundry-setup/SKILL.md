@@ -25,6 +25,6 @@ Check if `$ARGUMENTS` contains `--check` or `--preflight`:
   - → Preflight (MCP, Python, Git)
     - [--check?] → **Exit**
   - → Permissions → Workspace
-    - [toml created?] → Providers → Research → TestConfig
+    - [toml created?] → FeatureFlags → Providers → Research → TestConfig
   - → Summary → **Exit**
 ```
