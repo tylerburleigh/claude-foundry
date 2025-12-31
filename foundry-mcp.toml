@@ -14,6 +14,10 @@ structured = true
 name = "foundry-mcp"
 version = "0.3.3"
 
+[features]
+research_tools = true
+intake_tools = true
+
 [workflow]
 mode = "task"
 auto_validate = true
@@ -32,6 +36,18 @@ priority = [
 
 # Operational settings
 default_timeout = 300
+
+[research]
+# Research tool configuration (chat, consensus, thinkdeep, ideate)
+# Uses same format as consultation: "[cli]provider:model"
+default_provider = "[cli]codex:gpt-5.2-codex"
+consensus_providers = [
+    "[cli]codex:gpt-5.2-codex",
+    "[cli]opencode:gpt-5.2-codex",
+    "[cli]gemini:pro",
+    "[cli]cursor-agent:composer-1",
+    "[cli]claude:opus",
+]
 max_retries = 2
 retry_delay = 5.0
 fallback_enabled = true

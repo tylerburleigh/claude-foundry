@@ -5,6 +5,38 @@ All notable changes to claude-foundry will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.1] - 2025-12-30
+
+### Added
+
+- **Research configuration in setup**: `/setup` now configures the `[research]` section in `foundry-mcp.toml`
+  - New Phase 2.6 in setup workflow for research provider configuration
+  - Uses same `[cli]provider:model` format as consultation for consistency
+  - Automatically reuses provider priority from consultation section
+  - Updated `foundry-mcp.toml` with example `[research]` section
+
+## [1.3.0] - 2025-12-30
+
+### Added
+
+- **Research skill**: AI-powered research with four workflows and persistent threads
+  - New `/research` command with auto-routing and explicit workflow selection
+  - **chat**: Single-model iterative conversation with thread persistence
+  - **consensus**: Multi-model parallel consultation with synthesis strategies
+  - **thinkdeep**: Hypothesis-driven systematic investigation
+  - **ideate**: Four-phase creative brainstorming (divergent → convergent → selection → elaboration)
+  - Auto-routing: Intent-based workflow detection from natural language prompts
+  - Thread management: List, resume, and delete conversation threads
+  - New skill files:
+    - `skills/research/SKILL.md`: Main skill with MCP contract and flow
+    - `commands/research.md`: Command entry point with routing logic
+  - New reference files:
+    - `references/chat-workflow.md`, `references/consensus-workflow.md`
+    - `references/thinkdeep-workflow.md`, `references/ideate-workflow.md`
+    - `references/thread-management.md`, `references/auto-routing.md`
+    - `references/troubleshooting.md`
+  - Updated `CLAUDE.md` skill selection table
+
 ## [1.2.0] - 2025-12-29
 
 ### Added
