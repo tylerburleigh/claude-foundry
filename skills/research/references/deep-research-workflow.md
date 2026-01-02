@@ -50,13 +50,7 @@ This allows long-running research without blocking the conversation.
 ### Start Research
 
 ```bash
-mcp__plugin_foundry_foundry-mcp__research \
-  action="deep-research" \
-  deep_research_action="start" \
-  query="Your research question" \
-  max_iterations=3 \
-  max_sub_queries=5 \
-  max_sources_per_query=5
+mcp__plugin_foundry_foundry-mcp__research action="deep-research" deep_research_action="start" query="Your research question" max_iterations=3 max_sub_queries=5 max_sources_per_query=5
 ```
 
 | Parameter | Required | Default | Description |
@@ -74,9 +68,7 @@ mcp__plugin_foundry_foundry-mcp__research \
 ### Check Status
 
 ```bash
-mcp__plugin_foundry_foundry-mcp__research \
-  action="deep-research-status" \
-  research_id="research-abc123"
+mcp__plugin_foundry_foundry-mcp__research action="deep-research-status" research_id="research-abc123"
 ```
 
 Returns:
@@ -97,9 +89,7 @@ Returns:
 ### Get Report
 
 ```bash
-mcp__plugin_foundry_foundry-mcp__research \
-  action="deep-research-report" \
-  research_id="research-abc123"
+mcp__plugin_foundry_foundry-mcp__research action="deep-research-report" research_id="research-abc123"
 ```
 
 Returns comprehensive report with:
@@ -112,18 +102,13 @@ Returns comprehensive report with:
 ### List Sessions
 
 ```bash
-mcp__plugin_foundry_foundry-mcp__research \
-  action="deep-research-list" \
-  limit=10 \
-  completed_only=false
+mcp__plugin_foundry_foundry-mcp__research action="deep-research-list" limit=10 completed_only=false
 ```
 
 ### Delete Session
 
 ```bash
-mcp__plugin_foundry_foundry-mcp__research \
-  action="deep-research-delete" \
-  research_id="research-abc123"
+mcp__plugin_foundry_foundry-mcp__research action="deep-research-delete" research_id="research-abc123"
 ```
 
 ## Session States
