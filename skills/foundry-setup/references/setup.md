@@ -231,6 +231,49 @@ Enabled features:
 
 ---
 
+## Phase 2.2: Context Configuration
+
+**Only run this phase if foundry-mcp.toml was created in Phase 2.**
+
+This phase configures the `[context]` section for context monitoring behavior.
+
+### Step 1: Check Existing Configuration
+
+Read the `foundry-mcp.toml` file and check if it already contains a `[context]` section.
+
+**If `[context]` section exists:** Skip this phase and display:
+> "Context configuration already present in foundry-mcp.toml. Your existing settings are preserved."
+
+Continue to Phase 2.5.
+
+### Step 2: Add Context Section
+
+Append the context section after `[features]`:
+
+```toml
+
+[context]
+# Auto-compact mode affects context percentage calculation
+# true (default): denominator is 155k (Claude compacts before hitting limit)
+# false: denominator is 200k (full context window, no auto-compaction)
+auto_compact = true
+```
+
+Use the Edit tool to update the file.
+
+### Step 3: Display Results
+
+```
+## Context Configuration
+
+Enabled context settings:
+- auto_compact: true (context monitor uses 155k denominator)
+
+Note: Set auto_compact = false in foundry-mcp.toml if you've disabled auto-compaction in Claude Code settings (uses 200k denominator).
+```
+
+---
+
 ## Phase 2.5: AI Provider Configuration
 
 **Only run this phase if foundry-mcp.toml was created in Phase 2.**
@@ -474,6 +517,7 @@ Summarize what was configured:
 - Permissions status (created/updated/skipped)
 - Workspace setup (specs directory, foundry-mcp.toml)
 - Feature flags enabled (research_tools, intake_tools)
+- Context settings (auto_compact value, or note if already configured)
 - AI providers configured (list providers added to consultation priority, or note if skipped)
 - Research configuration (default provider and consensus providers, or note if skipped/already configured)
 - Test runner configured (runner name, or note if skipped/already configured)

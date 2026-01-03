@@ -25,9 +25,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Updated `task-lifecycle.md` with Batch Task States section
   - Updated `CLAUDE.md` with sequential vs parallel mode task state behavior
 
-- **disabled_tools configuration** (PR 13): Tool filtering via `foundry-mcp.toml`
+- **disabled_tools configuration**: Tool filtering via `foundry-mcp.toml`
   - New `[tools]` section with `disabled_tools` list
   - Allows disabling specific MCP tools without code changes
+
+- **Context configuration**: Configurable context denominator for context-monitor hook
+  - New `[context]` section in `foundry-mcp.toml` with `auto_compact` setting
+  - `auto_compact = true` (default): Uses 155k denominator (Claude auto-compacts)
+  - `auto_compact = false`: Uses 200k denominator (full context window)
+  - Updated `hooks/context-monitor` to read setting dynamically
+  - Added Phase 2.2 (Context Configuration) to `/setup` workflow
 
 ### Changed
 
