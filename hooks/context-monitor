@@ -11,7 +11,17 @@
 # - CONTEXT_THRESHOLD: Percentage threshold for warning (default: 85)
 
 THRESHOLD="${CONTEXT_THRESHOLD:-85}"
-MAX_CONTEXT=155000
+
+# Find foundry-mcp.toml and read auto_compact setting
+TOML="${CLAUDE_PROJECT_ROOT:-$(pwd)}/foundry-mcp.toml"
+AUTO_COMPACT=$(grep -E '^\s*auto_compact\s*=' "$TOML" 2>/dev/null | sed 's/.*=\s*//' | tr -d ' "')
+
+# Set denominator: 155k if auto_compact enabled (default), 200k if disabled
+if [ "$AUTO_COMPACT" = "false" ]; then
+    MAX_CONTEXT=200000
+else
+    MAX_CONTEXT=155000
+fi
 
 # Require jq
 if ! command -v jq &> /dev/null; then

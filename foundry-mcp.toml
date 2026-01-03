@@ -18,6 +18,19 @@ version = "0.3.3"
 research_tools = true
 intake_tools = true
 
+[context]
+# Auto-compact mode affects context percentage calculation
+# true (default): denominator is 155k (Claude compacts before hitting limit)
+# false: denominator is 200k (full context window, no auto-compaction)
+auto_compact = true
+
+[tools]
+# Disable specific tools to reduce context window usage
+# List tool names (without mcp__plugin_foundry_foundry-mcp__ prefix)
+# Example: disabled_tools = ["metrics", "error"]
+disabled_tools = []
+# Environment variable alternative: FOUNDRY_MCP_DISABLED_TOOLS (comma-separated)
+
 [workflow]
 mode = "task"
 auto_validate = true

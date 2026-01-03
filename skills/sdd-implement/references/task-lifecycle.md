@@ -99,3 +99,147 @@ mcp__plugin_foundry_foundry-mcp__task action="update-status" spec_id={spec-id} t
 2. **Be specific** - Vague notes aren't helpful later
 3. **Document WHY** - Rationale, not just what changed
 4. **Use complete** - Ensures proper journaling
+
+---
+
+## Batch Task States
+
+Parallel mode (`--parallel`) manages multiple tasks as a batch with coordinated lifecycle.
+
+### Batch State Model
+
+```
+idle ──[prepare-batch]──> prepared ──[start-batch]──> running
+                              │                          │
+                              │                          ├──[all complete]──> completed
+                              │                          │
+                              │                          ├──[partial failure]──> partial
+                              │                          │
+                              │                          └──[reset-batch]──> idle
+                              │
+                              └──[abandon]──> idle
+```
+
+| State | Description |
+|-------|-------------|
+| `idle` | No active batch |
+| `prepared` | Eligible tasks identified, conflicts excluded |
+| `running` | Subagents executing tasks concurrently |
+| `completed` | All tasks in batch finished successfully |
+| `partial` | Some tasks completed, some failed |
+
+### Starting a Batch
+
+1. **Prepare batch** - Identify eligible tasks:
+
+```bash
+mcp__plugin_foundry_foundry-mcp__task action="prepare-batch" \
+  spec_id={spec-id} \
+  max_tasks=5
+```
+
+Response includes `eligible_tasks` (no conflicts) and `excluded_tasks` (conflicts detected).
+
+2. **Start batch** - Begin parallel execution:
+
+```bash
+mcp__plugin_foundry_foundry-mcp__task action="start-batch" \
+  spec_id={spec-id} \
+  batch_id={batch-id}
+```
+
+This marks all batch tasks as `in_progress` atomically.
+
+### Completing a Batch
+
+After subagents finish, report aggregated results:
+
+```bash
+mcp__plugin_foundry_foundry-mcp__task action="complete-batch" \
+  spec_id={spec-id} \
+  batch_id={batch-id} \
+  results='[
+    {"task_id": "task-3-1", "status": "completed", "note": "Implemented auth handler"},
+    {"task_id": "task-3-2", "status": "completed", "note": "Added validation utils"},
+    {"task_id": "task-3-3", "status": "failed", "error": "Import error in module X"}
+  ]'
+```
+
+**What `complete-batch` does:**
+1. Updates each task's status based on results
+2. Creates journal entries for completed tasks
+3. Leaves failed tasks as `in_progress` for retry
+4. Returns summary with success/failure counts
+5. Recalculates phase progress
+
+### Partial Failure Handling
+
+When some tasks in a batch fail:
+
+| Outcome | Task Status | Next Steps |
+|---------|-------------|------------|
+| Completed | `completed` | Normal - journaled automatically |
+| Failed | `in_progress` | Retry in next batch or debug manually |
+| Timed out | `in_progress` | Check subagent, retry or block |
+
+**Recovery options:**
+
+1. **Retry in next batch:**
+   ```bash
+   # Failed tasks remain in_progress, will be included in next prepare-batch
+   mcp__plugin_foundry_foundry-mcp__task action="prepare-batch" spec_id={spec-id}
+   ```
+
+2. **Switch to interactive mode:**
+   ```bash
+   # Debug the specific failed task
+   /implement  # Without --parallel
+   ```
+
+3. **Block the task:**
+   ```bash
+   mcp__plugin_foundry_foundry-mcp__task action="block" \
+     spec_id={spec-id} \
+     task_id={failed-task-id} \
+     reason="Repeated failure: {error}" \
+     blocker_type="technical"
+   ```
+
+### Reset Recovery Pattern
+
+If a batch is interrupted (crash, timeout, user abort):
+
+```bash
+mcp__plugin_foundry_foundry-mcp__task action="reset-batch" \
+  spec_id={spec-id} \
+  batch_id={batch-id} \
+  reason="Session interrupted by user"
+```
+
+**What `reset-batch` does:**
+1. Resets all batch tasks to `pending` status
+2. Clears partial progress (uncommitted changes may be lost)
+3. Returns batch to `idle` state
+4. Records reset in journal for audit trail
+
+**When to use reset:**
+- Subagent crashed mid-execution
+- Network timeout during batch
+- User cancelled with Ctrl+C
+- Context exhaustion during batch
+
+**After reset:**
+1. Review git status for partial changes
+2. Decide: commit partial work or revert
+3. Re-run `prepare-batch` to start fresh
+
+### Batch vs Single Task Lifecycle
+
+| Aspect | Single Task | Batch |
+|--------|-------------|-------|
+| Start | `task action="start"` | `task action="start-batch"` |
+| Complete | `task action="complete"` | `task action="complete-batch"` |
+| Progress | Immediate update | Aggregated at batch end |
+| Failure | Block or retry | Isolated per task |
+| Journal | Per-task automatic | Per-task in results array |
+| Reset | N/A (use block) | `task action="reset-batch"` |
