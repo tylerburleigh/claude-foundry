@@ -9,9 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **Default disabled_tools**: Now disables `error`, `metrics`, and `health` by default
+- **Default disabled_tools**: Now disables `error`, `metrics`, `health`, and `environment` by default
   - Reduces context token usage for common workflows
-  - Health tool only needed during initial `/setup`
+  - Health and environment tools only needed during initial `/setup`
   - Error and metrics tools only needed for dashboard features
 
 - **Setup workflow**: Removed Step 5 (health check validation) from Phase 2.7
