@@ -30,7 +30,8 @@ sdd-plan → sdd-implement → [CODE] → sdd-review → run-tests → sdd-pr
 **Human-in-Loop**: Skills use `AskUserQuestion` for key decisions. Don't assume - ask.
 
 **Task States**: `pending` → `in_progress` → `completed` | `blocked`
-- Only one task should be `in_progress` at a time
+- **Sequential mode** (interactive, autonomous): Only one task `in_progress` at a time
+- **Parallel mode** (`--parallel`): Multiple tasks `in_progress` during batch execution
 - Mark tasks complete immediately after finishing
 
 **Safety**: Use dry-run previews before spec modifications. Backups created automatically.

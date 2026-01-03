@@ -7,6 +7,56 @@ description: Resume or start spec-driven development work by detecting active ta
 
 When invoked, follow these steps:
 
+## Step 0: Flag Parsing and Session Check
+
+### Parse Command Flags
+
+| Flag | Description | Mode |
+|------|-------------|------|
+| `--auto` | Autonomous execution - continue tasks without prompts | Autonomous |
+| `--parallel` | Parallel execution - run independent tasks concurrently | Parallel |
+| `--delegate` | Interactive with delegation - subagent implements each task | Delegated |
+| (none) | Interactive single-task mode (default) | Interactive |
+
+### Check for Existing Session
+
+Before proceeding, check if a paused session exists:
+
+```bash
+mcp__plugin_foundry_foundry-mcp__task action="session-config" spec_id={spec-id} command="status"
+```
+
+**If session is `paused`:**
+```
+AskUserQuestion:
+"Found paused session (reason: {pause_reason}). Last task: {current_task}"
+Options:
+- "Resume session" → session-config command="resume", then continue
+- "Start fresh" → session-config command="end", then proceed normally
+- "Exit"
+```
+
+**If session is `active`:**
+Warn user that a session is already running. Offer to view status or exit.
+
+**If session is `idle` or no session:**
+Proceed to Step 1.
+
+### Interactive Fallback (No Flags)
+
+When no flags provided, offer mode selection:
+
+```
+AskUserQuestion:
+"Select execution mode:"
+Options:
+- "Interactive (single task)" → Proceed to Step 1
+- "Interactive with delegation (--delegate)" → Proceed to Step 1 with delegation enabled
+- "Autonomous (--auto)" → Start autonomous session
+- "Parallel (--parallel)" → Start parallel session
+- "Exit"
+```
+
 ## Step 1: Check for Active Specifications
 
 Use `mcp__plugin_foundry_foundry-mcp__spec action="list"` with status "active" to find specifications in progress.

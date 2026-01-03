@@ -16,7 +16,11 @@ description: Task implementation skill for spec-driven workflows. Reads specific
 > `[x?]`=decision · `(GATE)`=user approval · `→`=sequence · `↻`=loop · `§`=section ref
 
 ```
-- **Entry** → SelectTask
+- **Entry** → ModeDispatch
+  - [--auto?] → §AutonomousMode (see references/autonomous-mode.md)
+  - [--parallel?] → §ParallelMode (see references/parallel-mode.md)
+  - [--delegate?] → §DelegatedMode
+  - [interactive] → SelectTask
   - [recommend] → `task action="prepare"` → ShowRecommendation
   - [browse] → `task action="query"` → (GATE: task selection)
 - → TypeDispatch
@@ -41,6 +45,16 @@ description: Task implementation skill for spec-driven workflows. Reads specific
         - [skip] → SurfaceNext
 
 §VerifyWorkflow → see references/verification.md
+
+§ParallelMode:
+  - `task action="prepare-batch"` → IdentifyEligible
+  - [conflicts?] → ExcludeConflicting
+  - `task action="start-batch"` → SpawnSubagents
+  - For each subagent: Task(general-purpose, run_in_background=true)
+  - TaskOutput(block=true) → CollectResults
+  - `task action="complete-batch"` → AggregateResults
+  - [failures?] → HandlePartialFailure
+  - [more batches?] → ↻ back to prepare-batch | **Exit**
 ```
 
 > Flow notation: see [docs/flow-notation.md](../../docs/flow-notation.md)
@@ -53,7 +67,7 @@ This skill interacts solely with the Foundry MCP server (`foundry-mcp`). Tools u
 
 | Router | Key Actions |
 |--------|-------------|
-| `task` | `prepare`, `query`, `info`, `start`, `complete`, `update-status`, `block`, `unblock`, `add-dependency`, `add-requirement` |
+| `task` | `prepare`, `query`, `info`, `start`, `complete`, `update-status`, `block`, `unblock`, `add-dependency`, `add-requirement`, `session-config`, `prepare-batch`, `start-batch`, `complete-batch`, `reset-batch` |
 | `journal` | `add`, `list` |
 | `lifecycle` | `activate`, `move`, `complete` |
 | `spec` | `find`, `list` |
@@ -63,6 +77,78 @@ This skill interacts solely with the Foundry MCP server (`foundry-mcp`). Tools u
 - The agent never invokes the CLI directly
 - Stay inside the repo root, avoid chained shell commands
 - NEVER read raw spec JSON outside of MCP helpers
+
+---
+
+## Execution Modes
+
+The skill supports four execution modes, selected at entry via flags or interactive prompt.
+
+| Mode | Flag | Behavior | Use Case |
+|------|------|----------|----------|
+| Interactive | (default) | Single task with user gates | Exploratory work, unclear requirements |
+| Delegated | `--delegate` | Interactive + subagent implementation | Large tasks, context preservation |
+| Autonomous | `--auto` | Continuous execution until pause trigger | Well-defined specs, batch work |
+| Parallel | `--parallel` | Multiple tasks concurrently | Independent tasks, large phases |
+
+### Autonomous Mode
+
+Executes tasks continuously without user prompts between each task. Session state persists across `/clear` boundaries.
+
+**Entry:** `/implement --auto` or select "Autonomous" when prompted.
+
+**Key behaviors:**
+- Auto-selects recommended tasks via `task action="prepare"`
+- Skips plan approval gates (uses generated plan)
+- Auto-continues after task completion
+- Pauses on: context >= 85%, 3+ consecutive errors, blocked tasks, task limit
+
+**Session tracking:** Uses `task action="session-config"` with commands: `start`, `status`, `pause`, `resume`, `end`.
+
+> Full documentation: [references/autonomous-mode.md](./references/autonomous-mode.md)
+> Session management: [references/session-management.md](./references/session-management.md)
+
+### Parallel Mode
+
+Spawns multiple subagents to execute independent tasks concurrently. File-path conflicts are detected and excluded.
+
+**Entry:** `/implement --parallel` or select "Parallel" when prompted.
+
+**Key behaviors:**
+- Uses `task action="prepare-batch"` to identify eligible tasks
+- Excludes tasks with conflicting `file_path` metadata
+- Spawns `Task(general-purpose, run_in_background=true)` per task
+- Collects results via `TaskOutput` and aggregates with `complete-batch`
+- Handles partial failures (successful tasks complete, failed tasks remain in_progress)
+
+**Batch actions:** `prepare-batch`, `start-batch`, `complete-batch`, `reset-batch`
+
+> Full documentation: [references/parallel-mode.md](./references/parallel-mode.md)
+
+### Delegated Mode
+
+Interactive mode with implementation delegated to a subagent. All user gates preserved, but fresh context for implementation.
+
+**Entry:** `/implement --delegate` or select "Interactive with delegation" when prompted.
+
+**Key behaviors:**
+- Same gates as interactive (task selection, plan approval, continuation)
+- After plan approval, spawns `Task(general-purpose)` for implementation
+- Waits for subagent completion (sequential, not background)
+- Main agent handles task lifecycle (status updates, journaling)
+
+**Subagent receives:**
+- Task details, file path, acceptance criteria
+- Context from main agent (LSP findings, explore results, previous sibling)
+- Verification scope guidance
+- Constraint: subagent does NOT update spec status or write journals
+
+**When to use:**
+- Large file changes where you want oversight
+- Complex tasks where fresh context helps
+- Long sessions to preserve main agent context
+
+> See also: [references/subagent-patterns.md](./references/subagent-patterns.md)
 
 ---
 

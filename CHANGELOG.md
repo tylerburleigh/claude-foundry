@@ -5,6 +5,36 @@ All notable changes to claude-foundry will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2026-01-03
+
+### Added
+
+- **Batch operations integration**: `--auto` and `--parallel` execution modes for sdd-implement
+  - **Autonomous mode** (`--auto`): Sequential execution without user prompts between tasks
+    - Session state persistence across `/clear` boundaries
+    - Pause triggers: context >= 85%, 3+ consecutive errors, blocked tasks, task limit
+    - New `session-config` task action with commands: `start`, `status`, `pause`, `resume`, `end`
+    - New reference: `skills/sdd-implement/references/autonomous-mode.md`
+    - New reference: `skills/sdd-implement/references/session-management.md`
+  - **Parallel mode** (`--parallel`): Concurrent execution via subagents
+    - File-path conflict detection and exclusion
+    - Batch operations: `prepare-batch`, `start-batch`, `complete-batch`, `reset-batch`
+    - Partial failure handling with isolated task recovery
+    - New reference: `skills/sdd-implement/references/parallel-mode.md`
+  - Updated `SKILL.md` with Execution Modes section and flow diagrams
+  - Updated `task-lifecycle.md` with Batch Task States section
+  - Updated `CLAUDE.md` with sequential vs parallel mode task state behavior
+
+- **disabled_tools configuration** (PR 13): Tool filtering via `foundry-mcp.toml`
+  - New `[tools]` section with `disabled_tools` list
+  - Allows disabling specific MCP tools without code changes
+
+### Changed
+
+- **implement command**: Added Step 0 for session check and mode selection
+  - Flag parsing: `--auto`, `--parallel`
+  - Session resume prompt when paused session exists
+
 ## [1.4.0] - 2026-01-02
 
 ### Added
