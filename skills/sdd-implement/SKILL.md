@@ -134,7 +134,7 @@ Spawns multiple subagents to execute independent tasks concurrently. File-path c
 
 **Batch actions:** `prepare-batch`, `start-batch`, `complete-batch`, `reset-batch`
 
-> Full documentation: [references/parallel-mode.md](./references/parallel-mode.md)
+**CRITICAL when using `--parallel`:** Read [references/parallel-mode.md](./references/parallel-mode.md) before proceeding. Contains required JSON formats for batch operations.
 
 ### Delegation Behavior (`--delegate`)
 
@@ -426,7 +426,7 @@ mcp__plugin_foundry_foundry-mcp__task action="complete" spec_id="my-spec-001" ta
 
 **Entry:** Routed here from Task Type Dispatch when task has `type: "verify"`
 
-> For the complete verification workflow (mark in progress, detect type, dispatch, execute, complete/remediate), see [references/verification.md](./references/verification.md)
+**CRITICAL:** Read [references/verification.md](./references/verification.md) before proceeding. Contains mandatory skill dispatch rules.
 
 ---
 
@@ -447,7 +447,7 @@ Research nodes use AI-powered workflows (chat, consensus, thinkdeep, ideate, dee
 - `soft` (default): Informational - dependents can proceed
 - `none`: Research never blocks
 
-> For the complete research workflow (status check, execute, review findings, record, handle blocking), see [references/research-workflow.md](./references/research-workflow.md)
+**CRITICAL:** Read [references/research-workflow.md](./references/research-workflow.md) before proceeding. Contains required command syntax and recording parameters.
 
 ---
 

@@ -15,6 +15,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Configurable via TOML: `[implement] model = "haiku"`
   - CLI flag overrides TOML default
 
+### Changed
+
+- **Strengthen critical reference links**: Changed soft links to mandatory directives for essential workflow references
+  - `verification.md`: Now marked CRITICAL (contains skill dispatch rules)
+  - `research-workflow.md`: Now marked CRITICAL (contains required command syntax)
+  - `parallel-mode.md`: Now marked CRITICAL when using `--parallel` (contains required JSON formats)
+
 ## [1.6.1] - 2026-01-04
 
 ### Fixed
