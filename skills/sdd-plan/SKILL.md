@@ -109,7 +109,7 @@ Get user approval before detailed spec creation.
 ### Step 4: Create JSON Specification
 
 ```bash
-mcp__plugin_foundry_foundry-mcp__authoring action="spec-create" name="feature-name" template="medium"
+mcp__plugin_foundry_foundry-mcp__authoring action="spec-create" name="feature-name" template="empty"
 ```
 
 Add phases with tasks:
@@ -193,7 +193,7 @@ Use this approach for efficient spec creation:
 
 **Step 1: Create spec from template**
 ```bash
-mcp__plugin_foundry_foundry-mcp__authoring action="spec-create" name="my-feature" template="medium"
+mcp__plugin_foundry_foundry-mcp__authoring action="spec-create" name="my-feature" template="empty"
 ```
 
 **Step 2: Add phases with bulk macro**

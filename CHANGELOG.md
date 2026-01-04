@@ -5,6 +5,16 @@ All notable changes to claude-foundry will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.1] - 2026-01-04
+
+### Fixed
+
+- **Outdated spec template documentation**: Updated all references from deprecated templates (`simple`, `medium`, `complex`, `security`) to `empty`
+  - `skills/sdd-plan/SKILL.md`: Fixed 2 examples
+  - `skills/sdd-plan/references/json-spec.md`: Updated template list and removed complex/security language
+  - `skills/sdd-plan/references/task-hierarchy.md`: Removed complex/security template references
+  - `skills/sdd-plan/references/troubleshooting.md`: Fixed example
+
 ## [1.6.0] - 2026-01-03
 
 ### Added
