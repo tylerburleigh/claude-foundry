@@ -96,7 +96,7 @@ mcp__plugin_foundry_foundry-mcp__plan action="create" name="Feature Name" templa
 mcp__plugin_foundry_foundry-mcp__plan action="review" plan_path="specs/.plans/feature-name.md" review_type="full"
 
 # Create JSON spec
-mcp__plugin_foundry_foundry-mcp__authoring action="spec-create" name="feature-name" template="medium"
+mcp__plugin_foundry_foundry-mcp__authoring action="spec-create" name="feature-name" template="empty"
 
 # Validate spec
 mcp__plugin_foundry_foundry-mcp__spec action="validate" spec_id="{spec-id}"

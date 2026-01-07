@@ -5,6 +5,28 @@ All notable changes to claude-foundry will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.1] - 2026-01-07
+
+### Changed
+
+- **Deep research polling strategy**: Improved polling approach for Claude's async limitations
+  - Changed from timed polling (every 15 seconds) to maximum 5 status checks
+  - Added progress communication guidelines between checks
+  - Added stall detection logic (5 min elapsed + no progress change)
+  - Added user options at final check (keep waiting, background, cancel)
+
+- **Spec creation template**: Updated default template from `medium` to `empty`
+  - `sdd-plan` now uses `template="empty"` for spec creation
+  - Phases added via `phase-add-bulk` or `phase-template` macros
+  - Updated documentation in SKILL.md, json-spec.md, and troubleshooting.md
+
+### Documentation
+
+- **Research tool defaults guidance**: Added to setup.md reference
+  - Don't override timeout parameters - use foundry-mcp.toml defaults
+  - Don't specify providers - use configured consensus providers
+  - Minimal call pattern: `action="consensus" prompt="..." strategy="synthesize"`
+
 ## [1.6.0] - 2026-01-03
 
 ### Added

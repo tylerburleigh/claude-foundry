@@ -128,15 +128,48 @@ started → in_progress → completed
 
 ## Polling Strategy
 
-Recommended polling approach:
+**Critical:** Claude cannot implement timed delays between tool calls. Follow these patience rules instead.
+
+### Polling Rules
+
+1. **Maximum checks:** 5 status checks per research session
+2. **Progress tracking:** Track `sub_queries_completed` and `iteration` between checks
+3. **Stall detection:** Research is stalled only if:
+   - `elapsed_ms` > 300000 (5 minutes) AND
+   - No change in `sub_queries_completed` or `iteration` since last check
+
+### Polling Flow
 
 ```
-1. Start research → get research_id
-2. Initial wait: 10 seconds
-3. Poll status every 15 seconds
-4. If in_progress > 2 minutes: notify user of progress
-5. On completed: fetch and present report
-6. On failed: show error, offer retry
+1. Start research → notify user "This may take several minutes"
+2. Check #1: Record initial progress (iteration, sub_queries_completed)
+3. Check #2-4: Compare progress to previous check
+   - If progress changed → continue checking
+   - If no progress AND elapsed_ms > 300000 → stalled
+4. Check #5 (final): If still in_progress, offer user options
+
+On completed: fetch and present report
+On failed: show error, offer retry
+On stall detected: offer retry or background options
+```
+
+### What to Say Between Checks
+
+Instead of silent rapid polling:
+- After check #1: "Research is underway. Currently in {phase} phase..."
+- After check #2-3: "Progress: {sub_queries_completed}/{sub_queries_total} queries completed..."
+- After check #4: "Still working. Research has been running for {elapsed_ms/60000:.1f} minutes..."
+- After check #5: Present user options if not complete
+
+### Stall Recovery
+
+When stall detected (>5 min with no progress), use AskUserQuestion:
+
+```
+"Research appears stalled ({elapsed} minutes, no progress). Options:"
+- "Keep waiting (check 2 more times)"
+- "Run in background (check later with /research research-{id})"
+- "Cancel and try different query"
 ```
 
 ## User Gates

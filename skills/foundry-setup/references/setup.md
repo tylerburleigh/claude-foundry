@@ -704,6 +704,12 @@ Use marker comments for idempotent updates:
 - Use `documentSymbol` before expensive AI reviews (sdd-review)
 - Use `findReferences` to assess impact before refactoring (sdd-refactor)
 - LSP catches structural issues in seconds vs minutes for full analysis
+
+**Research tool defaults - let config decide:**
+- Do NOT specify `timeout_per_provider` or `timeout_per_operation` - use `foundry-mcp.toml` defaults
+- Do NOT specify `providers` - use configured consensus providers
+- Only override when user explicitly requests different behavior
+- Minimal call: `action="consensus" prompt="..." strategy="synthesize"`
 <!-- foundry-sdd-end -->
 ```
 

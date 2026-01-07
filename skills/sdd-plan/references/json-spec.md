@@ -101,7 +101,7 @@ For `template="complex"` and `template="security"` specs, require:
 
 ```bash
 # Create from template
-mcp__plugin_foundry_foundry-mcp__authoring action="spec-create" name="feature-name" template="medium"
+mcp__plugin_foundry_foundry-mcp__authoring action="spec-create" name="feature-name" template="empty"
 
-# Templates: simple, medium, complex, security
+# Only 'empty' template available; add phases via phase-add-bulk or phase-template
 ```

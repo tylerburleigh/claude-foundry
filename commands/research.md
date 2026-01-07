@@ -119,17 +119,27 @@ Include brief rationale for why ambiguity was detected.
 When `deep` workflow is selected:
 
 1. **Start**: Invoke `mcp__...research action="deep-research" query="$PROMPT"`
-2. **Notify**: "Starting deep research on '{query}'. This may take a few minutes."
-3. **Poll**: Check `deep-research-status` every 15 seconds
-4. **Progress**: Update user at 25%, 50%, 75% completion
-5. **Report**: On completion, fetch and present `deep-research-report`
+2. **Notify**: "Starting deep research on '{query}'. This typically takes 2-5 minutes."
+3. **Poll**: Check status up to **5 times maximum** (not on a timer - Claude cannot delay)
+4. **Progress**: Report meaningful progress changes to user between each check
+5. **Stall check**: Research is stalled only if `elapsed_ms` > 300000 (5 min) AND no progress change
+6. **Report**: On completion, fetch and present `deep-research-report`
 
-If user interrupts, offer to continue in background:
+**Important:** Do NOT poll in rapid succession. Report progress to user between each status check.
+
+### Polling Communication
+
+- Check #1: "Research is underway. Currently in {phase} phase..."
+- Check #2-4: "Progress: {sub_queries_completed}/{sub_queries_total} queries completed..."
+- Check #5 (final): If not complete, offer user options
+
+### User Options (at check #5 or on stall)
+
 ```
 AskUserQuestion:
-"Research is still running. What would you like to do?"
+"Research is still running ({elapsed} minutes). What would you like to do?"
 Options:
-- "Continue polling (stay here)"
-- "Run in background (I'll check later with /research research-{id})"
+- "Keep waiting (check 2 more times)"
+- "Run in background (check later with /research research-{id})"
 - "Cancel research"
 ```
