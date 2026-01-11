@@ -20,15 +20,15 @@ description: Plan-first development methodology that creates detailed specificat
 
 ## Integrated Workflow
 
-This skill combines planning, review, modification, and validation into a unified flow:
+This skill follows a **plan-first methodology**. A markdown plan is **MANDATORY** before JSON spec creation, with human approval required after AI review.
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│  1. Analyze     2. Create Spec    3. AI Review    4. Apply     5. Validate  │
-│  ───────────    ────────────      ───────────     ──────────   ──────────   │
-│  Explore/LSP →  spec-create   →   spec-review →  apply-plan → validate-fix │
-│  (understand)   (scaffold)        (auto)         (if needed)  (auto-fix)   │
-└─────────────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│  1. Analyze    2. Create Plan    3. Plan Review   4. APPROVAL   5. Create Spec   6. Spec Review   7. Validate │
+│  ──────────    ─────────────     ────────────     ───────────   ─────────────    ────────────     ──────────  │
+│  Explore/LSP → plan-create   →   plan-review  →  HUMAN GATE →  spec-create  →   spec-review  →  validate-fix │
+│  (understand)  (MANDATORY)       (AI feedback)   (approve)     (from plan)      (auto)          (auto-fix)   │
+└──────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ### Flow
@@ -37,10 +37,22 @@ This skill combines planning, review, modification, and validation into a unifie
 
 ```
 - **Entry** → UnderstandIntent → Analyze[Explore|LSP]
-  - `authoring action="spec-create"` → scaffold spec
+- **Plan** (MANDATORY)
+  - `plan action="create"` → create markdown plan
+  - Fill in plan content with analysis results
+- **Plan Review** → `plan action="review"` (automatic)
+  - [findings?] → Revise plan based on feedback
+  - ↻ Re-review until no critical blockers
+- **(GATE: approve plan)**
+  - Present plan summary + AI review findings to user
+  - User must explicitly approve via AskUserQuestion
+  - [approved] → continue to spec creation
+  - [revise] → ↻ back to plan editing
+  - [abort] → **Exit** (no spec created)
+- **Spec Creation** → `authoring action="spec-create"`
   - `authoring action="phase-add-bulk"` ↻ per phase
   - `authoring action="spec-update-frontmatter"` → mission/metadata
-- **Review** → `review action="spec-review"` (automatic)
+- **Spec Review** → `review action="spec-review"` (automatic)
   - [findings?] → `review action="parse-feedback"`
   - (GATE: approve modifications) → `spec action="apply-plan"`
 - **Validate** → `spec action="validate"` ↻ [errors?] → `spec action="fix"`
@@ -94,19 +106,70 @@ Use **Explore subagents** for large codebases (prevents context bloat), or `Glob
 
 > See `references/codebase-analysis.md` for detailed patterns.
 
-### Step 3: Create Phase Plan
+### Step 3: Create Phase Plan (MANDATORY)
 
-For complex features, create a markdown phase plan first:
+**This step is REQUIRED.** All specifications must begin as markdown plans before JSON conversion.
 
 ```bash
 mcp__plugin_foundry_foundry-mcp__plan action="create" name="Feature Name" template="detailed"
 ```
 
-Get user approval before detailed spec creation.
+The command creates a template at `specs/.plans/feature-name.md`. Fill in all sections:
+- Mission statement (becomes `metadata.mission`)
+- Objective and success criteria
+- Phase breakdown with tasks
+- Risks and dependencies
+
+**After completing the plan:**
+1. Run AI review (Step 4)
+2. Obtain human approval (Step 5)
+3. Then proceed to JSON spec creation (Step 6)
 
 > See `references/phase-authoring.md` for templates and bulk macros.
+> See `references/phase-plan-template.md` for the plan structure.
 
-### Step 4: Create JSON Specification
+### Step 4: Run AI Review on Plan
+
+After completing the markdown plan, run AI review to catch issues before JSON conversion:
+
+```bash
+mcp__plugin_foundry_foundry-mcp__plan action="review" plan_path="specs/.plans/feature-name.md" review_type="full"
+```
+
+**Review types for plans:**
+| Type | Focus | Use When |
+|------|-------|----------|
+| `quick` | Critical blockers only | Simple plans |
+| `full` | All dimensions | Complex features |
+| `security` | Auth, data handling | Security-sensitive |
+| `feasibility` | Estimates, dependencies | Tight deadlines |
+
+**Review output:** Saved to `specs/.plan-reviews/<plan-name>-<review-type>.md`
+
+**Iterate if needed:** If the review identifies issues:
+1. Read the review feedback
+2. Revise the plan to address findings
+3. Re-run review until no critical blockers
+
+> See `references/ai-review.md` for review output format and iteration workflow.
+
+### Step 5: Human Approval Gate (MANDATORY)
+
+**Before creating the JSON spec, obtain explicit user approval.**
+
+Present to user:
+1. Plan summary (mission, phases, task count)
+2. AI review findings summary (critical/high/medium issues)
+3. Any unresolved questions or risks
+
+**Use `AskUserQuestion` with options:**
+- **"Approve & Create JSON Spec"** - Proceed to Step 6
+- **"Revise Plan"** - Return to Step 3 for modifications
+- **"Abort"** - Exit without creating spec
+
+**CRITICAL:** Do NOT proceed to JSON spec creation without explicit "Approve" response.
+
+### Step 6: Create JSON Specification (From Approved Plan)
 
 ```bash
 mcp__plugin_foundry_foundry-mcp__authoring action="spec-create" name="feature-name" template="empty"
@@ -135,7 +198,7 @@ mcp__plugin_foundry_foundry-mcp__authoring action="assumption-list" spec_id="{sp
 
 > See `references/json-spec.md` and `references/task-hierarchy.md` for structure details.
 
-### Step 5: Run AI Review (Automatic)
+### Step 7: Run AI Review on Spec (Automatic)
 
 After spec creation, AI review runs automatically:
 
@@ -155,7 +218,7 @@ mcp__plugin_foundry_foundry-mcp__review action="spec-review" spec_id="{spec-id}"
 > See `references/plan-review-dimensions.md` for review dimensions.
 > See `references/plan-review-consensus.md` for interpreting results.
 
-### Step 6: Apply Modifications (If Needed)
+### Step 8: Apply Modifications (If Needed)
 
 If review finds issues, parse and apply feedback:
 
@@ -173,7 +236,7 @@ mcp__plugin_foundry_foundry-mcp__spec action="apply-plan" spec_id="{spec-id}" mo
 > See `references/modification-workflow.md` for detailed workflow.
 > See `references/modification-operations.md` for operation formats.
 
-### Step 7: Validate Specification
+### Step 9: Validate Specification
 
 Validate and auto-fix the specification:
 

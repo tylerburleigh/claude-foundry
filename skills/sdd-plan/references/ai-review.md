@@ -65,14 +65,18 @@ Reviews are saved to: `specs/.plan-reviews/<plan-name>-<review-type>.md`
 ## Iteration Workflow
 
 ```
-1. Create plan → plan action="create"
+1. Create plan → plan action="create" (MANDATORY)
 2. Fill in content → Read + Edit
-3. Run review → plan action="review"
+3. Run AI review → plan action="review"
 4. Read feedback → specs/.plan-reviews/
 5. Revise plan → Edit based on feedback
 6. Re-review → plan action="review"
-7. Repeat until APPROVED
-8. Convert to spec → authoring action="spec-create"
+7. Repeat until no critical blockers
+8. HUMAN APPROVAL GATE → AskUserQuestion
+   - [approved] → continue
+   - [revise] → back to step 2
+   - [abort] → exit
+9. Convert to spec → authoring action="spec-create"
 ```
 
 ## Common Review Feedback
