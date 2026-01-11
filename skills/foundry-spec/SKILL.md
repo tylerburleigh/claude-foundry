@@ -22,31 +22,41 @@ description: Spec-first development methodology that creates detailed specificat
 
 This skill follows a **plan-first methodology**. A markdown plan is **MANDATORY** before JSON spec creation, with human approval required after AI review.
 
-See the flow below for the NBS version of the workflow.
+```
+┌──────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│  1. Analyze    2. Create Plan    3. Plan Review   4. APPROVAL   5. Create Spec   6. Spec Review   7. Validate │
+│  ──────────    ─────────────     ────────────     ───────────   ─────────────    ────────────     ──────────  │
+│  Explore/LSP → plan-create   →   plan-review  →  HUMAN GATE →  spec-create  →   spec-review  →  validate-fix │
+│  (understand)  (MANDATORY)       (AI feedback)   (approve)     (from plan)      (auto)          (auto-fix)   │
+└──────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+```
 
 ### Flow
 
 > `[x?]`=decision · `(GATE)`=user approval · `→`=sequence · `↻`=loop
 
 ```
-- **Entry** → Understand intent → Analyze
-  - [LSP available?] → LSP analysis
-  - [else] → Explore analysis
-  - **Plan** → `plan action="create"` → Fill plan content
-  - **Plan Review** → `plan action="review"`
-    - [findings?] → Revise plan → ↻ back to Plan Review
-  - (GATE: approve plan)
-    - [approved] → **Spec Creation** → `authoring action="spec-create"`
-      - `authoring action="phase-add-bulk"` → Add phases
-      - `authoring action="spec-update-frontmatter"` → Update mission/metadata
-      - **Spec Review** → `review action="spec-review"`
-        - [findings?] → `review action="parse-feedback"`
-        - (GATE: approve modifications) → `spec action="apply-plan"`
-      - **Validate** → `spec action="validate"`
-        - [errors?] → `spec action="fix"` → ↻ back to Validate
-      - **Exit** → specs/pending/{spec-id}.json
-    - [revise] → ↻ back to Plan
-    - [abort] → **Exit**: no spec created
+- **Entry** → UnderstandIntent → Analyze[Explore|LSP]
+- **Plan** (MANDATORY)
+  - `plan action="create"` → create markdown plan
+  - Fill in plan content with analysis results
+- **Plan Review** → `plan action="review"` (automatic)
+  - [findings?] → Revise plan based on feedback
+  - ↻ Re-review until no critical blockers
+- **(GATE: approve plan)**
+  - Present plan summary + AI review findings to user
+  - User must explicitly approve via AskUserQuestion
+  - [approved] → continue to spec creation
+  - [revise] → ↻ back to plan editing
+  - [abort] → **Exit** (no spec created)
+- **Spec Creation** → `authoring action="spec-create"`
+  - `authoring action="phase-add-bulk"` ↻ per phase
+  - `authoring action="spec-update-frontmatter"` → mission/metadata
+- **Spec Review** → `review action="spec-review"` (automatic)
+  - [findings?] → `review action="parse-feedback"`
+  - (GATE: approve modifications) → `spec action="apply-plan"`
+- **Validate** → `spec action="validate"` ↻ [errors?] → `spec action="fix"`
+- **Exit** → specs/pending/{spec-id}.json
 ```
 
 ## When to Use This Skill
