@@ -33,7 +33,7 @@ a user, has a title, optional description, and completed status.
 Use PostgreSQL with our existing Drizzle ORM setup.
 ```
 
-Claude recognizes this needs planning and invokes `sdd-plan`.
+Claude recognizes this needs planning and invokes `foundry-spec`.
 
 ### Creating the markdown plan
 
@@ -158,7 +158,7 @@ Claude responds:
 Spec activated!
 Moved to: specs/active/todo-feature-2025-01-15-001.json
 
-Ready to implement. Run /implement to get started.
+Ready to implement. Use foundry-implement to get started.
 ```
 
 ---
@@ -168,7 +168,7 @@ Ready to implement. Run /implement to get started.
 ### Starting the loop
 
 ```
-/implement
+Use foundry-implement
 ```
 
 Claude loads the spec and finds the first task:
@@ -345,7 +345,7 @@ router.post('/', authMiddleware, async (req, res) => {
 After implementing all tasks, we run a fidelity review:
 
 ```
-Run sdd-review on the completed spec.
+Run foundry-review on the completed spec.
 ```
 
 Claude analyzes:

@@ -1,10 +1,10 @@
-# Bikelane Integration
+# Note Integration
 
 Fast-capture intake queue for ideas/tasks that arise during implementation.
 
 ## Overview
 
-Bikelane provides low-friction capture without disrupting workflow. Items are stored in `specs/.bikelane/intake.jsonl` for later review.
+Note provides low-friction capture without disrupting workflow. Items are stored in `specs/.bikelane/intake.jsonl` for later review.
 
 **Key principle:** Capture autonomously. Do NOT prompt the user - just add items when you identify something worth capturing.
 
@@ -18,7 +18,7 @@ Bikelane provides low-friction capture without disrupting workflow. Items are st
 
 ## Autonomous Capture During Implementation
 
-**Proactively add to bikelane** whenever you encounter:
+**Proactively add notes** whenever you encounter:
 
 | Trigger | Title Prefix | Example |
 |---------|--------------|---------|
@@ -43,7 +43,7 @@ mcp__plugin_foundry_foundry-mcp__intake action="add" title="[Type] description" 
 
 ## Promotion Workflow
 
-When reviewing bikelane items, promote actionable ones to spec tasks:
+When reviewing note items, promote actionable ones to spec tasks:
 
 **Add to existing spec:**
 ```bash

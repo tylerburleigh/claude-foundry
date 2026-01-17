@@ -193,7 +193,7 @@ When some tasks in a batch fail:
 2. **Switch to interactive mode:**
    ```bash
    # Debug the specific failed task
-   /implement  # Without --parallel
+   foundry-implement  # Without --parallel
    ```
 
 3. **Block the task:**

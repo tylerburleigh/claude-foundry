@@ -37,10 +37,10 @@ Restart Claude Code when prompted and trust the repository.
 
 ## Step 2: Run Setup
 
-Run the setup command to configure Claude Foundry:
+Run the setup skill to configure Claude Foundry:
 
 ```
-/setup
+Use foundry-setup
 ```
 
 This interactive wizard will:
@@ -56,8 +56,8 @@ Follow the prompts to complete configuration.
 Before planning, you can explore your codebase or research best practices:
 
 ```
-/research How does this project currently handle API routes?
-/research deep Current best practices for API rate limiting
+Use foundry-research to explore how this project handles API routes
+Use foundry-research deep to research current best practices for API rate limiting
 ```
 
 This is optional but recommended for larger codebases, unfamiliar projects, or when you want to research industry best practices before committing to an approach.
@@ -71,7 +71,7 @@ I want to add a simple health check endpoint to my API that returns
 { "status": "ok" } when the server is running.
 ```
 
-Claude will invoke `sdd-plan` and guide you through:
+Claude will invoke `foundry-spec` and guide you through:
 
 1. **Creating a markdown plan** - outlining the approach
 2. **AI review** - checking for issues
@@ -92,7 +92,7 @@ Would you like to activate this spec and start implementation?
 Once the spec is activated, start implementing:
 
 ```
-/implement
+Use foundry-implement to work on the next task
 ```
 
 Claude will:
@@ -118,8 +118,8 @@ Ready to implement? [Yes / Skip / View details]
 
 You've just experienced the core SDD workflow:
 
-1. **Planning** (`sdd-plan`) - You described what you wanted, and Claude created a structured plan with AI review
-2. **Implementation** (`/implement`) - Claude guided you through each task systematically
+1. **Planning** (`foundry-spec`) - You described what you wanted, and Claude created a structured plan with AI review
+2. **Implementation** (`foundry-implement`) - Claude guided you through each task systematically
 3. **Progress tracking** - Each completed task is recorded with a journal entry
 
 The spec file in `specs/active/` contains the full plan, task status, and journal of what was done.
@@ -132,16 +132,12 @@ The spec file in `specs/active/` contains the full plan, task status, and journa
 
 ## Quick Reference
 
-| Command | What it does |
-|---------|--------------|
-| `/setup` | First-time configuration |
-| `/implement` | Find next task and implement it |
-| `/bikelane add <idea>` | Quick capture an idea for later |
-| `/research <question>` | AI-powered research |
-
-| Skill | When to use |
-|-------|-------------|
-| `sdd-plan` | Creating or modifying specs |
-| `sdd-review` | Verify implementation matches spec |
-| `run-tests` | Run tests and debug failures |
-| `sdd-pr` | Create a pull request |
+| Skill | What it does |
+|-------|--------------|
+| `foundry-spec` | Create or modify specs |
+| `foundry-implement` | Find next task and implement it |
+| `foundry-review` | Verify implementation matches spec |
+| `foundry-test` | Run tests and debug failures |
+| `foundry-pr` | Create a pull request |
+| `foundry-note` | Quick capture an idea for later |
+| `foundry-research` | AI-powered research |

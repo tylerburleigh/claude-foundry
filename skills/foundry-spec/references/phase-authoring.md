@@ -69,7 +69,7 @@ mcp__plugin_foundry_foundry-mcp__authoring action="phase-add-bulk" spec_id="{spe
 
 ## Quick Phase Refinements
 
-After creating a phase with `phase-add-bulk`, you may need to adjust phase-level metadata without invoking `sdd-modify`. Use `phase-update-metadata` for lightweight refinements:
+After creating a phase with `phase-add-bulk`, you may need to adjust phase-level metadata without using modification operations. Use `phase-update-metadata` for lightweight refinements:
 
 ```bash
 # Adjust estimated hours after reviewing task breakdown
@@ -82,13 +82,13 @@ mcp__plugin_foundry_foundry-mcp__authoring action="phase-update-metadata" spec_i
 mcp__plugin_foundry_foundry-mcp__authoring action="phase-update-metadata" spec_id="{spec-id}" phase_id="phase-2" estimated_hours=4.0 dry_run=true
 ```
 
-**When to use `phase-update-metadata` vs `sdd-modify`:**
+**When to use `phase-update-metadata` vs modification operations:**
 
 | Scenario | Recommendation |
 |----------|----------------|
 | Adjust phase hours, description, or purpose | Use `phase-update-metadata` |
-| Add/remove/reorder tasks within a phase | Use `sdd-modify` |
-| Bulk changes across multiple phases | Use `sdd-modify` |
+| Add/remove/reorder tasks within a phase | Use modification operations |
+| Bulk changes across multiple phases | Use modification operations |
 | Quick post-creation tweaks | Use `phase-update-metadata` |
 
 > This action is ideal for iterative refinement during spec creation without leaving the planning workflow.

@@ -53,9 +53,9 @@ Parallel mode spawns multiple subagents to work on independent tasks simultaneou
 ### Via Command Flag
 
 ```bash
-/implement --delegate --parallel                # Interactive parallel
-/implement --auto --delegate --parallel         # Autonomous parallel
-/implement --parallel                           # Implies --delegate
+foundry-implement --delegate --parallel                # Interactive parallel
+foundry-implement --auto --delegate --parallel         # Autonomous parallel
+foundry-implement --parallel                           # Implies --delegate
 ```
 
 ### Via TOML Defaults
@@ -71,7 +71,7 @@ model = "haiku"   # Model for subagents (haiku, sonnet, opus)
 
 ### Via Interactive Selection
 
-When running `/implement` without flags and no TOML defaults:
+When running `foundry-implement` without flags and no TOML defaults:
 ```
 "Select execution mode:"
 - "Interactive, inline (default)"

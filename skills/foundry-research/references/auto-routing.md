@@ -23,7 +23,7 @@ Intent-based workflow selection from natural language prompts.
 Both command and skill use the same routing logic:
 
 ```
-commands/research.md           skills/research/SKILL.md
+commandsfoundry-research.md           skillsfoundry-research/SKILL.md
         │                              │
         └──────────┬───────────────────┘
                    │
@@ -113,7 +113,7 @@ Options:
 
 When no clear signals detected:
 1. Default to `chat` workflow
-2. Include notice: "Using chat mode. For specific workflows, try `/research consensus|thinkdeep|ideate|deep`"
+2. Include notice: "Using chat mode. For specific workflows, try `foundry-research consensus|thinkdeep|ideate|deep`"
 3. Allow user to switch mid-conversation
 
 ## Edge Cases

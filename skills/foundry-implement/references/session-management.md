@@ -124,12 +124,12 @@ Autonomous execution pauses when specific thresholds are reached.
 **Resolution:**
 1. Complete current task if possible
 2. Record session state via `session-config command="pause" reason="context_limit"`
-3. Instruct user to run `/clear` then `/implement --auto` to resume
+3. Instruct user to run `/clear` then `foundry-implement --auto` to resume
 
 **Example recovery message:**
 ```
 Context at 87%. Session paused.
-Run `/clear` then `/implement --auto` to resume from task-3-2.
+Run `/clear` then `foundry-implement --auto` to resume from task-3-2.
 ```
 
 ### error_threshold
@@ -140,13 +140,13 @@ Run `/clear` then `/implement --auto` to resume from task-3-2.
 1. Pause session with `reason="error_threshold"`
 2. Surface failed tasks and error summaries
 3. User investigates and fixes issues manually
-4. Resume with `/implement --auto`
+4. Resume with `foundry-implement --auto`
 
 **Example recovery message:**
 ```
 3 consecutive tasks failed. Session paused.
 Review: task-2-1 (import error), task-2-2 (test failure), task-2-3 (blocked)
-Fix issues, then run `/implement --auto` to resume.
+Fix issues, then run `foundry-implement --auto` to resume.
 ```
 
 ### blocked_task
@@ -157,7 +157,7 @@ Fix issues, then run `/implement --auto` to resume.
 1. Pause session with `reason="blocked_task"`
 2. Surface blocker details
 3. User resolves blocker or skips task
-4. Resume with `/implement --auto`
+4. Resume with `foundry-implement --auto`
 
 ### task_limit
 
@@ -168,7 +168,7 @@ Fix issues, then run `/implement --auto` to resume.
 **Resolution:**
 1. Pause session with `reason="task_limit"`
 2. Summarize completed tasks
-3. User reviews and continues with `/implement --auto`
+3. User reviews and continues with `foundry-implement --auto`
 
 ### user_requested
 
@@ -177,7 +177,7 @@ Fix issues, then run `/implement --auto` to resume.
 **Resolution:**
 1. Complete current atomic operation if safe
 2. Record session state
-3. User resumes when ready with `/implement --auto`
+3. User resumes when ready with `foundry-implement --auto`
 
 ## Recovery Patterns
 
@@ -186,7 +186,7 @@ Fix issues, then run `/implement --auto` to resume.
 Session state persists across `/clear` boundaries via MCP storage.
 
 **Recovery flow:**
-1. User runs `/implement --auto`
+1. User runs `foundry-implement --auto`
 2. Command checks `session-config command="status"`
 3. If session exists and is `paused`:
    - Surface pause reason and last task
@@ -272,7 +272,7 @@ Session paused (context_limit). Continuing anyway...
 **Right:**
 ```
 Session paused (context_limit).
-Run `/clear` then `/implement --auto` to resume safely.
+Run `/clear` then `foundry-implement --auto` to resume safely.
 ```
 
 ### Manual State Manipulation

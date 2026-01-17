@@ -29,7 +29,7 @@ Unified management of conversation threads and deep research sessions.
 
 ## Unified Listing
 
-The `/research sessions` command shows both types:
+The `foundry-research sessions` command shows both types:
 
 ```bash
 mcp__plugin_foundry_foundry-mcp__research action="thread-list" limit=10
@@ -142,7 +142,7 @@ Options:
 
 ### Resume Thread
 ```
-/research thread-abc123 continue the discussion
+foundry-research thread-abc123 continue the discussion
 ```
 Invokes:
 ```bash
@@ -151,7 +151,7 @@ mcp__plugin_foundry_foundry-mcp__research action="chat" thread_id="thread-abc123
 
 ### Resume Research (check status)
 ```
-/research research-abc123
+foundry-research research-abc123
 ```
 Invokes:
 ```bash
@@ -200,14 +200,14 @@ Auto-cleanup runs daily. Users notified before archive/delete via system message
 
 ```bash
 # Only threads
-/research sessions list type=threads
+foundry-research sessions list type=threads
 
 # Only research
-/research sessions list type=research
+foundry-research sessions list type=research
 
 # All (default)
-/research sessions list
+foundry-research sessions list
 
 # Only completed research
-/research sessions list type=research completed=true
+foundry-research sessions list type=research completed=true
 ```

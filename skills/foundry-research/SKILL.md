@@ -9,7 +9,7 @@ description: AI-powered research skill with five workflows - chat (single-model 
 
 - **Purpose:** AI-powered research with multiple reasoning strategies
 - **Scope:** Five workflows, persistent thread and session management
-- **Entry:** `/research` command or `Skill(foundry:research)`
+- **Entry:** `Skill(foundry:foundry-research)` or user invocation
 
 ### Flow
 

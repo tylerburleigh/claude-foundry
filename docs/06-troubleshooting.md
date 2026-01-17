@@ -7,7 +7,7 @@ Solutions to common issues with Claude Foundry.
 Run this first to check your setup:
 
 ```
-/setup --check
+Use foundry-setup --check
 ```
 
 This verifies:
@@ -25,7 +25,7 @@ This verifies:
 
 **Symptoms:**
 - Commands fail with MCP-related errors
-- `/setup --check` shows foundry-mcp missing
+- `foundry-setup --check` shows foundry-mcp missing
 
 **Solutions:**
 
@@ -59,7 +59,7 @@ This verifies:
 
 1. **Re-run setup:**
    ```
-   /setup
+   Use foundry-setup to reconfigure permissions
    ```
    This will reconfigure permissions if needed.
 
@@ -69,7 +69,7 @@ This verifies:
    ```
 
 3. **Verify required permissions:**
-   The file should match `templates/settings.local.json.example`. If entries are missing, copy that template or re-run `/setup`.
+   The file should match `templates/settings.local.json.example`. If entries are missing, copy that template or use `foundry-setup` to reconfigure.
 
 ---
 
@@ -78,7 +78,7 @@ This verifies:
 ### "No active specs found"
 
 **Symptoms:**
-- `/implement` says no specs found
+- `foundry-implement` says no specs found
 - Can't find your spec
 
 **Solutions:**
@@ -96,7 +96,7 @@ This verifies:
    ```
 
 3. **If no specs exist:**
-   Create one with `sdd-plan`:
+   Create one with `foundry-spec`:
    ```
    I want to build [describe feature]
    ```
@@ -177,14 +177,14 @@ Claude Code has limited context window. Long sessions can approach this limit.
    ```
    Then:
    ```
-   /implement
+   Use foundry-implement
    ```
    Claude will reload the spec and continue.
 
 2. **Use delegated mode:**
    Each subagent gets fresh context:
    ```
-   /implement --delegate
+   Use foundry-implement --delegate
    ```
 
 3. **Break into smaller sessions:**
@@ -293,7 +293,7 @@ Language Server Protocol provides code intelligence. Some features need it.
 
 **Solutions:**
 
-1. **Use run-tests skill:**
+1. **Use foundry-test skill:**
    ```
    Run the tests and help me debug failures.
    ```
@@ -332,7 +332,7 @@ Language Server Protocol provides code intelligence. Some features need it.
 ### Deep research timing out
 
 **Symptoms:**
-- `/research deep` never returns
+- `foundry-research deep` never returns
 - Status check shows still running
 
 **What it means:**
@@ -342,7 +342,7 @@ Deep research runs in background and can take 2-5 minutes.
 
 1. **Check status:**
    ```
-   /research sessions status research-[id]
+   Use foundry-research to check status of research-[id]
    ```
 
 2. **Wait longer:**
@@ -351,7 +351,7 @@ Deep research runs in background and can take 2-5 minutes.
 3. **Try simpler workflow:**
    For faster results:
    ```
-   /research chat [question]
+   Use foundry-research chat [question]
    ```
 
 ### Research gives unhelpful answers
@@ -364,7 +364,7 @@ Deep research runs in background and can take 2-5 minutes.
 
 1. **Be more specific:**
    ```
-   /research chat Specifically, how does X handle Y in the context of Z?
+   Use foundry-research chat: Specifically, how does X handle Y in the context of Z?
    ```
 
 2. **Try different workflow:**
@@ -374,7 +374,7 @@ Deep research runs in background and can take 2-5 minutes.
 
 3. **Provide context:**
    ```
-   /research chat Given our use of [framework], how should we [question]?
+   Use foundry-research chat: Given our use of [framework], how should we [question]?
    ```
 
 ---
@@ -441,7 +441,7 @@ I'm having trouble with [issue]. Can you help diagnose?
 ### Capture for later
 If something seems like a bug:
 ```
-/bikelane add [Bug] Description of what went wrong
+Use foundry-note to capture: [Bug] Description of what went wrong
 ```
 
 ### Check plugin version

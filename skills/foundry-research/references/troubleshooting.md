@@ -24,7 +24,7 @@ Common issues and resolutions for research workflows.
 
 **Resolution:**
 1. Verify thread ID format: `thread-[alphanumeric]`
-2. List available threads: `/research threads list`
+2. List available threads: `foundry-research threads list`
 3. Start new thread if original unavailable
 
 ### Thread Corruption
@@ -100,7 +100,7 @@ Common issues and resolutions for research workflows.
 1. Check for pending user prompt
 2. Force phase transition:
    ```
-   `/research ideate phase=convergent`
+   `foundry-research ideate phase=convergent`
    ```
 3. Add ideas manually before converging
 
@@ -124,7 +124,7 @@ Common issues and resolutions for research workflows.
 
 **Resolution:**
 1. Verify research ID format: `research-[alphanumeric]`
-2. List available sessions: `/research sessions list type=research`
+2. List available sessions: `foundry-research sessions list type=research`
 3. Start new research if original unavailable
 
 ### RESEARCH_TIMEOUT

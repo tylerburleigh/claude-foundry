@@ -1,13 +1,13 @@
 ---
-name: foundry-bikelane
+name: foundry-note
 description: Fast-capture intake queue for ideas and follow-up tasks. Add items quickly, list pending items, or dismiss resolved ones.
 ---
 
-# Bikelane: Fast Capture Skill
+# Note: Fast Capture Skill
 
 ## Overview
 
-`Skill(foundry:foundry-bikelane)` provides a low-friction intake queue for capturing ideas, bugs, and follow-up tasks without disrupting your current workflow. Items are stored for later review and can be promoted to spec tasks.
+`Skill(foundry:foundry-note)` provides a low-friction intake queue for capturing ideas, bugs, and follow-up tasks without disrupting your current workflow. Items are stored for later review and can be promoted to spec tasks.
 
 **Core capabilities:**
 - Quick capture of ideas, bugs, and documentation gaps
@@ -108,15 +108,15 @@ mcp__plugin_foundry_foundry-mcp__intake action="dismiss" item_id="{item-id}" rea
 
 **Add an idea:**
 ```
-Skill(foundry:foundry-bikelane) "Add idea: implement caching layer for API responses"
+Skill(foundry:foundry-note) "Add idea: implement caching layer for API responses"
 ```
 
 **List pending items:**
 ```
-Skill(foundry:foundry-bikelane) "Show me the intake queue"
+Skill(foundry:foundry-note) "Show me the intake queue"
 ```
 
 **Dismiss an item:**
 ```
-Skill(foundry:foundry-bikelane) "Dismiss item intake-001, it was fixed in the last PR"
+Skill(foundry:foundry-note) "Dismiss item intake-001, it was fixed in the last PR"
 ```

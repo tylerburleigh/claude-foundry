@@ -45,7 +45,7 @@ mcp__plugin_foundry_foundry-mcp__lifecycle action="activate" spec_id={spec-id}
 1. Complete current task
 2. Mark task complete with journal
 3. Run `/clear`
-4. Resume with `/implement`
+4. Resume with `foundry-implement`
 
 ## MCP Tools Not Responding
 
@@ -54,7 +54,7 @@ mcp__plugin_foundry_foundry-mcp__lifecycle action="activate" spec_id={spec-id}
 **Resolution:**
 1. Check foundry-mcp is installed: `python -m foundry_mcp.server --help`
 2. Restart Claude Code
-3. Run `/implement` again
+3. Run `foundry-implement` again
 
 ## Quick Reference
 

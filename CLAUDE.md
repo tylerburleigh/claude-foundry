@@ -20,7 +20,7 @@ foundry-spec → foundry-implement → [CODE] → foundry-review → foundry-tes
 | Run tests and debug failures | `foundry-test` |
 | Create PR with spec context | `foundry-pr` |
 | Safe refactoring with LSP | `foundry-refactor` |
-| Quick capture ideas/issues | `foundry-bikelane` |
+| Quick capture ideas/issues | `foundry-note` |
 | AI research (chat, consensus, thinkdeep, ideate, deep) | `foundry-research` |
 
 ## Key Patterns
@@ -38,7 +38,7 @@ foundry-spec → foundry-implement → [CODE] → foundry-review → foundry-tes
 
 **Context Flow**: Spec metadata (journals, dependencies, completion notes) passes through the workflow.
 
-**Bikelane (Autonomous Capture)**: Proactively add to bikelane when encountering issues - do NOT prompt the user:
+**Note (Autonomous Capture)**: Proactively add notes when encountering issues - do NOT prompt the user:
 - MCP tool errors or unexpected failures → `[Error]`
 - Missing/wished-for tools → `[Feature]`
 - Confusing behavior or documentation gaps → `[Docs]`
@@ -48,7 +48,7 @@ foundry-spec → foundry-implement → [CODE] → foundry-review → foundry-tes
 mcp__plugin_foundry_foundry-mcp__intake action="add" title="[Type] description" tags='["foundry-feedback"]' source="skill-name"
 ```
 
-User can invoke `foundry-bikelane` skill for manual capture or list pending items.
+User can invoke `foundry-note` skill for manual capture or list pending items.
 
 ## Common Workflows
 

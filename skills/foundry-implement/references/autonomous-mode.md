@@ -57,9 +57,9 @@ Autonomous mode uses session-config to track state:
 ### Via Command Flag
 
 ```bash
-/implement --auto                         # Inline execution
-/implement --auto --delegate              # Delegate to subagent
-/implement --auto --delegate --parallel   # Concurrent subagents
+foundry-implement --auto                         # Inline execution
+foundry-implement --auto --delegate              # Delegate to subagent
+foundry-implement --auto --delegate --parallel   # Concurrent subagents
 ```
 
 ### Via TOML Defaults
@@ -74,7 +74,7 @@ parallel = false  # Sequential by default
 
 ### Via Interactive Selection
 
-When running `/implement` without flags and no TOML defaults:
+When running `foundry-implement` without flags and no TOML defaults:
 ```
 "Select execution mode:"
 - "Interactive, inline (default)"
@@ -87,7 +87,7 @@ When running `/implement` without flags and no TOML defaults:
 ### Resuming a Paused Session
 
 ```bash
-/implement --auto
+foundry-implement --auto
 # If session exists and is paused, you'll be prompted:
 # "Resume session?" / "Start fresh?"
 ```
@@ -120,7 +120,7 @@ Autonomous execution pauses when specific thresholds are reached.
 ```
 Context at 87%. Session paused at task-3-2.
 Completed 5 tasks this session.
-Run `/clear` then `/implement --auto` to resume.
+Run `/clear` then `foundry-implement --auto` to resume.
 ```
 
 ### Error Threshold (>= 3 Consecutive)
@@ -139,7 +139,7 @@ Failed tasks:
 - task-2-1: ImportError in module X
 - task-2-2: Test assertion failed
 - task-2-3: Blocked by missing dependency
-Fix issues manually, then `/implement --auto` to resume.
+Fix issues manually, then `foundry-implement --auto` to resume.
 ```
 
 ### Blocked Task
@@ -170,7 +170,7 @@ Resolve blocker or mark task as skipped, then resume.
 ```
 Completed 10 tasks this session. Checkpoint pause.
 Progress: 10/25 tasks (40%)
-Review changes, then `/implement --auto` to continue.
+Review changes, then `foundry-implement --auto` to continue.
 ```
 
 ### User Interrupt
@@ -189,7 +189,7 @@ Review changes, then `/implement --auto` to continue.
 Session state persists in MCP storage. Recovery flow:
 
 ```
-User runs: /implement --auto
+User runs: foundry-implement --auto
     │
     ├─ Check session-config status
     │
@@ -207,7 +207,7 @@ User runs: /implement --auto
 ### After Context Limit
 
 1. Run `/clear` to reset context
-2. Run `/implement --auto`
+2. Run `foundry-implement --auto`
 3. Accept "Resume session" prompt
 4. Execution continues from paused task
 
@@ -215,7 +215,7 @@ User runs: /implement --auto
 
 1. Review error output from pause message
 2. Fix underlying issues (imports, tests, dependencies)
-3. Run `/implement --auto`
+3. Run `foundry-implement --auto`
 4. Accept "Resume session" prompt
 5. Error counter resets on successful task completion
 
@@ -223,17 +223,17 @@ User runs: /implement --auto
 
 **Option A: Resolve the blocker**
 1. Complete the blocking task manually
-2. Run `/implement --auto` to resume
+2. Run `foundry-implement --auto` to resume
 
 **Option B: Skip the blocked task**
 1. Mark task as blocked/skipped via MCP
-2. Run `/implement --auto` to continue with next available
+2. Run `foundry-implement --auto` to continue with next available
 
 ### Abandoning a Session
 
 To start completely fresh:
 ```bash
-/implement --auto
+foundry-implement --auto
 # When prompted "Resume session?", select "Start fresh"
 ```
 

@@ -9,7 +9,7 @@ description: Task implementation skill for spec-driven workflows. Reads specific
 
 - **Purpose:** Task execution workflow - select tasks, plan implementation, and track progress within an active spec.
 - **Scope:** Single-task execution with user approval at key checkpoints.
-- **Entry:** Invoked by `/implement-cmd` command after spec has been identified.
+- **Entry:** Invoked via skill system after spec has been identified.
 
 ### Flow
 
@@ -193,7 +193,7 @@ Direct JSON access (`Read()`, `cat`, `jq`, `grep`, etc.) is prohibited.
 ### Anti-Recursion Rule (NEVER VIOLATE)
 
 This skill must NEVER invoke itself or `Skill(foundry-implement)`. The only valid callers are:
-- The `/implement` command (entry point)
+- The skill system (entry point)
 - Direct user invocation
 
 If you find yourself about to call `Skill(foundry-implement)` from within this skill, **STOP** and proceed with the workflow instead. The skill handles the complete task lifecycle - there is no need to re-invoke it.
@@ -207,7 +207,7 @@ If you find yourself about to call `Skill(foundry-implement)` from within this s
 
 Execute one task at a time with explicit user approval.
 
-**Assumption:** The `/next-cmd` command has already identified the active spec and passed it to this skill.
+**Assumption:** The active spec has been identified (either via skill auto-discovery or passed during invocation).
 
 ### Select Task
 
@@ -324,9 +324,9 @@ This atomically:
 3. Creates a journal entry
 4. Auto-journals parent nodes (phases) when they complete
 
-### Bikelane (Autonomous Capture)
+### Note (Autonomous Capture)
 
-**Proactively add to bikelane** when you encounter:
+**Proactively add notes** when you encounter:
 - Ideas/improvements beyond current task scope
 - Bugs noticed but not immediately actionable
 - Documentation gaps or confusing behavior
@@ -337,11 +337,11 @@ mcp__plugin_foundry_foundry-mcp__intake action="add" title="[Type] description" 
 
 **Do NOT prompt the user.** Silently capture and continue working.
 
-> For capture patterns and examples, see `references/bikelane.md`
+> For capture patterns and examples, see `references/note.md`
 
 ### Surface Next Recommendation
 
-**Context Awareness:** The `context-monitor` hook automatically warns when context exceeds 85%. If you see `[CONTEXT X%]` warnings, follow the recommendation to `/clear` then `/next-cmd` after completing the current task.
+**Context Awareness:** The `context-monitor` hook automatically warns when context exceeds 85%. If you see `[CONTEXT X%]` warnings, follow the recommendation to `/clear` then `foundry-implement` after completing the current task.
 
 **Surface next recommendation:**
 ```bash
@@ -355,7 +355,7 @@ mcp__plugin_foundry_foundry-mcp__task action="prepare" spec_id={spec-id}
 
 After surfacing the next task, you MUST prompt the user with `AskUserQuestion`:
 - **When context < 85%**: Ask "Continue to next task?" with options: "Yes, continue" / "No, exit"
-- **When context >= 85%**: Exit with guidance to `/clear` then `/next-cmd`
+- **When context >= 85%**: Exit with guidance to `/clear` then `foundry-implement`
 - **When spec is complete**: Report completion status and exit (no prompt needed)
 
 This gate ensures the user controls the workflow pace and prevents runaway execution.
@@ -467,7 +467,7 @@ For comprehensive documentation including:
 - Post-implementation checklist → `references/checklist.md`
 - Verification task workflow → `references/verification.md`
 - Research node workflow → `references/research-workflow.md`
-- Bikelane quick capture → `references/bikelane.md`
+- Note quick capture → `references/note.md`
 
 **Task Lifecycle:**
 - Task status transitions → `references/task-lifecycle.md`

@@ -173,7 +173,7 @@ Skills are invoked by Claude based on your intent. Describe what you want, and C
 | `foundry-pr` | You ask to create a pull request |
 | `foundry-refactor` | You ask to rename, extract, or move code |
 | `foundry-research` | You ask to research or investigate something |
-| `foundry-bikelane` | You ask to capture an idea or track an issue |
+| `foundry-note` | You ask to capture an idea or track an issue |
 | `foundry-setup` | First-time setup and permissions configuration |
 
 ## Configuration

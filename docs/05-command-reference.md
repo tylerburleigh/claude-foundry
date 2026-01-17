@@ -1,27 +1,36 @@
-# Command Reference
+# Skill Reference
 
-Detailed documentation for all Claude Foundry commands and skills.
+Detailed documentation for all Claude Foundry skills.
 
-## Commands vs Skills
+## How to Invoke Skills
 
-| Type | How to invoke | Example |
-|------|--------------|---------|
-| **Commands** | Slash commands in chat | `/implement` |
-| **Skills** | Ask Claude to use them | "Use sdd-plan to..." |
+Skills are invoked by asking Claude to use them naturally:
 
-Commands are shortcuts that invoke skills or MCP-backed workflows with common configurations.
+```
+Use foundry-spec to create a plan for user authentication
+Use foundry-implement to work on the next task
+Use foundry-note to capture this idea
+```
+
+Or invoke directly with `Skill(foundry:skill-name)`.
 
 ---
 
-## Commands
+## Skills
 
-### /setup
+### foundry-setup
 
 First-time configuration and verification.
 
-**Usage:**
+**When to use:**
+- Setting up Claude Foundry for the first time
+- Verifying your installation is working
+- Re-configuring after changes
+
+**Invoking:**
 ```
-/setup [--check]
+Use foundry-setup to configure Claude Foundry
+Use foundry-setup --check to verify installation
 ```
 
 **Options:**
@@ -36,182 +45,9 @@ First-time configuration and verification.
 4. Configures foundry-mcp.toml if needed
 5. Verifies permissions
 
-**Example:**
-```
-/setup --check
-
-Pre-flight check results:
-✓ foundry-mcp installed (v1.2.0)
-✓ Python 3.11 available
-✓ Git repository detected
-✓ specs/ directory exists
-✓ Permissions configured
-
-All checks passed!
-```
-
 ---
 
-### /implement
-
-Start or resume task implementation.
-
-**Usage:**
-```
-/implement [--auto] [--delegate] [--parallel] [--model MODEL]
-```
-
-**Options:**
-| Option | Description |
-|--------|-------------|
-| `--auto` | Reduce prompts between tasks |
-| `--delegate` | Use subagent for each task |
-| `--parallel` | Run multiple subagents concurrently (requires `--delegate`) |
-| `--model MODEL` | Model for delegation: `haiku`, `sonnet`, `opus` |
-
-Defaults come from `[implement]` in `foundry-mcp.toml`. If that section is absent, `/implement` runs in interactive inline mode; `/setup` recommends that default.
-
-**Execution modes:**
-
-| Mode | Flags | Best for |
-|------|-------|----------|
-| Interactive | (none) | Learning, complex work |
-| Autonomous | `--auto` | Routine tasks, faster flow |
-| Delegated | `--delegate` | Many tasks, fresh context per task |
-| Parallel | `--delegate --parallel` | Independent tasks, max speed |
-
-**Examples:**
-```bash
-# Interactive (default when not configured)
-/implement
-
-# Faster with less prompting
-/implement --auto
-
-# Delegate to subagents with Sonnet
-/implement --delegate --model sonnet
-
-# Maximum parallelism
-/implement --delegate --parallel
-```
-
-**What happens:**
-1. Finds active spec (or asks which to work on)
-2. Recommends next task based on dependencies
-3. Shows task details and acceptance criteria
-4. Implements task (you or subagent)
-5. Marks complete with journal entry
-6. Offers to continue to next task
-
----
-
-### /bikelane
-
-Quick capture for ideas and issues.
-
-**Usage:**
-```
-/bikelane [add|list|dismiss] [ITEM]
-```
-
-**Actions:**
-| Command | Description |
-|---------|-------------|
-| `/bikelane <title>` or `/bikelane add <title>` | Capture a new item |
-| `/bikelane` | Prompt for a title |
-| `/bikelane list` | Show pending items |
-| `/bikelane dismiss ID` | Mark item resolved |
-
-**Item types:**
-Use prefixes to categorize:
-- `[Bug]` - Issues to fix
-- `[Feature]` - Ideas for features
-- `[Docs]` - Documentation improvements
-- `[Idea]` - General ideas
-- `[Error]` - Errors encountered
-
-**Examples:**
-```bash
-# Capture an idea
-/bikelane add [Feature] Add rate limiting to auth endpoints
-
-# List pending items
-/bikelane list
-
-# Dismiss a resolved item
-/bikelane dismiss item-001
-```
-
-**Why use bikelane?**
-- Capture without interrupting flow
-- Review ideas later when appropriate
-- Don't lose track of small improvements
-
----
-
-### /research
-
-AI-powered research workflows.
-
-**Usage:**
-```
-/research [WORKFLOW] [PROMPT]
-/research thread-ID [FOLLOW-UP]
-/research sessions [list|get|delete|status|report]
-```
-
-**Workflows:**
-| Workflow | Description | Use for |
-|----------|-------------|---------|
-| `chat` | Single-model conversation | Quick questions, iteration |
-| `consensus` | Multiple AI perspectives | Design decisions, trade-offs |
-| `thinkdeep` | Systematic investigation | Complex debugging, analysis |
-| `ideate` | Creative brainstorming | Exploring options |
-| `deep` | Web research (background) | Comprehensive research |
-
-**Examples:**
-```bash
-# Quick question
-/research chat What's the best way to handle JWT refresh?
-
-# Get multiple perspectives
-/research consensus Should we use Redis or PostgreSQL for sessions?
-
-# Systematic analysis
-/research thinkdeep Why is this test flaky?
-
-# Creative brainstorming
-/research ideate How could we improve the onboarding flow?
-
-# Deep research (runs in background)
-/research deep Current best practices for API rate limiting 2025
-
-# Resume a previous conversation
-/research thread-abc123 What about the security implications?
-
-# Check status of deep research
-/research sessions status research-xyz789
-```
-
-**Session management:**
-```bash
-# List all research sessions
-/research sessions list
-
-# Get a specific session
-/research sessions get research-xyz789
-
-# Delete a session
-/research sessions delete research-xyz789
-```
-
----
-
-## Skills
-
-Skills are invoked by asking Claude to use them. They can also be invoked directly with `Skill(foundry:skill-name)`.
-
-### sdd-plan
+### foundry-spec
 
 Create and manage specifications.
 
@@ -232,7 +68,7 @@ Create and manage specifications.
 
 **Invoking:**
 ```
-Use sdd-plan to create a spec for user authentication.
+Use foundry-spec to create a spec for user authentication.
 ```
 
 Or describe the feature and let Claude recognize the need:
@@ -252,7 +88,7 @@ I want to add user authentication with JWT tokens.
 
 ---
 
-### sdd-implement
+### foundry-implement
 
 Task execution and progress tracking.
 
@@ -261,10 +97,31 @@ Task execution and progress tracking.
 - When resuming work
 - To check what's next
 
-**Usually invoked via `/implement` command**, but can be invoked directly:
+**Invoking:**
 ```
-Use sdd-implement to work on the next task.
+Use foundry-implement to work on the next task
+Use foundry-implement --auto for less prompting
+Use foundry-implement --delegate to use subagents
+Use foundry-implement --delegate --parallel for parallel execution
 ```
+
+**Options:**
+| Option | Description |
+|--------|-------------|
+| `--auto` | Reduce prompts between tasks |
+| `--delegate` | Use subagent for each task |
+| `--parallel` | Run multiple subagents concurrently (requires `--delegate`) |
+| `--model MODEL` | Model for delegation: `haiku`, `sonnet`, `opus` |
+
+Defaults come from `[implement]` in `foundry-mcp.toml`.
+
+**Execution modes:**
+| Mode | Flags | Best for |
+|------|-------|----------|
+| Interactive | (none) | Learning, complex work |
+| Autonomous | `--auto` | Routine tasks, faster flow |
+| Delegated | `--delegate` | Many tasks, fresh context per task |
+| Parallel | `--delegate --parallel` | Independent tasks, max speed |
 
 **Task lifecycle:**
 ```
@@ -283,7 +140,7 @@ pending → in_progress → completed
 
 ---
 
-### sdd-review
+### foundry-review
 
 Verify implementation matches specification.
 
@@ -294,9 +151,9 @@ Verify implementation matches specification.
 
 **Invoking:**
 ```
-Run sdd-review on phase 1.
-Run sdd-review on the entire spec.
-Use sdd-review to check task-2-3.
+Run foundry-review on phase 1.
+Run foundry-review on the entire spec.
+Use foundry-review to check task-2-3.
 ```
 
 **Review types:**
@@ -316,7 +173,7 @@ Use sdd-review to check task-2-3.
 
 ---
 
-### run-tests
+### foundry-test
 
 Execute tests and debug failures.
 
@@ -328,7 +185,7 @@ Execute tests and debug failures.
 **Invoking:**
 ```
 Run the tests.
-Use run-tests to debug the failing tests.
+Use foundry-test to debug the failing tests.
 ```
 
 **Failure categories:**
@@ -351,7 +208,7 @@ Use run-tests to debug the failing tests.
 
 ---
 
-### sdd-pr
+### foundry-pr
 
 Create pull requests with full context.
 
@@ -363,7 +220,7 @@ Create pull requests with full context.
 **Invoking:**
 ```
 Create a PR for this spec.
-Use sdd-pr to create a pull request.
+Use foundry-pr to create a pull request.
 ```
 
 **Context sources:**
@@ -381,7 +238,7 @@ Use sdd-pr to create a pull request.
 
 ---
 
-### sdd-refactor
+### foundry-refactor
 
 Safe refactoring with LSP.
 
@@ -395,7 +252,7 @@ Safe refactoring with LSP.
 ```
 Rename 'oldFunction' to 'newFunction' across the codebase.
 Extract this code block into a function called 'helper'.
-Use sdd-refactor to clean up unused imports.
+Use foundry-refactor to clean up unused imports.
 ```
 
 **Operations:**
@@ -411,6 +268,79 @@ Use sdd-refactor to clean up unused imports.
 - Shows impact before changes
 - Requires approval for large refactors
 - Verifies all references updated
+
+---
+
+### foundry-note
+
+Quick capture for ideas and issues.
+
+**When to use:**
+- Capturing ideas without interrupting flow
+- Recording bugs or issues for later
+- Documenting thoughts to review later
+
+**Invoking:**
+```
+Use foundry-note to capture: Add rate limiting to auth endpoints
+Use foundry-note to list pending items
+Use foundry-note to dismiss item-001
+```
+
+**Actions:**
+| Action | Description |
+|--------|-------------|
+| add | Capture a new item |
+| list | Show pending items |
+| dismiss | Mark item resolved |
+
+**Item types (prefixes):**
+- `[Bug]` - Issues to fix
+- `[Feature]` - Ideas for features
+- `[Docs]` - Documentation improvements
+- `[Idea]` - General ideas
+- `[Error]` - Errors encountered
+
+**Why use foundry-note?**
+- Capture without interrupting flow
+- Review ideas later when appropriate
+- Don't lose track of small improvements
+
+---
+
+### foundry-research
+
+AI-powered research workflows.
+
+**When to use:**
+- Complex investigations
+- Design decisions needing multiple perspectives
+- Learning about unfamiliar topics
+- Web research for best practices
+
+**Invoking:**
+```
+Use foundry-research to explore how authentication works in this codebase
+Use foundry-research consensus to get perspectives on Redis vs PostgreSQL for sessions
+Use foundry-research thinkdeep to investigate why this test is flaky
+Use foundry-research deep to research API rate limiting best practices 2025
+```
+
+**Workflows:**
+| Workflow | Description | Use for |
+|----------|-------------|---------|
+| `chat` | Single-model conversation | Quick questions, iteration |
+| `consensus` | Multiple AI perspectives | Design decisions, trade-offs |
+| `thinkdeep` | Systematic investigation | Complex debugging, analysis |
+| `ideate` | Creative brainstorming | Exploring options |
+| `deep` | Web research (background) | Comprehensive research |
+
+**Thread management:**
+```
+Use foundry-research to continue thread-abc123: What about security implications?
+Use foundry-research to list sessions
+Use foundry-research to get session research-xyz789
+```
 
 ---
 
@@ -451,23 +381,18 @@ default_provider = "[cli]codex:gpt-5.2-codex"
 
 ## Quick Reference Card
 
-### Common commands
-```bash
-/setup --check     # Verify setup
-/implement         # Start/resume work
-/implement --auto  # Less prompting
-/bikelane add X    # Capture idea
-/research chat X   # Quick research
-```
-
 ### Common skill invocations
 ```
-Create a spec for [feature]           → sdd-plan
-Check what's next                     → sdd-implement
-Verify implementation matches spec    → sdd-review
-Run and debug tests                   → run-tests
-Create a PR                           → sdd-pr
-Rename X to Y                         → sdd-refactor
+Use foundry-setup --check              # Verify installation
+Use foundry-spec to plan [feature]     # Create a specification
+Use foundry-implement                  # Start/resume work
+Use foundry-implement --auto           # Less prompting
+Use foundry-review on phase 1          # Verify implementation
+Use foundry-test                       # Run and debug tests
+Use foundry-pr                         # Create a PR
+Use foundry-refactor to rename X to Y  # Safe refactoring
+Use foundry-note to capture [idea]     # Quick capture
+Use foundry-research chat [question]   # Quick research
 ```
 
 ---

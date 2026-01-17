@@ -168,7 +168,7 @@ When stall detected (>5 min with no progress), use AskUserQuestion:
 ```
 "Research appears stalled ({elapsed} minutes, no progress). Options:"
 - "Keep waiting (check 2 more times)"
-- "Run in background (check later with /research research-{id})"
+- "Run in background (check later with foundry-research research-{id})"
 - "Cancel and try different query"
 ```
 
@@ -232,7 +232,7 @@ When stall detected (>5 min with no progress), use AskUserQuestion:
 Deep research sessions are listed alongside threads in unified session management:
 
 ```
-/research sessions list
+foundry-research sessions list
 ```
 
 Shows both:

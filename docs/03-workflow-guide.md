@@ -4,25 +4,25 @@ The complete Spec-Driven Development workflow explained step by step.
 
 ## What you'll learn
 
-- How to plan features with `sdd-plan`
-- How to implement tasks with `/implement`
-- How to verify your work with `sdd-review`
-- How to debug tests with `run-tests`
-- How to create PRs with `sdd-pr`
+- How to plan features with `foundry-spec`
+- How to implement tasks with `foundry-implement`
+- How to verify your work with `foundry-review`
+- How to debug tests with `foundry-test`
+- How to create PRs with `foundry-pr`
 - Supporting skills for research and refactoring
 
 ## The SDD Workflow
 
 ```
-/research → describe intent → /implement → (auto-verify) → /sdd-pr
-    │             │               │              │              │
- Explore      Claude          Work on       Verify tasks     Ship it
- codebase     creates         tasks via     auto-dispatch
- or web       spec            dependency    to sdd-review
-                              order         or run-tests
+foundry-research → describe intent → foundry-implement → (auto-verify) → foundry-pr
+       │                 │                  │                  │              │
+    Explore          Claude            Work on           Verify tasks     Ship it
+    codebase         creates           tasks via         auto-dispatch
+    or web           spec              dependency        to foundry-review
+                                       order             or foundry-test
 ```
 
-**Key insight:** You don't manually call `sdd-review` or `run-tests`. Specs include verification tasks that `/implement` auto-dispatches when reached.
+**Key insight:** You don't manually call `foundry-review` or `foundry-test`. Specs include verification tasks that `foundry-implement` auto-dispatches when reached.
 
 Each step has a specific skill. Let's walk through each one.
 
@@ -35,8 +35,8 @@ Each step has a specific skill. Let's walk through each one.
 ### Starting research
 
 ```
-/research How does this project handle authentication?
-/research deep Current best practices for JWT refresh tokens 2025
+Use foundry-research to explore how this project handles authentication
+Use foundry-research deep to research current best practices for JWT refresh tokens 2025
 ```
 
 ### Research workflows
@@ -53,7 +53,7 @@ Research helps you make informed decisions before committing to a plan. Use `dee
 
 ---
 
-## 1. Planning with sdd-plan
+## 1. Planning with foundry-spec
 
 **When to use:** Starting a new feature, complex bug fix, refactoring, or any work that benefits from upfront planning.
 
@@ -73,10 +73,10 @@ Simply describe what you want to build:
 I want to add user authentication with JWT tokens to my Express API.
 ```
 
-Claude will invoke `sdd-plan` automatically, or you can ask directly:
+Claude will invoke `foundry-spec` automatically, or you can ask directly:
 
 ```
-Use sdd-plan to create a spec for adding JWT authentication.
+Use foundry-spec to create a spec for adding JWT authentication.
 ```
 
 ### Stage 1: Creating the markdown plan
@@ -159,7 +159,7 @@ The spec starts in `pending`. When ready:
 Spec created. Would you like to activate it now?
 ```
 
-Activating moves the spec to `active/` and makes it available for `/implement`.
+Activating moves the spec to `active/` and makes it available for `foundry-implement`.
 
 ### Tips for good specs
 
@@ -170,14 +170,14 @@ Activating moves the spec to `active/` and makes it available for `/implement`.
 
 ---
 
-## 2. Implementing with /implement
+## 2. Implementing with foundry-implement
 
 **When to use:** After you have an active spec and want to make progress.
 
 ### Starting implementation
 
 ```
-/implement
+Use foundry-implement to work on the next task
 ```
 
 Claude finds your active spec and recommends the next task based on:
@@ -266,18 +266,18 @@ Control how much prompting you want:
 
 Examples:
 
-```bash
+```
 # Interactive (default) - most control
-/implement
+Use foundry-implement
 
 # Autonomous - fewer prompts, you still implement
-/implement --auto
+Use foundry-implement --auto
 
 # Delegated - subagent implements, you approve
-/implement --delegate
+Use foundry-implement --delegate
 
 # Parallel delegation - fast, less control
-/implement --delegate --parallel
+Use foundry-implement --delegate --parallel
 ```
 
 ### Progress tracking
@@ -296,13 +296,13 @@ Claude shows:
 
 ---
 
-## 3. Reviewing with sdd-review
+## 3. Reviewing with foundry-review
 
 **When to use:** After implementing a phase or the entire spec, before final testing.
 
 ### What it does
 
-`sdd-review` compares your implementation against the spec:
+`foundry-review` compares your implementation against the spec:
 
 - Did you implement what the spec said?
 - Are there any deviations?
@@ -311,13 +311,13 @@ Claude shows:
 ### Running a review
 
 ```
-Run sdd-review on phase 1.
+Run foundry-review on phase 1.
 ```
 
 Or for the whole spec:
 
 ```
-Run sdd-review on the entire spec.
+Run foundry-review on the entire spec.
 ```
 
 ### The review process
@@ -364,7 +364,7 @@ Claude will modify the spec to match reality, keeping documentation accurate.
 
 ---
 
-## 4. Testing with run-tests
+## 4. Testing with foundry-test
 
 **When to use:** When tests fail or you need to debug test issues systematically.
 
@@ -377,7 +377,7 @@ Run the tests for this project.
 Or invoke directly:
 
 ```
-Use run-tests to debug the failing tests.
+Use foundry-test to debug the failing tests.
 ```
 
 ### What it does
@@ -414,13 +414,13 @@ The AI will:
 
 ---
 
-## 5. Creating PRs with sdd-pr
+## 5. Creating PRs with foundry-pr
 
 **When to use:** When your spec is complete and you're ready to submit for review.
 
 ### What it does
 
-`sdd-pr` creates a comprehensive pull request by gathering:
+`foundry-pr` creates a comprehensive pull request by gathering:
 
 - **Spec metadata** - Title, description, mission
 - **Completed tasks** - What was implemented
@@ -488,7 +488,7 @@ Explanation of how it was implemented.
 
 ## Supporting Skills
 
-### sdd-refactor
+### foundry-refactor
 
 **When to use:** Renaming, extracting functions, moving code, or cleaning up.
 
@@ -501,12 +501,12 @@ Uses LSP (Language Server Protocol) for:
 - **Safe renaming** - Updates all usages automatically
 - **Verification** - Confirms all references updated
 
-### /research
+### foundry-research
 
 **When to use:** Complex investigations, design decisions, or learning.
 
 ```
-/research What are the security implications of storing JWTs in localStorage?
+Use foundry-research to explore the security implications of storing JWTs in localStorage
 ```
 
 Research workflows:
@@ -516,18 +516,18 @@ Research workflows:
 - **ideate** - Creative brainstorming
 - **deep** - Comprehensive web research
 
-### /bikelane
+### foundry-note
 
 **When to use:** Quick capture of ideas or issues without interrupting flow.
 
 ```
-/bikelane add Remember to add rate limiting to auth endpoints
+Use foundry-note to capture: Remember to add rate limiting to auth endpoints
 ```
 
 Later, review captured items:
 
 ```
-/bikelane list
+Use foundry-note to list pending items
 ```
 
 ---
@@ -537,18 +537,18 @@ Later, review captured items:
 ### Starting fresh
 
 ```
-1. /research to understand codebase (optional)
+1. Use foundry-research to understand codebase (optional)
 2. Describe your feature naturally
 3. Claude creates spec, you review and approve
-4. /implement to work through tasks
+4. Use foundry-implement to work through tasks
 5. Verification tasks auto-dispatch when reached
-6. /sdd-pr when spec is complete
+6. Use foundry-pr when spec is complete
 ```
 
 ### Resuming work
 
 ```
-1. /implement
+1. Use foundry-implement
 2. Claude finds active spec
 3. Shows next task
 4. Continue from where you left off
@@ -560,7 +560,7 @@ Later, review captured items:
 1. Verify task fails (or you ask to run tests)
 2. AI helps diagnose
 3. Fix the issues
-4. Continue with /implement
+4. Continue with foundry-implement
 ```
 
 ---

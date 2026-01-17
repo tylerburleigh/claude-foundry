@@ -352,7 +352,7 @@ Plugin components are namespaced:
 
 | Pattern | Example |
 |---------|---------|
-| `plugin-name:agent-name` | `sdd-toolkit:sdd-plan` |
+| `plugin-name:agent-name` | `foundry:foundry-spec` |
 
 ### Directory Structure
 
