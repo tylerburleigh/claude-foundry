@@ -255,10 +255,10 @@ Use `AskUserQuestion` to determine preferred execution mode:
 ```
 "How should /implement behave by default?"
 Options:
-- "Interactive, inline (default)" → auto=false, delegate=false, parallel=false
+- "Interactive, inline (Recommended)" → auto=false, delegate=false, parallel=false
 - "Autonomous, inline" → auto=true, delegate=false, parallel=false
 - "Interactive, delegated" → auto=false, delegate=true, parallel=false
-- "Autonomous, delegated (recommended)" → auto=true, delegate=true, parallel=false
+- "Autonomous, delegated" → auto=true, delegate=true, parallel=false
 - "Autonomous, parallel" → auto=true, delegate=true, parallel=true
 ```
 

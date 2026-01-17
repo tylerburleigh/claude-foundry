@@ -6,6 +6,19 @@ A Claude Code plugin for working with [foundry-mcp](https://github.com/tylerburl
 
 This plugin provides skills, commands, and agents for spec-driven development (SDD) workflows powered by the Foundry MCP server.
 
+**New to Claude Foundry?** Check out the [User Documentation](docs/README.md) for guides, tutorials, and examples.
+
+## Documentation
+
+| Guide | Description |
+|-------|-------------|
+| [Quick Start](docs/01-quick-start.md) | Get started in 5 minutes |
+| [Core Concepts](docs/02-core-concepts.md) | Understand specs, phases, tasks |
+| [Workflow Guide](docs/03-workflow-guide.md) | The complete SDD workflow |
+| [Tutorial](docs/04-tutorial.md) | Build a feature from start to finish |
+| [Command Reference](docs/05-command-reference.md) | All commands and options |
+| [Troubleshooting](docs/06-troubleshooting.md) | Common issues and solutions |
+
 ## Prerequisites
 
 ### Install foundry-mcp (Required)
@@ -88,16 +101,7 @@ The plugin requires the foundry-mcp MCP server to be installed and registered (s
 
 ## Permissions
 
-Claude Code requires explicit permissions for plugin tools. Add the permissions from `docs/examples/settings.local.json.example` to your project's `.claude/settings.local.json`.
-
-**If you don't have a `.claude/settings.local.json` yet:**
-
-```bash
-mkdir -p .claude && curl -o .claude/settings.local.json \
-  https://raw.githubusercontent.com/tylerburleigh/claude-foundry/main/docs/examples/settings.local.json.example
-```
-
-**If you already have one:** Merge the permissions from the sample file into your existing config. See `docs/examples/settings.local.json.example` in this repo for the full list.
+Claude Code requires explicit permissions for plugin tools. Run `/setup` to configure permissions automatically, or see `templates/settings.local.json.example` for the full list of required permissions.
 
 ### What's included
 

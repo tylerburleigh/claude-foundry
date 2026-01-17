@@ -51,6 +51,10 @@ better user experience with provider-managed consent screens.
 - Verified login/logout flows manually
 - Tested with both GitHub and Google accounts
 
+## Spec Reference
+
+- Spec: `specs/completed/<spec-id>.json`
+
 ## Commits
 
 - abc1234: task-1-1: Implement OAuth providers

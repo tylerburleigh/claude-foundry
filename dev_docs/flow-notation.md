@@ -45,6 +45,16 @@ Token-efficient flow diagram notation for skill documentation.
       - [fail?] → ↻ back to Investigate
 ```
 
+## Lint Checklist
+
+- Use one root bullet per flow block; nested bullets represent branch paths and rejoin steps.
+- Replace inline `|` with sibling bullets at the same indent.
+- Decisions use `[condition?]` and fallbacks use `[else]` when needed.
+- Every `→` must connect two steps; never start a line with `→`.
+- Loops use `↻ back to StepName`.
+- Gates are `(GATE: description)` as standalone steps.
+- Avoid bracketed labels like `Step[foo]`; use plain text or branches.
+
 ## Token Efficiency
 
 NBS achieves ~65% reduction vs ASCII box diagrams:

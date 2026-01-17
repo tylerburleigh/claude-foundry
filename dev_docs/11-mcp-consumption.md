@@ -26,7 +26,7 @@ Claude Code discovers MCP servers from:
 |--------|----------|
 | User config | `~/.claude/settings.json` |
 | Project config | `.mcp.json` |
-| Plugin config | Plugin's `.mcp.json` or `plugin.json` |
+| Plugin config | Plugin's `mcp/servers.json` or `plugin.json` |
 | CLI | `claude mcp add` command |
 
 ### Connection Process

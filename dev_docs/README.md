@@ -18,6 +18,7 @@ This documentation uses RFC 2119 terminology. See [RFC 2119](https://datatracker
 | **Integration** | [11-MCP Consumption](./11-mcp-consumption.md) | Using MCP in Claude Code |
 | **Operations** | [13-Testing](./13-testing.md), [14-Distribution](./14-distribution.md), [15-Debugging](./15-debugging.md) | Testing, publishing, debugging |
 | **Prompt Engineering** | [16-Description Writing](./16-description-writing.md), [17-System Prompts](./17-system-prompts.md), [18-Context Management](./18-context-management.md) | Writing effective prompts |
+| **Documentation** | [19-README Best Practices](./19-readme-best-practices.md) | Writing effective READMEs |
 
 ---
 
@@ -115,6 +116,12 @@ When in doubt, choose the mechanism that gives the right balance of discoverabil
 | 17 | [System Prompts](./17-system-prompts.md) | Designing system prompts with the "right altitude" principle |
 | 18 | [Context Management](./18-context-management.md) | Token budgets, progressive disclosure, and context optimization |
 
+### Documentation
+
+| # | Document | Description |
+|---|----------|-------------|
+| 19 | [README Best Practices](./19-readme-best-practices.md) | Patterns and guidance for README structure and style |
+
 ---
 
 ## How to Use This Guide
@@ -196,7 +203,8 @@ my-plugin/
 │       └── SKILL.md
 ├── hooks/                    # Optional
 │   └── hooks.json
-├── .mcp.json                 # Optional
+├── mcp/                      # Optional
+│   └── servers.json
 ├── README.md
 └── LICENSE
 ```

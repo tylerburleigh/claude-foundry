@@ -16,48 +16,52 @@ description: Task implementation skill for spec-driven workflows. Reads specific
 > `[x?]`=decision · `(GATE)`=user approval · `→`=sequence · `↻`=loop · `§`=section ref
 
 ```
-- **Entry** → LoadConfig → ModeDispatch
-  - LoadConfig: Call `environment action="get-config"` (returns implement + git), merge with CLI flags
-  - [--delegate or --parallel?] → §DelegatedMode / §ParallelMode
-  - [--auto?] → Skip user gates (autonomous execution)
-  - [interactive] → SelectTask
-  - [recommend] → `task action="prepare"` → ShowRecommendation
-  - [browse] → `task action="query"` → (GATE: task selection)
-- → TypeDispatch
-    - [type=verify?] → §VerifyWorkflow
-    - [type=task?] → DeepDive
+- **Entry** → LoadConfig → `environment action="get-config"` → Merge config → ModeDispatch
+  - [--parallel?] → §ParallelMode
+  - [--delegate?] → §DelegatedMode
+  - [--auto?] → Skip user gates
+  - Task selection → [selection mode?]
+    - [interactive?] → SelectTask
+    - [recommend?] → `task action="prepare"` → ShowRecommendation
+    - [browse?] → `task action="query"` → (GATE: task selection)
+  - Type dispatch → [type?]
+    - [verify?] → §VerifyWorkflow
+    - [task?] → DeepDive
       - `task action="prepare"` → ExtractContext
       - DraftPlan → (GATE: approve plan)
         - [approved] → PreImpl
         - [changes] → ↻ back to DraftPlan
         - [defer] → **Exit**
-      - PreImpl: LSP analysis → Explore subagent
-      - `task action="update-status" status="in_progress"`
-      - **Implement**
-      - PostImpl: `task action="complete"` + journal (auto)
-      - [success?] → SurfaceNext
-        - `task action="prepare"` → ShowNextTask
-        - (GATE: continue?) → ↻ back to SelectTask | **Exit**
-      - [blocked?] → HandleBlocker
-        - `task action="block"` → (GATE: alternatives)
-        - [add-dep?] → `task action="add-dependency"` | `task action="add-requirement"`
-        - [resolve] → ↻ back to Implement
+      - PreImpl → LSP analysis → Explore subagent
+      - `task action="update-status" status="in_progress"` → **Implement**
+      - PostImpl → `task action="complete"` → Journal (auto)
+      - [success?] → SurfaceNext → `task action="prepare"` → ShowNextTask → (GATE: continue?)
+        - [yes] → ↻ back to SelectTask
+        - [else] → **Exit**
+      - [blocked?] → HandleBlocker → `task action="block"` → (GATE: alternatives)
+        - [add-dep?] → `task action="add-dependency"`
+        - [add-requirement?] → `task action="add-requirement"`
+        - [resolve] → ↻ back to **Implement**
         - [skip] → SurfaceNext
+```
 
 §VerifyWorkflow → see references/verification.md
 
-§ParallelMode:
-  - `task action="prepare-batch"` → IdentifyEligible
+§ParallelMode flow:
+
+```
+- **Entry** → `task action="prepare-batch"` → IdentifyEligible
   - [conflicts?] → ExcludeConflicting
   - `task action="start-batch"` → SpawnSubagents
-  - For each subagent: Task(general-purpose, run_in_background=true)
+  - For each subagent → Task(general-purpose, run_in_background=true)
   - TaskOutput(block=true) → CollectResults
   - `task action="complete-batch"` → AggregateResults
   - [failures?] → HandlePartialFailure
-  - [more batches?] → ↻ back to prepare-batch | **Exit**
+  - [more batches?] → ↻ back to prepare-batch
+  - [else] → **Exit**
 ```
 
-> Flow notation: see [docs/flow-notation.md](../../docs/flow-notation.md)
+> Flow notation: see [dev_docs/flow-notation.md](../../dev_docs/flow-notation.md)
 
 ---
 

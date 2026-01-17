@@ -27,6 +27,7 @@ Content goes here...
 
 ```yaml
 ---
+name: command-name
 description: Brief summary for /help and tool discovery
 argument-hint: [required-arg] [optional-arg]
 allowed-tools: Bash(git status:*), Bash(git commit:*)
@@ -39,6 +40,7 @@ disable-model-invocation: false
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
+| `name` | string | MAY | Optional override for command name (defaults to filename) |
 | `description` | string | SHOULD | Summary shown in `/help`; enables SlashCommand tool discovery |
 | `argument-hint` | string | SHOULD | Documents expected parameters (e.g., `[file] [options]`) |
 | `allowed-tools` | string | MAY | Comma-separated tool whitelist |
@@ -52,6 +54,7 @@ disable-model-invocation: false
 | MUST | Include `description` for discoverable commands |
 | SHOULD | Include `argument-hint` when command accepts arguments |
 | SHOULD | Specify `allowed-tools` with precise patterns |
+| MAY | Set `name` to override filename; if set, MUST use kebab-case and SHOULD match the filename |
 | MAY | Override `model` for performance-sensitive commands |
 
 ### Example
@@ -155,7 +158,7 @@ allowed-tools: Read, Bash
 |-------|------|----------|-------------|
 | `name` | string | MUST | Lowercase, numbers, hyphens. Max 64 chars |
 | `description` | string | MUST | What + when. Max 1024 chars |
-| `allowed-tools` | array | MAY | Tool whitelist without prompts |
+| `allowed-tools` | string | MAY | Comma-separated tool whitelist |
 
 ### Requirements
 
@@ -199,7 +202,7 @@ Extract content from PDF files:
 
 | Field | Commands | Agents | Skills |
 |-------|----------|--------|--------|
-| `name` | - | MUST | MUST |
+| `name` | MAY | MUST | MUST |
 | `description` | SHOULD | MUST | MUST |
 | `tools`/`allowed-tools` | MAY | SHOULD | MAY |
 | `model` | MAY | MAY | - |

@@ -68,15 +68,12 @@ Traditional PR creation uses static templates. The sdd-pr skill:
 > `[x?]`=decision · `(GATE)`=user approval · `→`=sequence · `↻`=loop · `§`=section ref
 
 ```
-- **Entry** → GatherContext
-  - `pr action="context"` → [Spec|Tasks|Commits|Journals|Diff]
-- SpecChangeSummary → `spec action="diff"` + `spec action="history"`
-  - Capture requirement evolution during implementation
-- AIAnalysis → synthesize context
-- DraftPR → (GATE: user review)
-  - [approved] → continue
-  - [changes] → ↻ revise draft
-- PushBranch → CreatePR → UpdateMeta → **Exit**
+- **Entry** → Gather context → `pr action="context"` → Collect: Spec, Tasks, Commits, Journals, Diff
+  - Spec change summary → `spec action="diff"` → `spec action="history"` → Capture requirement evolution
+  - AI analysis → Synthesize context
+  - Draft PR → (GATE: user review)
+    - [approved] → Push branch → Create PR → Update meta → **Exit**
+    - [changes] → ↻ back to Draft PR
 ```
 
 ## Context Sources

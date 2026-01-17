@@ -58,7 +58,7 @@ plugin-root/
   "agents": "./agents",
   "skills": "./skills",
   "hooks": "./hooks/hooks.json",
-  "mcpServers": "./mcp.json"
+  "mcpServers": "./mcp/servers.json"
 }
 ```
 
@@ -275,7 +275,7 @@ Inline configuration:
 External file:
 ```json
 {
-  "mcpServers": "./mcp.json"
+  "mcpServers": "./mcp/servers.json"
 }
 ```
 
@@ -356,7 +356,7 @@ Use `${CLAUDE_PLUGIN_ROOT}` for plugin-relative paths in:
   "agents": ["./agents", "./specialized-agents"],
   "skills": "./skills",
   "hooks": "./hooks/hooks.json",
-  "mcpServers": "./mcp.json"
+  "mcpServers": "./mcp/servers.json"
 }
 ```
 

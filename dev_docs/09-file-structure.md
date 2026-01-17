@@ -42,9 +42,10 @@ plugin-name/
 ├── scripts/                  # Optional: utility scripts
 │   ├── validate.sh
 │   └── format.sh
+├── mcp/                      # Optional: MCP server config
+│   └── servers.json
 ├── servers/                  # Optional: MCP server executables
 │   └── api-server.js
-├── .mcp.json                 # Optional: MCP server config
 ├── README.md                 # Recommended: documentation
 ├── LICENSE                   # Recommended: license file
 └── CHANGELOG.md              # Recommended: version history
@@ -305,7 +306,7 @@ plugin/
 | Aspect | Project | Plugin |
 |--------|---------|--------|
 | Config location | `.claude/` | `.claude-plugin/` |
-| Config file | `settings.json` | `plugin.json` |
+| Config file | `.claude/settings.json` (and `.claude/settings.local.json`) | `plugin.json` |
 | Distribution | Local only | Installable |
 | Namespace | None | Plugin name prefix |
 
@@ -365,9 +366,10 @@ enterprise-toolkit/
 ├── scripts/
 │   ├── validate-deploy.sh
 │   └── health-check.sh
+├── mcp/
+│   └── servers.json
 ├── servers/
 │   └── metrics-server.js
-├── .mcp.json
 ├── README.md
 ├── LICENSE
 └── CHANGELOG.md

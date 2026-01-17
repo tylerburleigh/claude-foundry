@@ -149,7 +149,8 @@ description: Extracts text and tables from PDF files, fills forms, merges docume
 | MUST | Include both `name` and `description` |
 | MUST | Use lowercase letters, numbers, and hyphens only in name |
 | MUST | Write description in third person |
-| MUST NOT | Use reserved words: "anthropic", "claude" |
+| MUST NOT | Use reserved words in `name`: "anthropic", "claude" |
+| SHOULD | Avoid reserved words in `description` unless part of an official product or plugin name |
 | MUST NOT | Include XML tags in name or description |
 
 ### Body Content Guidelines
@@ -277,7 +278,7 @@ Use verb + -ing to describe the activity:
 |-------------|---------|
 | MUST | Use lowercase letters, numbers, hyphens only |
 | MUST NOT | Use spaces or underscores |
-| MUST NOT | Use reserved words ("anthropic", "claude") |
+| MUST NOT | Use reserved words in names ("anthropic", "claude") |
 | SHOULD | Be descriptive and specific |
 | SHOULD NOT | Use vague names ("helper", "utils", "tools") |
 

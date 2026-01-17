@@ -34,7 +34,7 @@ Commands can be project-scoped (shared with team) or user-scoped (personal workf
 | Requirement | Details |
 |-------------|---------|
 | MUST | Use `.md` extension |
-| MUST | Filename (minus extension) becomes command name |
+| MUST | Default command name is filename (minus extension) unless frontmatter `name` overrides |
 | SHOULD | Use kebab-case for multi-word names |
 | MAY | Use subdirectories for organization (does not affect invocation) |
 
@@ -57,6 +57,7 @@ Commands use optional YAML frontmatter:
 
 ```yaml
 ---
+name: command-name
 description: Brief summary for /help and tool discovery
 argument-hint: [required-arg] [optional-arg]
 allowed-tools: Bash(git status:*), Bash(git commit:*)
@@ -69,6 +70,7 @@ disable-model-invocation: false
 
 | Field | Type | Required | Purpose |
 |-------|------|----------|---------|
+| `name` | string | MAY | Optional override for command name (defaults to filename) |
 | `description` | string | SHOULD | Summary shown in `/help`; enables SlashCommand tool discovery |
 | `argument-hint` | string | SHOULD | Documents expected parameters |
 | `allowed-tools` | string | MAY | Comma-separated tool whitelist |
@@ -82,6 +84,7 @@ disable-model-invocation: false
 | MUST | Include `description` if command should be discoverable by SlashCommand tool |
 | SHOULD | Include `argument-hint` when command accepts arguments |
 | SHOULD | Specify `allowed-tools` with precise patterns (not wildcards) |
+| MAY | Set `name` to override filename; if set, MUST use kebab-case and SHOULD match the filename |
 | MAY | Override `model` for performance-sensitive commands |
 
 ---

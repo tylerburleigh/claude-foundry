@@ -88,7 +88,7 @@ if len(parts) >= 3:
 **Commands:**
 ```yaml
 ---
-name: my-command          # MUST: lowercase, hyphens
+name: my-command          # MAY: override (lowercase, hyphens; defaults to filename)
 description: What it does # MUST: clear purpose
 allowed-tools: Read, Grep # MAY: tool restrictions
 ---
@@ -109,7 +109,7 @@ model: sonnet             # MAY: model override
 ---
 name: my-skill            # MUST: lowercase, hyphens, max 64 chars
 description: What + when  # MUST: max 1024 chars, third person
-allowed-tools: Read       # MAY: tool restrictions
+allowed-tools: Read       # MAY: tool restrictions (comma-separated)
 ---
 ```
 

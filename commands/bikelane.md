@@ -12,9 +12,22 @@ Fast intake of ideas/tasks without immediate triage overhead. Items are stored i
 
 Parse $ARGUMENTS to determine action:
 
+### `add`: Explicit Add
+
+If arguments start with `add`, treat the remaining text as the title to add:
+
+```bash
+mcp__plugin_foundry_foundry-mcp__intake action="add" title="$REST" source="bikelane-cmd"
+```
+
+If no title provided after `add`, prompt for title:
+```
+AskUserQuestion: "What would you like to capture?"
+```
+
 ### Default: Quick Add
 
-If arguments start with text (not `list` or `dismiss`), treat as a title to add:
+If arguments start with text (not `list`, `dismiss`, or `add`), treat as a title to add:
 
 ```bash
 mcp__plugin_foundry_foundry-mcp__intake action="add" title="$ARGUMENTS" source="bikelane-cmd"
@@ -48,7 +61,7 @@ Optionally ask for dismissal reason.
 
 | Command | Action |
 |---------|--------|
-| `/bikelane Add retry logic to API calls` | Quick add with title |
+| `/bikelane add Add retry logic to API calls` | Quick add with title |
 | `/bikelane` | Prompt for title |
 | `/bikelane list` | Show pending items |
 | `/bikelane dismiss intake-abc123` | Dismiss specific item |

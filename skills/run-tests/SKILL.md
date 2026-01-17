@@ -26,13 +26,16 @@ The **Skill(foundry:run-tests)** skill provides systematic test debugging with a
 ```
 - **Entry** → Run failing test(s)
   - [pass?] → **Exit**: Done
-  - [fail?] → Categorize failure
-- FormHypothesis → GatherContext[Explore preferred]
-- [Research available?] → `research action="chat"`
-  - [yes] → Consult (MANDATORY)
-  - [no] → skip
-- ImplementFix → VerifySpecific ↻ [pass?]
-- RunFullSuite ↻ [pass?] → **Exit**: Done
+  - [else] → Categorize failure → Form hypothesis → Gather context
+    - [explore preferred?] → Explore subagent
+    - [else] → Targeted lookup
+    - [research available?] → `research action="chat"` → Consult (MANDATORY)
+    - [else] → skip
+    - Implement fix → Verify specific
+      - [pass?] → Run full suite
+        - [pass?] → **Exit**: Done
+        - [else] → ↻ back to Form hypothesis
+      - [else] → ↻ back to Form hypothesis
 ```
 
 **Decision rules:**

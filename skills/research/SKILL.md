@@ -16,11 +16,13 @@ description: AI-powered research skill with five workflows - chat (single-model 
 > `[x?]`=decision `(GATE)`=user approval `→`=sequence
 
 ```
-- **Entry** → [explicit?] → Dispatch | [thread-id?] → Resume
-  | [research-id?] → SessionMgmt | [sessions?] → ListSessions
-  | [no args?] → (GATE) | AutoRoute
-- **Dispatch** → Execute → PersistThread → Response + thread_id
-- **Deep** → Start → Poll → Report (background execution)
+- **Entry** → [route?]
+  - [explicit?] → Dispatch → Execute → Persist thread → Response + thread_id
+  - [thread-id?] → Resume → Dispatch → Execute → Persist thread → Response + thread_id
+  - [research-id?] → SessionMgmt
+  - [sessions?] → ListSessions
+  - [no args?] → (GATE: choose workflow) → AutoRoute → Dispatch → Execute → Persist thread → Response + thread_id
+  - [deep?] → Start → Poll → Report (background execution)
 ```
 
 **CRITICAL for `deep` workflow:** Read [references/deep-research-workflow.md](./references/deep-research-workflow.md) before execution. Contains required polling strategy and MCP parameters.

@@ -50,18 +50,16 @@ sdd-plan → sdd-implement → [CODE] → sdd-review (this skill) → run-tests 
 
 ```
 - **Entry** → [Familiar with code?]
-  - [no] → Explore subagent (optional)
-  - [yes] → skip
-- SpecChanges → `spec action="diff"` + `spec action="history"`
-  - Identify changed requirements, new tasks
-- LSP PreCheck → `documentSymbol` → [structures exist?]
-  - [fail] → early exit with findings
-  - [pass] → continue
-- MCP Review → `fidelity action="review"` [phase|task] (up to 5 min)
-  - [deviations found?] ↻ LSP Investigate
-    - `goToDefinition` → `findReferences` → `incomingCalls`
-  - Assess[Exact|Minor|Major|Missing]
-- **Exit** → Report with recommendations
+  - [no] → Explore subagent
+  - [else] → skip
+  - Spec changes → `spec action="diff"` → `spec action="history"`
+  - LSP pre-check → `documentSymbol`
+    - [structures exist?] → continue
+    - [else] → Early exit with findings → **Exit**: Report
+  - MCP review → `fidelity action="review"` → Scope: phase or task
+    - [deviations found?] → LSP investigate → `goToDefinition` → `findReferences` → `incomingCalls`
+  - Assess deviation: Exact, Minor, Major, Missing
+  - **Exit** → Report with recommendations
 ```
 
 ## MCP Tooling

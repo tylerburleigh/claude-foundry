@@ -21,17 +21,19 @@ Plugin MCP servers start automatically when the plugin is enabled.
 
 ## Configuration Methods
 
-### Option A: Separate .mcp.json
+### Option A: Separate mcp/servers.json
 
-Place at plugin root:
+Place at plugin root in `mcp/servers.json`:
 
 ```json
 {
-  "database-tools": {
-    "command": "${CLAUDE_PLUGIN_ROOT}/servers/db-server",
-    "args": ["--config", "${CLAUDE_PLUGIN_ROOT}/config.json"],
-    "env": {
-      "DB_URL": "${DB_URL}"
+  "mcpServers": {
+    "database-tools": {
+      "command": "${CLAUDE_PLUGIN_ROOT}/servers/db-server",
+      "args": ["--config", "${CLAUDE_PLUGIN_ROOT}/config.json"],
+      "env": {
+        "DB_URL": "${DB_URL}"
+      }
     }
   }
 }
@@ -51,6 +53,8 @@ Place at plugin root:
   }
 }
 ```
+
+**Note:** Use `.mcp.json` for project-scoped MCP servers. Plugins should use `mcp/servers.json` (or inline `mcpServers` in plugin.json) so plugin configs stay self-contained.
 
 ---
 
@@ -172,7 +176,7 @@ Place at plugin root:
 | User | `~/.claude/settings.json` | All projects |
 | Project (shared) | `.mcp.json` | Team via git |
 | Project (local) | `.claude/settings.local.json` | Personal |
-| Plugin | `plugin.json` or `.mcp.json` | With plugin |
+| Plugin | `plugin.json` or `mcp/servers.json` | With plugin |
 
 ### Precedence (Highest to Lowest)
 

@@ -24,5 +24,8 @@ Breakdown by phase with completed tasks.
 ## 6. Testing
 Verification steps and test coverage.
 
-## 7. Commits
+## 7. Spec Reference
+Spec ID or link to the spec for implementation context.
+
+## 8. Commits
 Development history showing progression.

@@ -47,17 +47,16 @@ Use `Skill(foundry:sdd-refactor)` for:
 > `[x?]`=decision · `(GATE)`=user approval · `→`=sequence · `↻`=loop · `§`=section ref
 
 ```
-- **Entry** → [Type: Rename|Extract|Move|Cleanup?]
-- ValidateTarget → [LSP available?]
-  - [yes] → `documentSymbol` → `goToDefinition`
-  - [no] → Grep fallback
-- ImpactAnalysis (GATE - REQUIRED)
-  - `findReferences` → Risk[<10|<50|50-100|>100 refs]
-  - (GATE: user approval for scope)
-- Execute → [4 operation-specific paths]
-- Verify → Structural[LSP] → References[LSP] → Tests[run-tests]
-- Document → [spec task?] → journal entry
-- **Exit**: Done
+- **Entry** → Select type: Rename, Extract, Move, Cleanup → Validate target
+  - [LSP available?] → `documentSymbol` → `goToDefinition`
+  - [else] → Grep fallback
+  - Impact analysis → `findReferences` → Assess risk: refs <10, <50, 50-100, >100 → (GATE: approve scope)
+  - Execute → Operation path: rename, extract, move, cleanup
+  - Verify → Structural LSP → References LSP → Tests via run-tests
+  - Document
+    - [spec task?] → Journal entry
+    - [else] → skip
+  - **Exit**: Done
 ```
 
 ## LSP Tools
