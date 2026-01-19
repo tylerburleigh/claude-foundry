@@ -262,7 +262,7 @@ Control how much prompting you want:
 | `--auto` | Less prompting between tasks |
 | `--delegate` | Use subagent for each task |
 | `--parallel` | Run multiple subagents (with `--delegate`) |
-| `--model opus` | Use Opus model for delegation |
+| `--model large` | Use large model size (opus) for delegation |
 
 Examples:
 

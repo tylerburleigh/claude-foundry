@@ -111,7 +111,7 @@ Use foundry-implement --delegate --parallel for parallel execution
 | `--auto` | Reduce prompts between tasks |
 | `--delegate` | Use subagent for each task |
 | `--parallel` | Run multiple subagents concurrently (requires `--delegate`) |
-| `--model MODEL` | Model for delegation: `haiku`, `sonnet`, `opus` |
+| `--model MODEL` | Model size for delegation: `small` (haiku), `medium` (sonnet), `large` (opus) |
 
 Defaults come from `[implement]` in `foundry-mcp.toml`.
 
@@ -361,7 +361,7 @@ specs_dir = "./specs"         # Where specs are stored
 auto = false                  # Default for --auto flag
 delegate = false              # Default for --delegate flag
 parallel = false              # Default for --parallel flag
-model = "haiku"               # Model for delegation
+model = "small"               # Model size for delegation (small=haiku, medium=sonnet, large=opus)
 
 [consultation]
 priority = [

@@ -4,11 +4,13 @@ Claude Code provides built-in subagents for efficient exploration without bloati
 
 ## Available Subagents
 
-| Subagent | Model | Best For |
-|----------|-------|----------|
-| **Explore** | Haiku | File discovery, pattern search, codebase questions |
-| **general-purpose** | Sonnet | Complex multi-step research, code analysis |
-| **Plan** | Sonnet | Architecture design, implementation planning |
+| Subagent | Model size | Best For |
+|----------|------------|----------|
+| **Explore** | small (haiku) | File discovery, pattern search, codebase questions |
+| **general-purpose** | medium (sonnet) | Complex multi-step research, code analysis |
+| **Plan** | medium (sonnet) | Architecture design, implementation planning |
+
+Model sizes map to Claude tiers: small = haiku, medium = sonnet, large = opus.
 
 ## Explore Agent Thoroughness Levels
 

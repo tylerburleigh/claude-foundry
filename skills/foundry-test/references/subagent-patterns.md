@@ -4,10 +4,10 @@ For complex test failures, leverage Claude Code's built-in subagents to explore 
 
 ## Built-in Subagents for Test Debugging
 
-| Subagent | Model | Use Case |
-|----------|-------|----------|
-| **Explore** | Haiku | Fast codebase search, finding test files, fixtures |
-| **general-purpose** | Sonnet | Complex multi-step debugging investigations |
+| Subagent | Model size | Use Case |
+|----------|------------|----------|
+| **Explore** | small (haiku) | Fast codebase search, finding test files, fixtures |
+| **general-purpose** | medium (sonnet) | Complex multi-step debugging investigations |
 
 ## By Failure Type
 
@@ -65,6 +65,6 @@ Use the Explore agent (medium thoroughness) to find:
 | Benefit | Description |
 |---------|-------------|
 | **Context isolation** | Test output and search results don't bloat main conversation |
-| **Speed** | Haiku model searches faster than manual Glob/Grep |
+| **Speed** | Small model size (haiku) searches faster than manual Glob/Grep |
 | **Focus** | Returns curated findings instead of raw file lists |
 | **Parallelization** | Can run multiple Explore agents for different investigation paths |

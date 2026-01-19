@@ -5,6 +5,15 @@ All notable changes to claude-foundry will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.9] - 2026-01-19
+
+### Changed
+
+- **Abstract model size naming**: Renamed model options from `haiku/sonnet/opus` to `small/medium/large`
+  - Abstracts away provider-specific model names for portability
+  - Mapping: small = haiku, medium = sonnet, large = opus
+  - Updated all documentation references across skills and command reference
+
 ## [1.6.8] - 2026-01-17
 
 ### Changed
@@ -84,9 +93,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - **Model selection for delegated tasks**: New `--model` flag for `/implement` command
-  - Specify `haiku`, `sonnet`, or `opus` for subagent tasks
-  - Default: `haiku` (fast, cost-effective for most tasks)
-  - Configurable via TOML: `[implement] model = "haiku"`
+  - Specify `small`, `medium`, or `large` for subagent tasks (small=haiku, medium=sonnet, large=opus)
+  - Default: `small` (fast, cost-effective for most tasks)
+  - Configurable via TOML: `[implement] model = "small"`
   - CLI flag overrides TOML default
 
 ### Changed

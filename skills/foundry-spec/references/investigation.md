@@ -45,7 +45,7 @@ Agent 3: Use the Explore agent (quick thoroughness) to find:
 ## Benefits of Parallel Investigation
 
 1. **Context isolation** - Each agent uses separate context
-2. **Speed** - Haiku model processes quickly
+2. **Speed** - Small model size (haiku) processes quickly
 3. **Thoroughness** - Multiple perspectives on codebase
 4. **Main context preserved** - Results summarized, not raw file contents
 

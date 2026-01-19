@@ -4,10 +4,10 @@ For complex fidelity reviews, leverage Claude Code's built-in subagents to gathe
 
 ## Built-in Subagents for Fidelity Review
 
-| Subagent | Model | Use Case |
-|----------|-------|----------|
-| **Explore** | Haiku | Fast file discovery, implementation mapping |
-| **general-purpose** | Sonnet | Complex deviation analysis requiring code reading |
+| Subagent | Model size | Use Case |
+|----------|------------|----------|
+| **Explore** | small (haiku) | Fast file discovery, implementation mapping |
+| **general-purpose** | medium (sonnet) | Complex deviation analysis requiring code reading |
 
 ## Pre-Review Context Gathering
 
@@ -70,6 +70,6 @@ Use the Explore agent (medium thoroughness) to find:
 | Benefit | Description |
 |---------|-------------|
 | **Context isolation** | File searches don't bloat main conversation |
-| **Faster discovery** | Haiku model finds files quickly |
+| **Faster discovery** | Small model size (haiku) finds files quickly |
 | **Focused investigation** | Post-review exploration targets specific deviations |
 | **Parallel preparation** | Can explore while formulating review strategy |
