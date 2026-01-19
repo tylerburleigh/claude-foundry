@@ -1,6 +1,6 @@
 {
     "name": "foundry",
-    "version": "1.6.8",
+    "version": "1.6.10",
     "description": "Spec-driven development toolkit for Claude Code",
     "author": {
         "name": "tylerburleigh",
@@ -11,7 +11,6 @@
     "repository": "https://github.com/foundry-works/claude-foundry",
     "license": "MIT",
     "keywords": ["sdd", "spec-driven", "development", "testing", "planning"],
-    "commands": "./commands",
     "skills": "./skills",
     "mcpServers": "./mcp/servers.json"
 }
