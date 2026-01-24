@@ -5,6 +5,16 @@ All notable changes to claude-foundry will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.12] - 2026-01-24
+
+### Added
+
+- **Deep research polling protocol**: Mandatory polling rules embedded directly in SKILL.md
+  - Table of required user communication at each status check (max 5 checks)
+  - Explicit "NO INDEPENDENT RESEARCH" rule while deep research is running
+  - Anti-pattern examples in deep-research-workflow.md (rapid polling, redundant WebSearch/WebFetch)
+  - Good pattern examples showing paced polling with user communication
+
 ## [1.6.11] - 2026-01-22
 
 ### Changed
