@@ -1,6 +1,8 @@
-# Claude Foundry
+<foundry-instructions>
 
-Spec-driven development (SDD) toolkit for Claude Code. Plan before code, verify against spec.
+# Foundry
+
+Spec-driven development (SDD) toolkit. Plan before code, verify against spec.
 
 ## Workflow
 
@@ -12,22 +14,40 @@ foundry-spec → foundry-implement → [CODE] → foundry-review → foundry-tes
 
 ## Skill Selection
 
-| When you need to... | Use |
-|---------------------|-----|
-| Create/review/modify a spec | `foundry-spec` |
-| Find next task, implement, track progress | `foundry-implement` |
-| Verify implementation matches spec | `foundry-review` |
-| Run tests and debug failures | `foundry-test` |
-| Create PR with spec context | `foundry-pr` |
-| Safe refactoring with LSP | `foundry-refactor` |
-| Quick capture ideas/issues | `foundry-note` |
-| AI research (chat, consensus, thinkdeep, ideate, deep) | `foundry-research` |
+### Core Workflow
+
+| Skill | Invoke When | Skip If |
+|-------|-------------|---------|
+| `foundry-spec` | New feature, multi-file refactor, API integration, architecture change | Single-file edit, trivial fix, exploratory spike |
+| `foundry-implement` | Spec active, need next task, resume work, track progress | No spec, need to plan new work (use spec first) |
+| `foundry-review` | Phase complete, before PR, audit task compliance | Need to run tests (use test), finding tasks (use implement) |
+| `foundry-test` | Test failure unclear, need AI diagnosis, systematic debugging | Simple test run, tests pass, obvious failure |
+| `foundry-pr` | Spec complete, comprehensive PR needed | Quick change, no spec (use `gh` directly) |
+| `foundry-refactor` | Rename/extract/move across files, cleanup unused code | Single-file edit, new code, formatting |
+
+### Supporting
+
+| Skill | Invoke When | Skip If |
+|-------|-------------|---------|
+| `foundry-note` | User asks to capture/list/dismiss ideas | Autonomous capture during impl (use authoring tool) |
+| `foundry-setup` | First foundry use, setup environment | Already configured |
+| `foundry-research` | Need AI consultation, multiple perspectives, investigation | Simple questions, no research needed |
+
+### Research (`foundry-research`)
+
+| Signal | Workflow |
+|--------|----------|
+| Follow-up, iteration | `chat` |
+| Multiple perspectives needed | `consensus` |
+| Complex investigation | `thinkdeep` |
+| Brainstorming | `ideate` |
+| Web research, multiple sources, deep research | `deep` |
 
 ## Key Patterns
 
-**MCP-First**: All skills use `mcp__plugin_foundry_foundry-mcp__*` tools exclusively. No CLI fallbacks.
+**MCP-First**: All skills use Foundry MCP tools exclusively. No CLI fallbacks.
 
-**Human-in-Loop**: Skills use `AskUserQuestion` for key decisions. Don't assume - ask.
+**Human-in-Loop**: Skills prompt for key decisions. Don't assume - ask.
 
 **Task States**: `pending` → `in_progress` → `completed` | `blocked`
 - **Sequential mode** (interactive, autonomous): Only one task `in_progress` at a time
@@ -44,13 +64,20 @@ foundry-spec → foundry-implement → [CODE] → foundry-review → foundry-tes
 - Confusing behavior or documentation gaps → `[Docs]`
 - Ideas beyond current scope → `[Idea]`
 
-```bash
-mcp__plugin_foundry_foundry-mcp__authoring action="intake-add" title="[Type] description" tags='["foundry-feedback"]' source="skill-name"
-```
+Use `authoring` MCP tool with `action="intake-add"` to capture notes programmatically.
 
 User can invoke `foundry-note` skill for manual capture or list pending items.
 
 ## Common Workflows
+
+### Workflow Selection
+
+| User Signal | Entry Point |
+|-------------|-------------|
+| "Build X", "Add feature Y" (multi-file) | Starting New Work |
+| "Continue", "What's next?", spec exists | Resuming Active Work |
+| "Done with phase", "Ready for PR" | Completing a Phase |
+| "First time", "Setup foundry" | Run `foundry-setup` |
 
 ### Starting New Work
 1. Invoke `foundry-spec` - creates spec in `specs/pending/`
@@ -68,11 +95,13 @@ User can invoke `foundry-note` skill for manual capture or list pending items.
 2. Execute `foundry-test` to validate functionality
 3. Create PR with `foundry-pr` when ready
 
-## Subagent Usage
+## Codebase Exploration
 
-Use the **Explore** subagent before skill invocation when you need:
+Launch the Explore tool before skill invocation when you need:
 - Codebase context for planning (`foundry-spec`)
 - Understanding existing patterns before implementation
 - Finding related files for fidelity review
 
-Example: Before `foundry-spec`, launch Explore to understand existing architecture.
+Example: Before `foundry-spec`, launch Explore tool to understand existing architecture.
+
+</foundry-instructions>

@@ -5,6 +5,26 @@ All notable changes to claude-foundry will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.13] - 2026-01-26
+
+### Changed
+
+- **CLAUDE.md restructuring**: Clearer skill selection guidance with decision tables
+  - Added "Invoke When" and "Skip If" columns for each skill
+  - Separated core workflow vs supporting skills
+  - Added research workflow signal table
+  - Added workflow selection table for common user signals
+  - Wrapped content in `<foundry-instructions>` tags for better LLM parsing
+  - Simplified language and removed implementation details
+
+### Documentation
+
+- **Fidelity review best practices**: Emphasized fidelity review as standard phase verification
+  - Every phase should end with fidelity review task (`verification_type: "fidelity"`)
+  - Added Phase Verification Pattern section to task-hierarchy.md
+  - Updated phase-plan-template.md with structured verification format
+  - Added best practice notes to SKILL.md and phase-authoring.md
+
 ## [1.6.12] - 2026-01-24
 
 ### Added
