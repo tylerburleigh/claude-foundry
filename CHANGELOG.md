@@ -5,6 +5,20 @@ All notable changes to claude-foundry will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.14] - 2026-01-27
+
+### Added
+
+- **Auto-push documentation**: Added comprehensive auto_push feature documentation
+  - Auto-push behavior section in autonomous-mode.md with flow diagrams
+  - Auto-push after batch commit section in parallel-mode.md
+  - Updated spec-lifecycle.md with auto_push configuration notes
+  - Updated SKILL.md config loading to mention auto_push parameter
+
+### Removed
+
+- **Opencode migration docs**: Removed obsolete migration documentation (doc1.md, doc2.md, doc3.md)
+
 ## [1.6.13] - 2026-01-26
 
 ### Changed
